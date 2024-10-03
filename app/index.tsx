@@ -28,10 +28,15 @@ export default function Index() {
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text>No events yet. Create one!</Text>}
-        contentContainerStyle={{ width: '2000',flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
+        contentContainerStyle={{ width: width, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
       />
 
-      <Button title="Create Event" onPress={() => setModalVisible(true)} />
+      {/* Bottom Navigation Bar */}
+      <View style={styles.bottomBar}>
+        <Button title="Home" onPress={() => alert('Go to Home')} />
+        <Button title="Create Event" onPress={() => setModalVisible(true)} />
+        <Button title="Profile" onPress={() => alert('Go to Profile')} />
+      </View>
 
       {/* Modal for event creation */}
       <Modal
@@ -115,4 +120,15 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 18,
   },
+  bottomBar: {
+    width: '100%',
+    height: 60,
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#ddd', // Navigation bar background color
+    paddingVertical: 10,
+  }
 });
