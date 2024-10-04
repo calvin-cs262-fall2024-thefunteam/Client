@@ -12,7 +12,12 @@ import {
 } from "react-native";
 
 // Predefined tag options with corresponding colors
-const tags = [
+type Tag = {
+  label: string;
+  color: string;
+};
+
+const tags: Tag[] = [
   { label: "Social", color: "#FFD700" },
   { label: "Sports", color: "#1E90FF" },
   { label: "Student Org", color: "#32CD32" },
@@ -26,11 +31,20 @@ export default function Index() {
   const [organizerName, setNameOrganizer] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  type Event = {
+    id: string;
+    name: string;
+    organizer: string;
+    date: string;
+    description: string;
+    tags: Tag[];
+  };
+  
+  const [events, setEvents] = useState<Event[]>([]);
 
   // Function to handle tag selection
-  const handleTagToggle = (tag) => {
+  const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
         ? prevSelectedTags.filter((t) => t !== tag)
@@ -46,6 +60,7 @@ export default function Index() {
         {
           id: Date.now().toString(),
           name: eventName,
+          organizer: organizerName,
           date: eventDate,
           description: eventDescription,
           tags: selectedTags,
@@ -61,12 +76,12 @@ export default function Index() {
     }
   };
 
-  const renderEventCard = ({ item }) => (
+  const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
       {/* Event Name and Date */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardText}>{item.name}</Text>
-        <text style={styles.cardText}>{item.organizerName}</text>
+        <Text style={styles.cardText}>{item.organizer}</Text>
         <Text style={styles.cardDate}>{item.date}</Text>
       </View>
 
@@ -104,7 +119,12 @@ export default function Index() {
         }}
       />
 
-      <Button title="Create Event" onPress={() => setModalVisible(true)} />
+      {/* Bottom Navigation Bar */}
+      <View style={styles.bottomBar}>
+        <Button title="Home" onPress={() => alert("Go to Home")} />
+        <Button title="Create Event" onPress={() => setModalVisible(true)} />
+        <Button title="Profile" onPress={() => alert("Go to Profile")} />
+      </View>
 
       {/* Modal for event creation */}
       <Modal
@@ -208,7 +228,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   eventNameInput: {
-    width: "40%",
+    width: "70%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
@@ -216,7 +236,15 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   nameOrgInput: {
-    width: "40%",
+    width: "70%",
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+  input: {
+    width: "70%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
@@ -224,7 +252,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   dateInput: {
-    width: "40%",
+    width: "70%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
@@ -300,4 +328,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#fff",
   },
+  bottomBar: {
+    width: "100%",
+    height: 60,
+    position: "absolute",
+    bottom: 0,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#ddd",
+    paddingVertical: 10,
+  },
 });
+``
