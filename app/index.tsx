@@ -12,7 +12,12 @@ import {
 } from "react-native";
 
 // Predefined tag options with corresponding colors
-const tags = [
+type Tag = {
+  label: string;
+  color: string;
+};
+
+const tags: Tag[] = [
   { label: "Social", color: "#FFD700" },
   { label: "Sports", color: "#1E90FF" },
   { label: "Student Org", color: "#32CD32" },
@@ -26,11 +31,20 @@ export default function Index() {
   const [organizerName, setNameOrganizer] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  type Event = {
+    id: string;
+    name: string;
+    organizer: string;
+    date: string;
+    description: string;
+    tags: Tag[];
+  };
+  
+  const [events, setEvents] = useState<Event[]>([]);
 
   // Function to handle tag selection
-  const handleTagToggle = (tag) => {
+  const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
         ? prevSelectedTags.filter((t) => t !== tag)
@@ -62,12 +76,12 @@ export default function Index() {
     }
   };
 
-  const renderEventCard = ({ item }) => (
+  const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
-      {/* Event Name, Organizer, and Date */}
+      {/* Event Name and Date */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardText}>{item.name}</Text>
-        <Text style={styles.cardText}>by {item.organizer}</Text>
+        <Text style={styles.cardText}>{item.organizer}</Text>
         <Text style={styles.cardDate}>{item.date}</Text>
       </View>
 
@@ -237,6 +251,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 10,
   },
+  dateInput: {
+    width: "70%",
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+  
+
   descriptionInput: {
     height: 80,
   },
