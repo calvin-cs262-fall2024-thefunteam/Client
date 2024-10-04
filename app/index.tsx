@@ -10,6 +10,7 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Import icons
 
 // Predefined tag options with corresponding colors
 type Tag = {
@@ -40,7 +41,7 @@ export default function Index() {
     description: string;
     tags: Tag[];
   };
-  
+
   const [events, setEvents] = useState<Event[]>([]);
 
   // Function to handle tag selection
@@ -121,9 +122,18 @@ export default function Index() {
 
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomBar}>
-        <Button title="Home" onPress={() => alert("Go to Home")} />
-        <Button title="Create Event" onPress={() => setModalVisible(true)} />
-        <Button title="Profile" onPress={() => alert("Go to Profile")} />
+        <View style={styles.buttonContainer}>
+          <Ionicons name="home-outline" size={30} color="black" />
+          <Button title="Home" onPress={() => alert("Go to Home")} />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Ionicons name="add-circle-outline" size={30} color="black" />
+          <Button title="Create Event" onPress={() => setModalVisible(true)} />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Ionicons name="person-outline" size={30} color="black" />
+          <Button title="Profile" onPress={() => alert("Go to Profile")} />
+        </View>
       </View>
 
       {/* Modal for event creation */}
@@ -259,7 +269,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 10,
   },
-  
 
   descriptionInput: {
     height: 80,
@@ -339,5 +348,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd",
     paddingVertical: 10,
   },
+  buttonContainer: {
+    alignItems: "center",
+  },
 });
-``
+``;
