@@ -123,16 +123,20 @@ export default function Index() {
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomBar}>
         <View style={styles.buttonContainer}>
-          <Ionicons name="home-outline" size={30} color="black" />
-          <Button title="Home" onPress={() => alert("Go to Home")} />
+          <Pressable style={styles.pressable} onPress={() => alert("Go to Home")}
+            >
+            <Ionicons name="home-outline" size={30} color="black" />
+          </Pressable>
         </View>
         <View style={styles.buttonContainer}>
-          <Ionicons name="add-circle-outline" size={30} color="black" />
-          <Button title="Create Event" onPress={() => setModalVisible(true)} />
+          <Pressable style={styles.pressable} onPress={() => setModalVisible(true)}>
+            <Ionicons name="add-circle-outline" size={30} color="black" />
+          </Pressable>
         </View>
         <View style={styles.buttonContainer}>
-          <Ionicons name="person-outline" size={30} color="black" />
-          <Button title="Profile" onPress={() => alert("Go to Profile")} />
+          <Pressable style={styles.pressable} onPress={() => alert("Go to Profile")}>
+            <Ionicons name="person-outline" size={30} color="black" />  
+          </Pressable>
         </View>
       </View>
 
@@ -350,6 +354,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: "center",
+  },
+  pressable: {
+    backgroundColor: '', // Background color for the pressable buttons
+    padding: 10,
+    borderRadius: 5,
   },
 });
 ``;
