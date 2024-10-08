@@ -5,13 +5,13 @@ import {
   Button,
   Modal,
   TextInput,
-  StyleSheet,
   FlatList,
-  Dimensions,
   Pressable,
+  Dimensions,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import icons
-import styles from "../styles/styles"; // Import styles
+import SearchBar from "../components/SearchBar"; // Import SearchBar component
 
 // Predefined tag options with corresponding colors
 type Tag = {
@@ -33,7 +33,10 @@ export default function Index() {
   const [organizerName, setNameOrganizer] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventDescription, setEventDescription] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [eventLocation, setEventLocation] = useState("");
+
   type Event = {
     id: string;
     name: string;
@@ -41,6 +44,7 @@ export default function Index() {
     date: string;
     description: string;
     tags: Tag[];
+    location: string;
   };
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -66,6 +70,7 @@ export default function Index() {
           date: eventDate,
           description: eventDescription,
           tags: selectedTags,
+          location: eventLocation, // Add location here
         },
       ]);
       // Reset inputs
@@ -74,9 +79,19 @@ export default function Index() {
       setNameOrganizer("");
       setEventDescription("");
       setSelectedTags([]);
+      setEventLocation("");
       setModalVisible(false); // Close the modal
     }
   };
+
+  const filteredEvents = events.filter(
+    (event) =>
+      event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.tags.some((tag) =>
+        tag.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+  );
 
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
@@ -109,8 +124,24 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      {/* Search bar at the top */}
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search"
+          size={24}
+          color="black"
+          style={styles.searchIcon}
+        />
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          style={styles.searchInput}
+        />
+      </View>
+
+      {/* Event List */}
       <FlatList
-        data={events}
+        data={filteredEvents}
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text>No events yet. Create one!</Text>}
@@ -124,24 +155,43 @@ export default function Index() {
       {/* Bottom Navigation Bar */}
       <View style={styles.bottomBar}>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.pressable} onPress={() => alert("Go to Home")}
-            >
+          <Pressable
+            style={styles.pressable}
+            onPress={() => alert("Go to Home")}
+          >
             <Ionicons name="home-outline" size={30} color="black" />
           </Pressable>
         </View>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.pressable} onPress={() => setModalVisible(true)}>
+          <Pressable
+            style={styles.pressable}
+            onPress={() => alert("Go to Communities")}
+          >
+            <Ionicons name="people-outline" size={30} color="black" />
+          </Pressable>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={styles.pressable}
+            onPress={() => setModalVisible(true)}
+          >
             <Ionicons name="add-circle-outline" size={30} color="black" />
           </Pressable>
         </View>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.pressable} onPress={() => alert("Go to Profile")}>
-            <Ionicons name="person-outline" size={30} color="black" />  
+          <Pressable
+            style={styles.pressable}
+            onPress={() => alert("Go to Communities")}
+          >
+            <Ionicons name="bookmark-outline" size={30} color="black" />
           </Pressable>
         </View>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.pressable} onPress={() => alert("Go to Communities")}>
-            <Ionicons name="people-outline" size={30} color="black" />  
+          <Pressable
+            style={styles.pressable}
+            onPress={() => alert("Go to Profile")}
+          >
+            <Ionicons name="person-outline" size={30} color="black" />
           </Pressable>
         </View>
       </View>
@@ -170,13 +220,26 @@ export default function Index() {
               value={organizerName}
               onChangeText={setNameOrganizer}
             />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Date (MM/DD/YYYY)"
-              value={eventDate}
-              onChangeText={setEventDate}
-            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <TextInput
+                style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
+                placeholder="(MM/DD/YYYY)"
+                value={eventDate}
+                onChangeText={setEventDate}
+              />
+              <TextInput
+                style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
+                placeholder="Location: e.g. Johnny's Cave"
+                value={eventLocation}
+                onChangeText={setEventLocation}
+              />
+            </View>
 
             <TextInput
               style={[styles.input, styles.descriptionInput]}
@@ -218,3 +281,164 @@ export default function Index() {
   );
 }
 
+const { width } = Dimensions.get("window");
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    width: "70%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 15,
+  },
+  eventNameInput: {
+    width: "100%",
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+  nameOrgInput: {
+    width: "100%",
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+  input: {
+    width: "70%",
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+
+  descriptionInput: {
+    width: "100%",
+    height: 80,
+  },
+  tagSelectionContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 15,
+  },
+  tagOption: {
+    padding: 10,
+    borderRadius: 10,
+    margin: 5,
+  },
+  card: {
+    width: 0.8 * width,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 15,
+    alignItems: "center",
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 10,
+  },
+  cardText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cardDate: {
+    fontSize: 14,
+    color: "gray",
+  },
+  separator: {
+    height: 1,
+    width: "100%",
+    backgroundColor: "gray",
+    marginVertical: 10,
+  },
+  cardDescription: {
+    fontSize: 16,
+    textAlign: "left",
+    width: "100%",
+  },
+  tagContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+  },
+  tag: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  tagText: {
+    fontSize: 14,
+    color: "#fff",
+  },
+  bottomBar: {
+    width: "100%",
+    height: 70,
+    position: "absolute",
+    bottom: 0,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#ddd",
+    paddingVertical: 10,
+  },
+  buttonContainer: {
+    alignItems: "center",
+  },
+  pressable: {
+    backgroundColor: "", // Background color for the pressable buttons
+    padding: 10,
+
+    borderRadius: 5,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%', // Adjust based on your layout requirements
+    marginBottom: 20, // Optional margin to space it from the rest of the content
+  },
+  searchIcon: {
+    marginRight: 10, // Space between the icon and the SearchBar
+  },
+  searchInput: {
+    flex: 1, // Makes the SearchBar take the remaining space
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingLeft: 10,
+  },
+});
+``;
