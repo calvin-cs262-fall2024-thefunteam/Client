@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { Text, Image, View, StyleSheet } from "react-native";
-
+import SearchBar from "../components/SearchBar.tsx";
 function LogoTitle() {
   return (
     <View style={styles.container}>
@@ -9,6 +9,7 @@ function LogoTitle() {
         source={{ uri: 'https://media.istockphoto.com/id/1424054284/vector/circle-logo-digital-target-round-shape-swirl-orbit-loop-globe.jpg?s=612x612&w=0&k=20&c=qYvxFX0MXms9H6lDeKwMT21F9z__K3JW6smm-ePmpz8=' }}
       />
       <Text style={styles.text}>EventSphere</Text>
+      
     </View>
   );
 }
