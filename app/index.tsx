@@ -100,6 +100,7 @@ export default function Index() {
         <Text style={styles.cardText}>{item.name}</Text>
         <Text style={styles.cardText}>{item.organizer}</Text>
         <Text style={styles.cardDate}>{item.date}</Text>
+        <Text style={styles.cardDate}>{item.location}</Text>
       </View>
 
       {/* Separator Line */}
@@ -390,6 +391,7 @@ const styles = StyleSheet.create({
   tagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "flex-start",
     marginTop: 10,
   },
   tag: {
@@ -424,10 +426,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '90%', // Adjust based on your layout requirements
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "90%", // Adjust based on your layout requirements
     marginBottom: 20, // Optional margin to space it from the rest of the content
   },
   searchIcon: {
@@ -436,7 +438,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1, // Makes the SearchBar take the remaining space
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingLeft: 10,
   },
