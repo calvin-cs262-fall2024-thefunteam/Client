@@ -9,6 +9,7 @@ import {
   Pressable,
   Dimensions,
   StyleSheet,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import icons
 import SearchBar from "../components/SearchBar"; // Import SearchBar component
@@ -47,13 +48,9 @@ export default function Index() {
     location: string;
   };
 
-  // setting event functionality
   const [events, setEvents] = useState<Event[]>([]);
-
-  // edit functionality (for button to edit event card)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
-  // Function to handle tag selection
   const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
@@ -62,43 +59,9 @@ export default function Index() {
     );
   };
 
-  // const handleCreateEvent = () => {
-  //   if (eventName.trim() && eventDate.trim()) {
-  //     // Add the new event to the list
-  //     setEvents([
-  //       ...events,
-  //       {
-  //         id: Date.now().toString(),
-  //         name: eventName,
-  //         organizer: organizerName,
-  //         date: eventDate,
-  //         description: eventDescription,
-  //         tags: selectedTags,
-  //         location: eventLocation, // Add location here
-  //       },
-  //     ]);
-  //     // Reset inputs
-  //     setEventName("");
-  //     setEventDate("");
-  //     setNameOrganizer("");
-  //     setEventDescription("");
-  //     setSelectedTags([]);
-  //     setEventLocation("");
-  //     setModalVisible(false); // Close the modal
-  //   }
-  // };
-
-  // delete functionality (button to delete event)
-  const handleDeleteEvent = (id: string) => {
-    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-  };
-
-  // creating a event with editing
-
   const handleCreateEvent = () => {
     if (eventName.trim() && eventDate.trim()) {
       if (editingEvent) {
-        // If editing an existing event, update it
         setEvents((prevEvents) =>
           prevEvents.map((event) =>
             event.id === editingEvent.id
@@ -114,9 +77,8 @@ export default function Index() {
               : event
           )
         );
-        setEditingEvent(null); // Clear the editing state
+        setEditingEvent(null);
       } else {
-        // Add a new event
         setEvents([
           ...events,
           {
@@ -131,18 +93,31 @@ export default function Index() {
         ]);
       }
 
-      // Reset inputs
       setEventName("");
       setEventDate("");
       setNameOrganizer("");
       setEventDescription("");
       setSelectedTags([]);
       setEventLocation("");
-      setModalVisible(false); // Close the modal
+      setModalVisible(false);
     }
   };
 
-  // filtering function
+  const handleDeleteEvent = (id: string) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent(event);
+    setEventName(event.name);
+    setNameOrganizer(event.organizer);
+    setEventDate(event.date);
+    setEventDescription(event.description);
+    setSelectedTags(event.tags);
+    setEventLocation(event.location);
+    setModalVisible(true);
+  };
+
   const filteredEvents = events.filter(
     (event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -152,34 +127,18 @@ export default function Index() {
       )
   );
 
-  // editing function
-  const handleEditEvent = (event: Event) => {
-    setEditingEvent(event);
-    setEventName(event.name);
-    setNameOrganizer(event.organizer);
-    setEventDate(event.date);
-    setEventDescription(event.description);
-    setSelectedTags(event.tags);
-    setEventLocation(event.location);
-    setModalVisible(true); // Open the modal
-  };
-
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
-      {/* Event Name and Date */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardText}>{item.name}</Text>
         <Text style={styles.cardText}>{item.organizer}</Text>
         <Text style={styles.cardDate}>{item.date}</Text>
       </View>
 
-      {/* Separator Line */}
       <View style={styles.separator} />
 
-      {/* Description */}
       <Text style={styles.cardDescription}>{item.description}</Text>
 
-      {/* Tags */}
       <View style={styles.tagContainer}>
         {item.tags.map((tag) => (
           <View
@@ -190,7 +149,6 @@ export default function Index() {
           </View>
         ))}
 
-        {/* Delete Button */}
         <Pressable
           style={styles.deleteButton}
           onPress={() => handleDeleteEvent(item.id)}
@@ -198,7 +156,6 @@ export default function Index() {
           <Text style={styles.deleteButtonText}>Delete Event</Text>
         </Pressable>
 
-        {/* edit button */}
         <Pressable
           style={styles.editButton}
           onPress={() => handleEditEvent(item)}
@@ -211,7 +168,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {/* Search bar at the top */}
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -226,7 +183,6 @@ export default function Index() {
         />
       </View>
 
-      {/* Event List */}
       <FlatList
         data={filteredEvents}
         renderItem={renderEventCard}
@@ -283,215 +239,189 @@ export default function Index() {
         </View>
       </View>
 
-      {/* Modal for event creation */}
+      {/* Modal for Creating/Editing Event */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Create New Event</Text>
+        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                {editingEvent ? "Edit Event" : "Create New Event"}
+              </Text>
 
-            <TextInput
-              style={styles.eventNameInput}
-              placeholder="Event Name"
-              value={eventName}
-              onChangeText={setEventName}
-            />
-
-            <TextInput
-              style={styles.nameOrgInput}
-              placeholder="Name of Organizer"
-              value={organizerName}
-              onChangeText={setNameOrganizer}
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
               <TextInput
-                style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
-                placeholder="(MM/DD/YYYY)"
-                value={eventDate}
-                onChangeText={setEventDate}
+                style={styles.eventNameInput}
+                placeholder="Event Name"
+                value={eventName}
+                onChangeText={setEventName}
               />
+
               <TextInput
-                style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
-                placeholder="Location: e.g. Johnny's Cave"
-                value={eventLocation}
-                onChangeText={setEventLocation}
+                style={styles.nameOrgInput}
+                placeholder="Name of Organizer"
+                value={organizerName}
+                onChangeText={setNameOrganizer}
               />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <TextInput
+                  style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
+                  placeholder="(MM/DD/YYYY)"
+                  value={eventDate}
+                  onChangeText={setEventDate}
+                />
+
+                <TextInput
+                  style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
+                  placeholder="Location"
+                  value={eventLocation}
+                  onChangeText={setEventLocation}
+                />
+              </View>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Event Description"
+                value={eventDescription}
+                onChangeText={setEventDescription}
+              />
+
+              <View style={styles.tagSelectionContainer}>
+                {tags.map((tag) => (
+                  <Pressable
+                    key={tag.label}
+                    onPress={() => handleTagToggle(tag)}
+                    style={[
+                      styles.tag,
+                      selectedTags.some((t) => t.label === tag.label) && {
+                        backgroundColor: tag.color,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.tagText}>{tag.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <Button
+                title={editingEvent ? "Save Event" : "Create Event"}
+                onPress={handleCreateEvent}
+              />
+
+              {/* Cancel Button */}
+              <Pressable
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)} // Close modal
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Pressable>
             </View>
-
-            <TextInput
-              style={[styles.input, styles.descriptionInput]}
-              placeholder="Description"
-              value={eventDescription}
-              onChangeText={setEventDescription}
-              multiline
-            />
-
-            {/* Tag selection */}
-            <Text style={styles.modalText}>Select Tags</Text>
-            <View style={styles.tagSelectionContainer}>
-              {tags.map((tag) => (
-                <Pressable
-                  key={tag.label}
-                  onPress={() => handleTagToggle(tag)}
-                  style={[
-                    styles.tagOption,
-                    selectedTags.includes(tag)
-                      ? { backgroundColor: tag.color }
-                      : { backgroundColor: "#eee" },
-                  ]}
-                >
-                  <Text>{tag.label}</Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <Button title="Submit" onPress={handleCreateEvent} />
-            <Button
-              title="Cancel"
-              color="red"
-              onPress={() => setModalVisible(false)}
-            />
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
 }
 
-const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#fff",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalView: {
-    width: "70%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 15,
-  },
-  eventNameInput: {
-    width: "100%",
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingLeft: 10,
-  },
-  nameOrgInput: {
-    width: "100%",
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingLeft: 10,
-  },
-  input: {
-    width: "70%",
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingLeft: 10,
-  },
-
-  descriptionInput: {
-    width: "100%",
-    height: 80,
-  },
-  tagSelectionContainer: {
+  searchContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 15,
+    alignItems: "center",
+    marginBottom: 10,
   },
-  tagOption: {
-    padding: 10,
-    borderRadius: 10,
-    margin: 5,
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1, // Makes the SearchBar take the remaining space
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    paddingLeft: 10,
   },
   card: {
-    width: 0.8 * width,
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    width: Dimensions.get("window").width * 0.9,
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginBottom: 15,
-    alignItems: "center",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 5,
   },
   cardText: {
-    fontSize: 18,
     fontWeight: "bold",
+    fontSize: 18,
   },
   cardDate: {
     fontSize: 14,
     color: "gray",
   },
   separator: {
-    height: 1,
-    width: "100%",
-    backgroundColor: "gray",
-    marginVertical: 10,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+    marginVertical: 5,
   },
   cardDescription: {
-    fontSize: 16,
-    textAlign: "left",
-    width: "100%",
+    marginBottom: 5,
   },
   tagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 10,
   },
   tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
+    backgroundColor: "#ddd",
+    padding: 5,
+    borderRadius: 5,
     marginRight: 5,
-    marginBottom: 5,
+    marginTop: 5,
   },
   tagText: {
-    fontSize: 14,
-    color: "#fff",
+    fontSize: 12,
+  },
+  deleteButton: {
+    backgroundColor: "#FF6347",
+    padding: 5,
+    borderRadius: 5,
+    marginLeft: "auto",
+    marginTop: 5,
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 12,
+  },
+  editButton: {
+    backgroundColor: "#4682B4",
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  editButtonText: {
+    color: "white",
+    fontSize: 12,
   },
   bottomBar: {
-    width: "100%",
+    width: Dimensions.get('window').width, // Ensure it fully matches the screen width
     height: 70,
     position: "absolute",
     bottom: 0,
@@ -502,52 +432,74 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   buttonContainer: {
+    flex: 1,
     alignItems: "center",
   },
   pressable: {
-    backgroundColor: "", // Background color for the pressable buttons
     padding: 10,
-
-    borderRadius: 5,
   },
-  searchContainer: {
-    flexDirection: "row",
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "space-between",
-    width: "90%", // Adjust based on your layout requirements
-    marginBottom: 20, // Optional margin to space it from the rest of the content
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
-  searchIcon: {
-    marginRight: 10, // Space between the icon and the SearchBar
+  modalView: {
+    width: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  searchInput: {
-    flex: 1, // Makes the SearchBar take the remaining space
-    height: 40,
-    borderColor: "gray",
+  modalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  input: {
+    width: "100%",
+    padding: 10,
     borderWidth: 1,
-    paddingLeft: 10,
-  },
-  deleteButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: "red",
+    borderColor: "#ddd",
     borderRadius: 5,
-    alignItems: "center",
+    marginBottom: 10,
   },
-  deleteButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  editButton: {
-    marginTop: 10,
+  eventNameInput: {
+    width: "100%",
     padding: 10,
-    backgroundColor: "blue",
+    borderWidth: 1,
+    borderColor: "#ddd",
     borderRadius: 5,
-    alignItems: "center",
+    marginBottom: 10,
   },
-  editButtonText: {
+  nameOrgInput: {
+    width: "100%",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  tagSelectionContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 10,
+  },
+  cancelButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: "#FF6347",
+    alignItems: "center",
+    width: "100%",
+  },
+  cancelButtonText: {
     color: "white",
-    fontWeight: "bold",
+    fontSize: 16,
   },
 });
-``;
