@@ -47,7 +47,11 @@ export default function Index() {
     location: string;
   };
 
+  // setting event functionality
   const [events, setEvents] = useState<Event[]>([]);
+
+  // edit functionality (for button to edit event card)
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Function to handle tag selection
   const handleTagToggle = (tag: Tag) => {
@@ -58,21 +62,75 @@ export default function Index() {
     );
   };
 
+  // const handleCreateEvent = () => {
+  //   if (eventName.trim() && eventDate.trim()) {
+  //     // Add the new event to the list
+  //     setEvents([
+  //       ...events,
+  //       {
+  //         id: Date.now().toString(),
+  //         name: eventName,
+  //         organizer: organizerName,
+  //         date: eventDate,
+  //         description: eventDescription,
+  //         tags: selectedTags,
+  //         location: eventLocation, // Add location here
+  //       },
+  //     ]);
+  //     // Reset inputs
+  //     setEventName("");
+  //     setEventDate("");
+  //     setNameOrganizer("");
+  //     setEventDescription("");
+  //     setSelectedTags([]);
+  //     setEventLocation("");
+  //     setModalVisible(false); // Close the modal
+  //   }
+  // };
+
+  // delete functionality (button to delete event)
+  const handleDeleteEvent = (id: string) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+  };
+
+  // creating a event with editing
+
   const handleCreateEvent = () => {
     if (eventName.trim() && eventDate.trim()) {
-      // Add the new event to the list
-      setEvents([
-        ...events,
-        {
-          id: Date.now().toString(),
-          name: eventName,
-          organizer: organizerName,
-          date: eventDate,
-          description: eventDescription,
-          tags: selectedTags,
-          location: eventLocation, // Add location here
-        },
-      ]);
+      if (editingEvent) {
+        // If editing an existing event, update it
+        setEvents((prevEvents) =>
+          prevEvents.map((event) =>
+            event.id === editingEvent.id
+              ? {
+                  ...event,
+                  name: eventName,
+                  organizer: organizerName,
+                  date: eventDate,
+                  description: eventDescription,
+                  tags: selectedTags,
+                  location: eventLocation,
+                }
+              : event
+          )
+        );
+        setEditingEvent(null); // Clear the editing state
+      } else {
+        // Add a new event
+        setEvents([
+          ...events,
+          {
+            id: Date.now().toString(),
+            name: eventName,
+            organizer: organizerName,
+            date: eventDate,
+            description: eventDescription,
+            tags: selectedTags,
+            location: eventLocation,
+          },
+        ]);
+      }
+
       // Reset inputs
       setEventName("");
       setEventDate("");
@@ -84,11 +142,7 @@ export default function Index() {
     }
   };
 
-  // delete functionality (button to delete event)
-  const handleDeleteEvent = (id: string) => {
-    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-  };
-
+  // filtering function
   const filteredEvents = events.filter(
     (event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,6 +151,18 @@ export default function Index() {
         tag.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
   );
+
+  // editing function
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent(event);
+    setEventName(event.name);
+    setNameOrganizer(event.organizer);
+    setEventDate(event.date);
+    setEventDescription(event.description);
+    setSelectedTags(event.tags);
+    setEventLocation(event.location);
+    setModalVisible(true); // Open the modal
+  };
 
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
@@ -130,6 +196,14 @@ export default function Index() {
           onPress={() => handleDeleteEvent(item.id)}
         >
           <Text style={styles.deleteButtonText}>Delete Event</Text>
+        </Pressable>
+
+        {/* edit button */}
+        <Pressable
+          style={styles.editButton}
+          onPress={() => handleEditEvent(item)}
+        >
+          <Text style={styles.editButtonText}>Edit Event</Text>
         </Pressable>
       </View>
     </View>
@@ -461,6 +535,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   deleteButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  editButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "blue",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  editButtonText: {
     color: "white",
     fontWeight: "bold",
   },
