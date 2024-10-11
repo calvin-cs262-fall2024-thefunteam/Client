@@ -84,6 +84,11 @@ export default function Index() {
     }
   };
 
+  // delete functionality (button to delete event)
+  const handleDeleteEvent = (id: string) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+  };
+
   const filteredEvents = events.filter(
     (event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -118,6 +123,14 @@ export default function Index() {
             <Text style={styles.tagText}>{tag.label}</Text>
           </View>
         ))}
+
+        {/* Delete Button */}
+        <Pressable
+          style={styles.deleteButton}
+          onPress={() => handleDeleteEvent(item.id)}
+        >
+          <Text style={styles.deleteButtonText}>Delete Event</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -424,10 +437,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '90%', // Adjust based on your layout requirements
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "90%", // Adjust based on your layout requirements
     marginBottom: 20, // Optional margin to space it from the rest of the content
   },
   searchIcon: {
@@ -436,9 +449,20 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1, // Makes the SearchBar take the remaining space
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingLeft: 10,
+  },
+  deleteButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "red",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 ``;
