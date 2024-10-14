@@ -49,7 +49,53 @@ export default function Index() {
     location: string;
   };
 
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>([
+    {
+      id: '1',
+      name: 'Sample Event 1',
+      organizer: 'Organizer 1',
+      date: '2023-10-01',
+      description: 'Description for Sample Event 1',
+      tags: [{ label: "Social", color: "#FFD700" }],
+      location: 'Location 1',
+    },
+    {
+      id: '2',
+      name: 'Sample Event 2',
+      organizer: 'Organizer 2',
+      date: '2023-10-15',
+      description: 'Description for Sample Event 2',
+      tags: [{ label: "Sports", color: "#1E90FF" }],
+      location: 'Location 2',
+    },
+    {
+      id: '3',
+      name: 'Tech Conference 2024',
+      organizer: 'TechOrg Inc.',
+      date: '2024-02-12',
+      description: 'A conference focused on the latest in technology and innovation.',
+      tags: [{ label: "Academic", color: "#FF4500" }, { label: "Workshop", color: "#8A2BE2" }],
+      location: 'Tech Park, City Center',
+    },
+    {
+      id: '4',
+      name: 'Community Cleanup',
+      organizer: 'Green Earth',
+      date: '2023-11-05',
+      description: 'Join us for a community-wide cleanup event to make our city greener.',
+      tags: [{ label: "Social", color: "#FFD700" }],
+      location: 'Main Street Park',
+    },
+    {
+      id: '5',
+      name: 'University Workshop',
+      organizer: 'University Department',
+      date: '2023-12-10',
+      description: 'Hands-on workshop for students on web development.',
+      tags: [{ label: "Workshop", color: "#8A2BE2" }, { label: "Student Org", color: "#32CD32" }],
+      location: 'University Lab, Room 101',
+    },
+  ]);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   const handleTagToggle = (tag: Tag) => {
@@ -225,7 +271,7 @@ export default function Index() {
         <View style={styles.buttonContainer}>
           <Pressable
             style={styles.pressable}
-            onPress={() => alert("Go to Communities")}
+            onPress={() => alert("Go to Saved Events")}
           >
             <Ionicons name="bookmark-outline" size={30} color="black" />
           </Pressable>
@@ -290,7 +336,9 @@ export default function Index() {
               </View>
 
               <TextInput
-                style={styles.input}
+                style={styles.descriptionInput}
+                multiline={true}
+                numberOfLines={4} // Optional: Set the initial number of lines
                 placeholder="Event Description"
                 value={eventDescription}
                 onChangeText={setEventDescription}
@@ -313,23 +361,29 @@ export default function Index() {
                 ))}
               </View>
 
-              <Button
-                title={editingEvent ? "Save Event" : "Create Event"}
-                onPress={handleCreateEvent}
-              />
+              <View style={styles.saveOrCancelButton}>
+                <View style={styles.saveButton}>
+                <Button 
+                  title={editingEvent ? "Save Event" : "Create"}
+                  onPress={handleCreateEvent}
+                />
+              </View>
+                {/* Cancel Button */}
+                <Pressable 
+                  style={styles.cancelButton}
+                  onPress={() => setModalVisible(false)}>
 
-              {/* Cancel Button */}
-              <Pressable
-                style={styles.cancelButton}
-                onPress={() => setModalVisible(false)} // Close modal
-              >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </Pressable>
+              </View>
             </View>
           </View>
         </KeyboardAvoidingView>
       </Modal>
     </View>
   );
+
+
+
 }
 ``;

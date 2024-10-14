@@ -19,6 +19,7 @@ export default SearchBar;
 const styles = {
   searchBarContainer: {
     width: "100%",
+    borderRadius: 10,
   },
   searchInput: {
     width: "100%",  // Ensure it stretches across available space

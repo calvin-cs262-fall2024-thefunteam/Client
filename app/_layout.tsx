@@ -1,5 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import Login from "../screens/login";
 
 function LogoTitle() {
   const router = useRouter();
@@ -14,7 +15,7 @@ function LogoTitle() {
         <Text style={styles.text}>EventSphere</Text>
       </View>
       <View style={styles.loginContainer}>
-      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/login')}>
+      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('../screens/login.tsx')}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity></View>
     </View>
@@ -46,7 +47,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: width,
+    width: '100%',
+    backgroundColor: 'purple',
     height: 'auto',
     paddingHorizontal: 10,
   },
