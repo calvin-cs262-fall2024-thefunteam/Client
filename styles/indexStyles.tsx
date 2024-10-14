@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#615EFC",
   },
   searchContainer: {
     flexDirection: "row",
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: Dimensions.get("window").width * 0.9,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#EEEEEE",
     padding: 10,
     marginBottom: 20,
     borderRadius: 8,
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: "90%",
+    height: "70%",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -152,23 +153,49 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
   },
+  descriptionInput: {
+    width: "100%",
+    height: 100,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
   tagSelectionContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 10,
   },
-  cancelButton: {
-    marginTop: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+  saveButton: {
+    fontSize: 14,//cant change font size for some reason
+    marginHorizontal: 5,
     borderRadius: 5,
-    backgroundColor: "#FF6347",
     alignItems: "center",
-    width: "100%",
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14, // Smaller font size
+  },
+  cancelButton: {
+    marginHorizontal: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    backgroundColor: "#FF0000",
+    alignItems: "center",
   },
   cancelButtonText: {
     color: "white",
-    fontSize: 16,
+  },
+  saveOrCancelButton: {
+    paddingVertical: 0,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 20,
+    position: "absolute",
+    bottom: 20,
+    right: 20,
   },
 });
 
