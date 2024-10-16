@@ -3,7 +3,7 @@ import {
     Text,
     View,
 } from "react-native";
-import styles from "../styles/indexStyles.js";
+import styles from "../styles/globalStyles.js";
 
 
 const EventCard = () => {
