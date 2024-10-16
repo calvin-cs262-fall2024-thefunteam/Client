@@ -68,24 +68,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   deleteButton: {
-    backgroundColor: "#FF6347",
     padding: 5,
     borderRadius: 5,
     marginLeft: "auto",
     marginTop: 5,
   },
   deleteButtonText: {
-    color: "white",
+    color: "red",
     fontSize: 12,
   },
   editButton: {
-    backgroundColor: "#4682B4",
     padding: 5,
     borderRadius: 5,
     marginTop: 5,
   },
   editButtonText: {
-    color: "white",
+    color: "blue",
     fontSize: 12,
   },
   bottomBar: {
@@ -196,6 +194,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
+  },
+  buttonContainerCard: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    position: "absolute",
+    paddingStart: '55%',
+    padding: 10,
+    paddingBottom: 15,
+  },
+  tagAndButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
 
