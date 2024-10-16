@@ -51,49 +51,57 @@ export default function Index() {
 
   const [events, setEvents] = useState<Event[]>([
     {
-      id: '1',
-      name: 'Sample Event 1',
-      organizer: 'Organizer 1',
-      date: '2023-10-01',
-      description: 'Description for Sample Event 1',
+      id: "1",
+      name: "Sample Event 1",
+      organizer: "Organizer 1",
+      date: "2023-10-01",
+      description: "Description for Sample Event 1",
       tags: [{ label: "Social", color: "#FFD700" }],
-      location: 'Location 1',
+      location: "Location 1",
     },
     {
-      id: '2',
-      name: 'Sample Event 2',
-      organizer: 'Organizer 2',
-      date: '2023-10-15',
-      description: 'Description for Sample Event 2',
+      id: "2",
+      name: "Sample Event 2",
+      organizer: "Organizer 2",
+      date: "2023-10-15",
+      description: "Description for Sample Event 2",
       tags: [{ label: "Sports", color: "#1E90FF" }],
-      location: 'Location 2',
+      location: "Location 2",
     },
     {
-      id: '3',
-      name: 'Tech Conference 2024',
-      organizer: 'TechOrg Inc.',
-      date: '2024-02-12',
-      description: 'A conference focused on the latest in technology and innovation.',
-      tags: [{ label: "Academic", color: "#FF4500" }, { label: "Workshop", color: "#8A2BE2" }],
-      location: 'Tech Park, City Center',
+      id: "3",
+      name: "Tech Conference 2024",
+      organizer: "TechOrg Inc.",
+      date: "2024-02-12",
+      description:
+        "A conference focused on the latest in technology and innovation. this conference will be I dont really know to be honest, Im trying to make this description really long so that I can test out what it will look like, i dont know if this is long enough but I guess well see, cya",
+      tags: [
+        { label: "Academic", color: "#FF4500" },
+        { label: "Workshop", color: "#8A2BE2" },
+      ],
+      location: "Tech Park, City Center",
     },
     {
-      id: '4',
-      name: 'Community Cleanup',
-      organizer: 'Green Earth',
-      date: '2023-11-05',
-      description: 'Join us for a community-wide cleanup event to make our city greener.',
+      id: "4",
+      name: "Community Cleanup",
+      organizer: "Green Earth",
+      date: "2023-11-05",
+      description:
+        "Join us for a community-wide cleanup event to make our city greener.",
       tags: [{ label: "Social", color: "#FFD700" }],
-      location: 'Main Street Park',
+      location: "Main Street Park",
     },
     {
-      id: '5',
-      name: 'University Workshop',
-      organizer: 'University Department',
-      date: '2023-12-10',
-      description: 'Hands-on workshop for students on web development.',
-      tags: [{ label: "Workshop", color: "#8A2BE2" }, { label: "Student Org", color: "#32CD32" }],
-      location: 'University Lab, Room 101',
+      id: "5",
+      name: "University Workshop",
+      organizer: "University Department",
+      date: "2023-12-10",
+      description: "Hands-on workshop for students on web development.",
+      tags: [
+        { label: "Workshop", color: "#8A2BE2" },
+        { label: "Student Org", color: "#32CD32" },
+      ],
+      location: "University Lab, Room 101",
     },
   ]);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -113,14 +121,14 @@ export default function Index() {
           prevEvents.map((event) =>
             event.id === editingEvent.id
               ? {
-                ...event,
-                name: eventName,
-                organizer: organizerName,
-                date: eventDate,
-                description: eventDescription,
-                tags: selectedTags,
-                location: eventLocation,
-              }
+                  ...event,
+                  name: eventName,
+                  organizer: organizerName,
+                  date: eventDate,
+                  description: eventDescription,
+                  tags: selectedTags,
+                  location: eventLocation,
+                }
               : event
           )
         );
@@ -174,6 +182,11 @@ export default function Index() {
       )
   );
 
+  const addToSavedEvents = () => {
+    // Add event to saved events
+    alert("Event saved!");
+  };
+
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -186,29 +199,39 @@ export default function Index() {
 
       <Text style={styles.cardDescription}>{item.description}</Text>
 
-      <View style={styles.tagContainer}>
-        {item.tags.map((tag) => (
-          <View
-            key={tag.label}
-            style={[styles.tag, { backgroundColor: tag.color }]}
+      <View style={styles.tagAndButtonContainer}>
+        <View style={styles.tagContainer}>
+          {item.tags.map((tag) => (
+            <View
+              key={tag.label}
+              style={[styles.tag, { backgroundColor: tag.color }]}
+            >
+              <Text style={styles.tagText}>{tag.label}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Save Event Button */}
+        <Pressable style={styles.saveButton} onPress={() => addToSavedEvents()}>
+          <Ionicons name="bookmark-outline" size={24} color="black"></Ionicons>
+        </Pressable>
+
+        {/* Delete Event */}
+        {/* <View style={styles.buttonContainerCard}>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() => handleDeleteEvent(item.id)}
           >
-            <Text style={styles.tagText}>{tag.label}</Text>
-          </View>
-        ))}
+            <Text style={styles.deleteButtonText}>Delete Event</Text>
+          </Pressable>
 
-        <Pressable
-          style={styles.deleteButton}
-          onPress={() => handleDeleteEvent(item.id)}
-        >
-          <Text style={styles.deleteButtonText}>Delete Event</Text>
-        </Pressable>
-
-        <Pressable
-          style={styles.editButton}
-          onPress={() => handleEditEvent(item)}
-        >
-          <Text style={styles.editButtonText}>Edit Event</Text>
-        </Pressable>
+          <Pressable
+            style={styles.editButton}
+            onPress={() => handleEditEvent(item)}
+          >
+            <Text style={styles.editButtonText}>Edit Event</Text>
+          </Pressable>
+        </View> */}
       </View>
     </View>
   );
@@ -363,18 +386,18 @@ export default function Index() {
 
               <View style={styles.saveOrCancelButton}>
                 <View style={styles.saveButton}>
-                <Button 
-                  title={editingEvent ? "Save Event" : "Create"}
-                  onPress={handleCreateEvent}
-                />
-              </View>
+                  <Button
+                    title={editingEvent ? "Save Event" : "Create"}
+                    onPress={handleCreateEvent}
+                  />
+                </View>
                 {/* Cancel Button */}
-                <Pressable 
+                <Pressable
                   style={styles.cancelButton}
-                  onPress={() => setModalVisible(false)}>
-
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </Pressable>
               </View>
             </View>
           </View>
@@ -382,8 +405,5 @@ export default function Index() {
       </Modal>
     </View>
   );
-
-
-
 }
 ``;
