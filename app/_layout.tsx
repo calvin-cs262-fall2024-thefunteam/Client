@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
-import Login from "../screens/login";
+import Login from "./login";
 
 function LogoTitle() {
   const router = useRouter();

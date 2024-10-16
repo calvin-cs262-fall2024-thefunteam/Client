@@ -4,7 +4,7 @@ import {
   Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import icons
-import styles from "../styles/indexStyles.js";
+import styles from "../styles/globalStyles.js";
 
 
  const default function BottomNavigationBar() {

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import icons
 import SearchBar from "@/components/SearchBar"; // Import SearchBar component
-import styles from "@/styles/indexStyles"; // Import styles
+import styles from "@/styles/globalStyles"; // Import styles
 
 // Predefined tag options with corresponding colors
 type Tag = {
@@ -242,7 +242,7 @@ export default function Index() {
         }}
       />
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation Bar
       <View style={styles.bottomBar}>
         <View style={styles.buttonContainer}>
           <Pressable
@@ -284,106 +284,115 @@ export default function Index() {
             <Ionicons name="person-outline" size={30} color="black" />
           </Pressable>
         </View>
-      </View>
+      </View> */}
 
-      {/* Modal for Creating/Editing Event */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                {editingEvent ? "Edit Event" : "Create New Event"}
-              </Text>
+      
+        <Pressable
+          style={styles.pressable}
+          onPress={() => setModalVisible(true)}
+        >
+          <Ionicons name="add-circle-outline" size={30} color="black" />
+        </Pressable>
+      
 
-              <TextInput
-                style={styles.eventNameInput}
-                placeholder="Event Name"
-                value={eventName}
-                onChangeText={setEventName}
-              />
+        {/* Modal for Creating/Editing Event */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  {editingEvent ? "Edit Event" : "Create New Event"}
+                </Text>
 
-              <TextInput
-                style={styles.nameOrgInput}
-                placeholder="Name of Organizer"
-                value={organizerName}
-                onChangeText={setNameOrganizer}
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
                 <TextInput
-                  style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
-                  placeholder="(MM/DD/YYYY)"
-                  value={eventDate}
-                  onChangeText={setEventDate}
+                  style={styles.eventNameInput}
+                  placeholder="Event Name"
+                  value={eventName}
+                  onChangeText={setEventName}
                 />
 
                 <TextInput
-                  style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
-                  placeholder="Location"
-                  value={eventLocation}
-                  onChangeText={setEventLocation}
+                  style={styles.nameOrgInput}
+                  placeholder="Name of Organizer"
+                  value={organizerName}
+                  onChangeText={setNameOrganizer}
                 />
-              </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <TextInput
+                    style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
+                    placeholder="(MM/DD/YYYY)"
+                    value={eventDate}
+                    onChangeText={setEventDate}
+                  />
 
-              <TextInput
-                style={styles.descriptionInput}
-                multiline={true}
-                numberOfLines={4} // Optional: Set the initial number of lines
-                placeholder="Event Description"
-                value={eventDescription}
-                onChangeText={setEventDescription}
-              />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
+                    placeholder="Location"
+                    value={eventLocation}
+                    onChangeText={setEventLocation}
+                  />
+                </View>
 
-              <View style={styles.tagSelectionContainer}>
-                {tags.map((tag) => (
+                <TextInput
+                  style={styles.descriptionInput}
+                  multiline={true}
+                  numberOfLines={4} // Optional: Set the initial number of lines
+                  placeholder="Event Description"
+                  value={eventDescription}
+                  onChangeText={setEventDescription}
+                />
+
+                <View style={styles.tagSelectionContainer}>
+                  {tags.map((tag) => (
+                    <Pressable
+                      key={tag.label}
+                      onPress={() => handleTagToggle(tag)}
+                      style={[
+                        styles.tag,
+                        selectedTags.some((t) => t.label === tag.label) && {
+                          backgroundColor: tag.color,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.tagText}>{tag.label}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+
+                <View style={styles.saveOrCancelButton}>
+                  <View style={styles.saveButton}>
+                    <Button
+                      title={editingEvent ? "Save Event" : "Create"}
+                      onPress={handleCreateEvent}
+                    />
+                  </View>
+                  {/* Cancel Button */}
                   <Pressable
-                    key={tag.label}
-                    onPress={() => handleTagToggle(tag)}
-                    style={[
-                      styles.tag,
-                      selectedTags.some((t) => t.label === tag.label) && {
-                        backgroundColor: tag.color,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.tagText}>{tag.label}</Text>
+                    style={styles.cancelButton}
+                    onPress={() => setModalVisible(false)}>
+
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
                   </Pressable>
-                ))}
-              </View>
-
-              <View style={styles.saveOrCancelButton}>
-                <View style={styles.saveButton}>
-                <Button 
-                  title={editingEvent ? "Save Event" : "Create"}
-                  onPress={handleCreateEvent}
-                />
-              </View>
-                {/* Cancel Button */}
-                <Pressable 
-                  style={styles.cancelButton}
-                  onPress={() => setModalVisible(false)}>
-
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
+                </View>
               </View>
             </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
-    </View>
-  );
+          </KeyboardAvoidingView>
+        </Modal>
+      </View>
+      );
 
 
 
 }
-``;
+      ``;
