@@ -15,6 +15,9 @@ import { Ionicons } from "@expo/vector-icons"; // Import icons
 import SearchBar from "@/components/SearchBar"; // Import SearchBar component
 import styles from "@/styles/globalStyles"; // Import styles
 
+// Import the Profile screen
+import Profile from "@/screens/Profile"; // Ensure this path is correct
+
 // Predefined tag options with corresponding colors
 type Tag = {
   label: string;
@@ -215,6 +218,11 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      {/* Logo as a Pressable for Home Navigation */}
+      <Pressable onPress={() => alert("Navigate to Home")}>
+        <Ionicons name="home-outline" size={30} color="black" />
+      </Pressable>
+
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
@@ -242,157 +250,91 @@ export default function Index() {
         }}
       />
 
-      {/* Bottom Navigation Bar
-      <View style={styles.bottomBar}>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Home")}
-          >
-            <Ionicons name="home-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Communities")}
-          >
-            <Ionicons name="people-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => setModalVisible(true)}
-          >
-            <Ionicons name="add-circle-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Saved Events")}
-          >
-            <Ionicons name="bookmark-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Profile")}
-          >
-            <Ionicons name="person-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-      </View> */}
+      <Pressable
+        style={styles.pressable}
+        onPress={() => setModalVisible(true)}
+      >
+        <Ionicons name="add-circle-outline" size={30} color="black" />
+      </Pressable>
 
-      
-        <Pressable
-          style={styles.pressable}
-          onPress={() => setModalVisible(true)}
-        >
-          <Ionicons name="add-circle-outline" size={30} color="black" />
-        </Pressable>
-      
+      {/* Modal for Creating/Editing Event */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                {editingEvent ? "Edit Event" : "Create New Event"}
+              </Text>
 
-        {/* Modal for Creating/Editing Event */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  {editingEvent ? "Edit Event" : "Create New Event"}
-                </Text>
+              <TextInput
+                style={styles.eventNameInput}
+                placeholder="Event Name"
+                value={eventName}
+                onChangeText={setEventName}
+              />
+              <TextInput
+                style={styles.organizerInput}
+                placeholder="Organizer Name"
+                value={organizerName}
+                onChangeText={setNameOrganizer}
+              />
+              <TextInput
+                style={styles.dateInput}
+                placeholder="Date (YYYY-MM-DD)"
+                value={eventDate}
+                onChangeText={setEventDate}
+              />
+              <TextInput
+                style={styles.descriptionInput}
+                placeholder="Event Description"
+                value={eventDescription}
+                onChangeText={setEventDescription}
+              />
+              <TextInput
+                style={styles.locationInput}
+                placeholder="Location"
+                value={eventLocation}
+                onChangeText={setEventLocation}
+              />
 
-                <TextInput
-                  style={styles.eventNameInput}
-                  placeholder="Event Name"
-                  value={eventName}
-                  onChangeText={setEventName}
-                />
-
-                <TextInput
-                  style={styles.nameOrgInput}
-                  placeholder="Name of Organizer"
-                  value={organizerName}
-                  onChangeText={setNameOrganizer}
-                />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <TextInput
-                    style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
-                    placeholder="(MM/DD/YYYY)"
-                    value={eventDate}
-                    onChangeText={setEventDate}
-                  />
-
-                  <TextInput
-                    style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
-                    placeholder="Location"
-                    value={eventLocation}
-                    onChangeText={setEventLocation}
-                  />
-                </View>
-
-                <TextInput
-                  style={styles.descriptionInput}
-                  multiline={true}
-                  numberOfLines={4} // Optional: Set the initial number of lines
-                  placeholder="Event Description"
-                  value={eventDescription}
-                  onChangeText={setEventDescription}
-                />
-
-                <View style={styles.tagSelectionContainer}>
-                  {tags.map((tag) => (
-                    <Pressable
-                      key={tag.label}
-                      onPress={() => handleTagToggle(tag)}
-                      style={[
-                        styles.tag,
-                        selectedTags.some((t) => t.label === tag.label) && {
-                          backgroundColor: tag.color,
-                        },
-                      ]}
-                    >
-                      <Text style={styles.tagText}>{tag.label}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-
-                <View style={styles.saveOrCancelButton}>
-                  <View style={styles.saveButton}>
-                    <Button
-                      title={editingEvent ? "Save Event" : "Create"}
-                      onPress={handleCreateEvent}
-                    />
-                  </View>
-                  {/* Cancel Button */}
+              <View style={styles.tagSelection}>
+                {tags.map((tag) => (
                   <Pressable
-                    style={styles.cancelButton}
-                    onPress={() => setModalVisible(false)}>
-
-                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                    key={tag.label}
+                    onPress={() => handleTagToggle(tag)}
+                    style={[
+                      styles.tagOption,
+                      selectedTags.includes(tag) && styles.selectedTag,
+                    ]}
+                  >
+                    <Text style={styles.tagOptionText}>{tag.label}</Text>
                   </Pressable>
+                ))}
+              </View>
+
+              <View style={styles.saveOrCancelButton}>
+                <View style={styles.saveButton}>
+                  <Button
+                    title={editingEvent ? "Save Event" : "Create"}
+                    onPress={handleCreateEvent}
+                  />
                 </View>
+                <Pressable
+                  style={styles.cancelButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </Pressable>
               </View>
             </View>
-          </KeyboardAvoidingView>
-        </Modal>
-      </View>
-      );
-
-
-
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+    </View>
+  );
 }
-      ``;
