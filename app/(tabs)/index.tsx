@@ -192,8 +192,10 @@ export default function Index() {
       <View style={styles.cardHeader}>
         <Text style={styles.cardText}>{item.name}</Text>
         <Text style={styles.cardText}>{item.organizer}</Text>
-        <Text style={styles.cardDate}>{item.date}</Text>
       </View>
+      <View style={styles.cardDateContainer}>
+        <Text style={styles.cardDate}>{item.date}</Text>
+        </View>
 
       <View style={styles.separator} />
 
@@ -266,49 +268,6 @@ export default function Index() {
         }}
       />
 
-      {/* Bottom Navigation Bar
-      <View style={styles.bottomBar}>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Home")}
-          >
-            <Ionicons name="home-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Communities")}
-          >
-            <Ionicons name="people-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => setModalVisible(true)}
-          >
-            <Ionicons name="add-circle-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Saved Events")}
-          >
-            <Ionicons name="bookmark-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.pressable}
-            onPress={() => alert("Go to Profile")}
-          >
-            <Ionicons name="person-outline" size={30} color="black" />
-          </Pressable>
-        </View>
-      </View> */}
 
       {/* Modal for Creating/Editing Event */}
       <Modal

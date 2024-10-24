@@ -18,7 +18,13 @@ export default function TabLayout() {
                     tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} />,
                 }}
             />
-
+            <Tabs.Screen
+                name="createEvent"
+                options={{
+                    title: 'Create Event',
+                    tabBarIcon: ({ color, size }) => <Ionicons name="add-circle-outline" size={size} color={color} />,
+                }}
+            />
             <Tabs.Screen
                 name="savedEvents"
                 options={{

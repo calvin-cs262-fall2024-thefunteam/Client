@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#615EFC",
+    backgroundColor: "white",
   },
   searchContainer: {
     flexDirection: "row",
@@ -37,13 +37,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 5,
   },
+  cardDateContainer:{
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardDate:{
+    fontSize: 14,
+    color: "gray",
+  },
   cardText: {
     fontWeight: "bold",
     fontSize: 18,
-  },
-  cardDate: {
-    fontSize: 14,
-    color: "gray",
   },
   separator: {
     borderBottomColor: "#ccc",
