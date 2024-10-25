@@ -114,48 +114,8 @@ export default function Index() {
     );
   };
 
-  const handleCreateEvent = () => {
-    if (eventName.trim() && eventDate.trim()) {
-      if (editingEvent) {
-        setEvents((prevEvents) =>
-          prevEvents.map((event) =>
-            event.id === editingEvent.id
-              ? {
-                  ...event,
-                  name: eventName,
-                  organizer: organizerName,
-                  date: eventDate,
-                  description: eventDescription,
-                  tags: selectedTags,
-                  location: eventLocation,
-                }
-              : event
-          )
-        );
-        setEditingEvent(null);
-      } else {
-        setEvents([
-          ...events,
-          {
-            id: Date.now().toString(),
-            name: eventName,
-            organizer: organizerName,
-            date: eventDate,
-            description: eventDescription,
-            tags: selectedTags,
-            location: eventLocation,
-          },
-        ]);
-      }
-
-      setEventName("");
-      setEventDate("");
-      setNameOrganizer("");
-      setEventDescription("");
-      setSelectedTags([]);
-      setEventLocation("");
-      setModalVisible(false);
-    }
+  const handleCreateEvent = (newEvent: Event) => {
+    setEvents([...events, { ...newEvent, id: Date.now().toString() }]);
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -195,7 +155,7 @@ export default function Index() {
       </View>
       <View style={styles.cardDateContainer}>
         <Text style={styles.cardDate}>{item.date}</Text>
-        </View>
+      </View>
 
       <View style={styles.separator} />
 
@@ -234,7 +194,6 @@ export default function Index() {
             <Text style={styles.editButtonText}>Edit Event</Text>
           </Pressable>
         </View>
-        
       </View>
     </View>
   );
@@ -267,103 +226,6 @@ export default function Index() {
           alignItems: "center",
         }}
       />
-
-
-      {/* Modal for Creating/Editing Event */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                {editingEvent ? "Edit Event" : "Create New Event"}
-              </Text>
-
-              <TextInput
-                style={styles.eventNameInput}
-                placeholder="Event Name"
-                value={eventName}
-                onChangeText={setEventName}
-              />
-
-              <TextInput
-                style={styles.nameOrgInput}
-                placeholder="Name of Organizer"
-                value={organizerName}
-                onChangeText={setNameOrganizer}
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <TextInput
-                  style={[styles.input, { flex: 1, marginRight: 10 }]} // Make Date input take up half the space
-                  placeholder="(MM/DD/YYYY)"
-                  value={eventDate}
-                  onChangeText={setEventDate}
-                />
-
-                <TextInput
-                  style={[styles.input, { flex: 1 }]} // Make Location input take up half the space
-                  placeholder="Location"
-                  value={eventLocation}
-                  onChangeText={setEventLocation}
-                />
-              </View>
-
-              <TextInput
-                style={styles.descriptionInput}
-                multiline={true}
-                numberOfLines={4} // Optional: Set the initial number of lines
-                placeholder="Event Description"
-                value={eventDescription}
-                onChangeText={setEventDescription}
-              />
-
-              <View style={styles.tagSelectionContainer}>
-                {tags.map((tag) => (
-                  <Pressable
-                    key={tag.label}
-                    onPress={() => handleTagToggle(tag)}
-                    style={[
-                      styles.tag,
-                      selectedTags.some((t) => t.label === tag.label) && {
-                        backgroundColor: tag.color,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.tagText}>{tag.label}</Text>
-                  </Pressable>
-                ))}
-              </View>
-
-              <View style={styles.saveOrCancelButton}>
-                <View style={styles.saveButton}>
-                  <Button
-                    title={editingEvent ? "Save Event" : "Create"}
-                    onPress={handleCreateEvent}
-                  />
-                </View>
-                {/* Cancel Button */}
-                <Pressable
-                  style={styles.cancelButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
     </View>
   );
 }
-``;
