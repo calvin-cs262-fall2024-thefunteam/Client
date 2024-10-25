@@ -37,11 +37,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 5,
   },
-  cardDateContainer:{
+  cardDateContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  cardDate:{
+  cardDate: {
     fontSize: 14,
     color: "gray",
   },
@@ -213,28 +213,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalTitle: {
-
     fontSize: 20,
-
     fontWeight: "bold",
-
     marginBottom: 20,
-
   },
   button: {
-
     backgroundColor: "blue",
-
     padding: 10,
-
     borderRadius: 5,
-
     width: "100%",
-
     alignItems: "center",
-
     marginTop: 10,
-
   },
 });
 

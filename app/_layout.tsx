@@ -1,5 +1,5 @@
 import { Stack, useRouter } from "expo-router";
-import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions, Pressable } from "react-native";
 import Login from "../app/login";
 
 function LogoTitle() {
@@ -7,6 +7,7 @@ function LogoTitle() {
 
   return (
     <View style={styles.container}>
+      <Pressable onPress={() => router.replace('/')}>
       <View style={styles.logoContainer}>
         <Image
           style={styles.image}
@@ -14,6 +15,7 @@ function LogoTitle() {
         />
         <Text style={styles.text}>EventSphere</Text>
       </View>
+      </Pressable>
       <View style={styles.loginContainer}>
       <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/login')}>
         <Text style={styles.loginButtonText}>Login</Text>
@@ -48,10 +50,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
+    width: width * .98,
     backgroundColor: 'white',
     height: 'auto',
-    paddingHorizontal: 10,
   },
   logoContainer: {
     flexDirection: 'row',
@@ -82,6 +83,5 @@ const styles = StyleSheet.create({
   loginContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginRight: 10,
   },
 });
