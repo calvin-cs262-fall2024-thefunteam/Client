@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
   },
   descriptionInput: {
     width: "100%",
-    height: 100,
     padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",

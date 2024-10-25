@@ -43,34 +43,39 @@ export default function CreateEvent() {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.modalTitle}>Create Event</Text>
+      {/* <Text style={styles.modalTitle}>Create Event</Text> */}
       <TextInput
         style={styles.input}
         placeholder="Event Name"
+        placeholderTextColor={"grey"}
         value={eventName}
         onChangeText={setEventName}
       />
       <TextInput
         style={styles.input}
         placeholder="Organizer"
+        placeholderTextColor={"grey"}
         value={organizer}
         onChangeText={setOrganizer}
       />
       <TextInput
         style={styles.input}
         placeholder="Event Date"
+        placeholderTextColor={"grey"}
         value={eventDate}
         onChangeText={setEventDate}
       />
       <TextInput
         style={styles.descriptionInput}
         placeholder="Event Description"
+        placeholderTextColor={"grey"}
         value={eventDescription}
         onChangeText={setEventDescription}
       />
       <TextInput
         style={styles.input}
         placeholder="Location"
+        placeholderTextColor={"grey"}
         value={location}
         onChangeText={setLocation}
       />
@@ -89,7 +94,7 @@ export default function CreateEvent() {
           </Pressable>
         ))}
       </View>
-      <Button title="Create Event" onPress={handleCreateEvent} />
+        <Button title="Create Event" onPress={handleCreateEvent} />
     </KeyboardAvoidingView>
   );
 }

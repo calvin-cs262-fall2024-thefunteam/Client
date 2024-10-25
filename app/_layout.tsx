@@ -37,9 +37,9 @@ export default function RootLayout() {
           fontWeight: 'bold',
         },
         headerTitle: () => <LogoTitle />, // Use the custom header component
+        headerBackTitleVisible: false,
       }}>
       <Stack.Screen name="login" />
-      <Stack.Screen name="index" />
     </Stack>
   );
 }
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: width * .98,
+    width: width * .95,
     backgroundColor: 'white',
     height: 'auto',
   },
@@ -59,18 +59,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     marginRight: 10,
     padding: 5,
   },
   text: {
     fontSize: 20,
-    color: 'black',
+    color: 'maroon',
     fontWeight: 'bold',
   },
   loginButton: {
-    backgroundColor: '#168af0',
+    backgroundColor: 'maroon',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -83,5 +83,6 @@ const styles = StyleSheet.create({
   loginContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    marginRight: 10,
   },
 });
