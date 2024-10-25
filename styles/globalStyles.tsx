@@ -212,6 +212,30 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  modalTitle: {
+
+    fontSize: 20,
+
+    fontWeight: "bold",
+
+    marginBottom: 20,
+
+  },
+  button: {
+
+    backgroundColor: "blue",
+
+    padding: 10,
+
+    borderRadius: 5,
+
+    width: "100%",
+
+    alignItems: "center",
+
+    marginTop: 10,
+
+  },
 });
 
 export default styles;
