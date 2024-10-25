@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
-import Login from "./login";
+import Login from "../app/login";
 
 function LogoTitle() {
   const router = useRouter();
@@ -10,14 +10,15 @@ function LogoTitle() {
       <View style={styles.logoContainer}>
         <Image
           style={styles.image}
-          source={{ uri: 'https://media.istockphoto.com/id/1424054284/vector/circle-logo-digital-target-round-shape-swirl-orbit-loop-globe.jpg?s=612x612&w=0&k=20&c=qYvxFX0MXms9H6lDeKwMT21F9z__K3JW6smm-ePmpz8=' }}
+          source={require('../assets/images/logo2.png')}
         />
         <Text style={styles.text}>EventSphere</Text>
       </View>
       <View style={styles.loginContainer}>
-      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('../screens/login.tsx')}>
+      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/login')}>
         <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity></View>
+      </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    backgroundColor: 'purple',
+    backgroundColor: 'white',
     height: 'auto',
     paddingHorizontal: 10,
   },
@@ -60,6 +61,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginRight: 10,
+    padding: 5,
   },
   text: {
     fontSize: 20,
