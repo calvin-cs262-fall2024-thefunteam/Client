@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Text,
   View,
-  Button,
-  Modal,
-  TextInput,
+  Text,
   FlatList,
   Pressable,
-  Dimensions,
   StyleSheet,
   KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import icons
 import SearchBar from "@/components/SearchBar"; // Import SearchBar component
 import styles from "@/styles/globalStyles"; // Import styles
+import eventsData from "../events.json"; // Import events from events.json
+import { router } from "expo-router";
 
 // Predefined tag options with corresponding colors
 type Tag = {
@@ -21,102 +19,24 @@ type Tag = {
   color: string;
 };
 
-const tags: Tag[] = [
-  { label: "Social", color: "#FFD700" },
-  { label: "Sports", color: "#1E90FF" },
-  { label: "Student Org", color: "#32CD32" },
-  { label: "Academic", color: "#FF4500" },
-  { label: "Workshop", color: "#8A2BE2" },
-];
+type Event = {
+  id: string;
+  name: string;
+  organizer: string;
+  date: string;
+  description: string;
+  tags: Tag[];
+  location: string;
+};
 
 export default function Index() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [eventName, setEventName] = useState("");
-  const [organizerName, setNameOrganizer] = useState("");
-  const [eventDate, setEventDate] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [eventLocation, setEventLocation] = useState("");
-
-  type Event = {
-    id: string;
-    name: string;
-    organizer: string;
-    date: string;
-    description: string;
-    tags: Tag[];
-    location: string;
-  };
-
-  const [events, setEvents] = useState<Event[]>([
-    {
-      id: "1",
-      name: "Sample Event 1",
-      organizer: "Organizer 1",
-      date: "2023-10-01",
-      description: "Description for Sample Event 1",
-      tags: [{ label: "Social", color: "#FFD700" }],
-      location: "Location 1",
-    },
-    {
-      id: "2",
-      name: "Sample Event 2",
-      organizer: "Organizer 2",
-      date: "2023-10-15",
-      description: "Description for Sample Event 2",
-      tags: [{ label: "Sports", color: "#1E90FF" }],
-      location: "Location 2",
-    },
-    {
-      id: "3",
-      name: "Tech Conference 2024",
-      organizer: "TechOrg Inc.",
-      date: "2024-02-12",
-      description:
-        "A conference focused on the latest in technology and innovation. this conference will be I dont really know to be honest, Im trying to make this description really long so that I can test out what it will look like, i dont know if this is long enough but I guess well see, cya",
-      tags: [
-        { label: "Academic", color: "#FF4500" },
-        { label: "Workshop", color: "#8A2BE2" },
-      ],
-      location: "Tech Park, City Center",
-    },
-    {
-      id: "4",
-      name: "Community Cleanup",
-      organizer: "Green Earth",
-      date: "2023-11-05",
-      description:
-        "Join us for a community-wide cleanup event to make our city greener.",
-      tags: [{ label: "Social", color: "#FFD700" }],
-      location: "Main Street Park",
-    },
-    {
-      id: "5",
-      name: "University Workshop",
-      organizer: "University Department",
-      date: "2023-12-10",
-      description: "Hands-on workshop for students on web development.",
-      tags: [
-        { label: "Workshop", color: "#8A2BE2" },
-        { label: "Student Org", color: "#32CD32" },
-      ],
-      location: "University Lab, Room 101",
-    },
-  ]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
-  const handleTagToggle = (tag: Tag) => {
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(tag)
-        ? prevSelectedTags.filter((t) => t !== tag)
-        : [...prevSelectedTags, tag]
-    );
-  };
-
-  const handleCreateEvent = (newEvent: Event) => {
-    setEvents([...events, { ...newEvent, id: Date.now().toString() }]);
-  };
+  useEffect(() => {
+    setEvents(eventsData); // Load events from events.json
+  }, []);
 
   const handleDeleteEvent = (id: string) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
@@ -124,13 +44,8 @@ export default function Index() {
 
   const handleEditEvent = (event: Event) => {
     setEditingEvent(event);
-    setEventName(event.name);
-    setNameOrganizer(event.organizer);
-    setEventDate(event.date);
-    setEventDescription(event.description);
-    setSelectedTags(event.tags);
-    setEventLocation(event.location);
-    setModalVisible(true);
+    router.push("/createEvent");
+    // You can add more logic here to open a modal or navigate to an edit screen
   };
 
   const filteredEvents = events.filter(
@@ -141,11 +56,6 @@ export default function Index() {
         tag.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
   );
-
-  const addToSavedEvents = () => {
-    // Add event to saved events
-    alert("Event saved!");
-  };
 
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.card}>
@@ -172,26 +82,18 @@ export default function Index() {
             </View>
           ))}
         </View>
-
-        {/* Save Event Button */}
-        <Pressable style={styles.saveButton} onPress={() => addToSavedEvents()}>
-          <Ionicons name="bookmark-outline" size={24} color="black"></Ionicons>
-        </Pressable>
-
-        {/* Delete Event */}
         <View style={styles.buttonContainerCard}>
-          <Pressable
-            style={styles.deleteButton}
-            onPress={() => handleDeleteEvent(item.id)}
-          >
-            <Text style={styles.deleteButtonText}>Delete Event</Text>
-          </Pressable>
-
           <Pressable
             style={styles.editButton}
             onPress={() => handleEditEvent(item)}
           >
-            <Text style={styles.editButtonText}>Edit Event</Text>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </Pressable>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() => handleDeleteEvent(item.id)}
+          >
+            <Text style={styles.deleteButtonText}>Delete</Text>
           </Pressable>
         </View>
       </View>
