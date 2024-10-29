@@ -1,9 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons"; // Import icons
+import { Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function TabLayout() {
     return (
-        <Tabs screenOptions={{ tabBarActiveTintColor: 'maroon', headerShown: true, headerTitleContainerStyle: {width: screen.width, alignItems: 'center'} }}>
+        <Tabs screenOptions={{ tabBarActiveTintColor: 'maroon', headerShown: true, headerTitleContainerStyle: {width: screenWidth, alignItems: 'center'} }}>
             <Tabs.Screen
                 name="index"
                 options={{

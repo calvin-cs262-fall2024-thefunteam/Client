@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
+    maxHeight: 300,
+    
   },
   cardHeader: {
     flexDirection: "row",
@@ -56,6 +58,7 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     marginBottom: 5,
+    maxHeight: 60,
   },
   tagContainer: {
     flexDirection: "row",
@@ -155,6 +158,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
   },
+  dateAndLocationInput: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dateInput: {
+    width: "48%",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  locationInput: {
+    width: "48%",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
   descriptionInput: {
     width: "100%",
     padding: 10,
@@ -162,6 +185,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 10,
+    height: 200,
   },
   tagSelectionContainer: {
     flexDirection: "row",
@@ -224,6 +248,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
+  bookmarkIcon: {
+    position: "absolute",
+    justifyContent: "flex-end",
+    right: 10,
+    top: 10,
+  },
+  seeMoreText:{
+    color: "blue",
+  }
 });
 
 export default styles;

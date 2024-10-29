@@ -11,7 +11,10 @@ import { Ionicons } from "@expo/vector-icons"; // Import icons
 import SearchBar from "@/components/SearchBar"; // Import SearchBar component
 import styles from "@/styles/globalStyles"; // Import styles
 import eventsData from "../events.json"; // Import events from events.json
+//import savedEvents from "../savedEvents.json"; // Import saved events from savedEvents.json
 import { router } from "expo-router";
+import eventDetails from "../eventDetails"; // Import event details page
+
 
 // Predefined tag options with corresponding colors
 type Tag = {
@@ -42,6 +45,18 @@ export default function Index() {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
   };
 
+  const handleSeeMore = (event: Event) => {
+    // Navigate to the event details page
+    router.push(`../eventDetails/`);
+  }
+
+  const truncateText = (text: string, charLimit: number) => {
+    if (text.length > charLimit) {
+      return text.slice(0, charLimit);
+    }
+    return text;
+  };
+  
   const handleEditEvent = (event: Event) => {
     setEditingEvent(event);
     router.push("/createEvent");
@@ -58,6 +73,9 @@ export default function Index() {
   );
 
   const renderEventCard = ({ item }: { item: Event }) => (
+    <Pressable
+    onPress={() => handleSeeMore(item)}
+    >
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.cardText}>{item.name}</Text>
@@ -68,8 +86,8 @@ export default function Index() {
       </View>
 
       <View style={styles.separator} />
-
-      <Text style={styles.cardDescription}>{item.description}</Text>
+      <Text style={styles.cardDescription}>{truncateText(item.description,200)}</Text>
+      <Text style={styles.seeMoreText}>...See More</Text>
 
       <View style={styles.tagAndButtonContainer}>
         <View style={styles.tagContainer}>
@@ -96,12 +114,25 @@ export default function Index() {
             <Text style={styles.deleteButtonText}>Delete</Text>
           </Pressable>
         </View>
+        <View style={styles.bookmarkIcon}>
+        <Pressable onPress={() => {
+          alert('Event bookmarked!');
+         }}>
+            <Ionicons
+              name='bookmark-outline'
+              size={24}
+              color="black"
+            />
+          </Pressable>
+        </View>
       </View>
     </View>
+    </Pressable>
   );
 
   return (
     <View style={styles.container}>
+      
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Ionicons
