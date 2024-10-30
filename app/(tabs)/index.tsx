@@ -14,15 +14,17 @@ import eventsData from "../events.json"; // Import events from events.json
 //import savedEvents from "../savedEvents.json"; // Import saved events from savedEvents.json
 import { router } from "expo-router";
 import eventDetails from "../eventDetails"; // Import event details page
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+
 
 
 // Predefined tag options with corresponding colors
-type Tag = {
+export type Tag = {
   label: string;
   color: string;
 };
 
-type Event = {
+export type Event = {
   id: string;
   name: string;
   organizer: string;
@@ -36,31 +38,37 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [events, setEvents] = useState<Event[]>([]);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const navigation = useNavigation(); // Initialize navigation
 
   useEffect(() => {
     setEvents(eventsData); // Load events from events.json
   }, []);
 
+
   const handleDeleteEvent = (id: string) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
   };
-
+  
   const handleSeeMore = (event: Event) => {
-    // Navigate to the event details page
-    router.push(`../eventDetails/`);
-  }
-
-  const truncateText = (text: string, charLimit: number) => {
+    router.push({
+      pathname: '/eventDetails', // This should match the screen name in RootLayout
+      params: { event: JSON.stringify(event) }, // Pass the event as a parameter
+    });
+  };
+  
+  
+  function truncateText(text: string, charLimit: number) {
     if (text.length > charLimit) {
-      return text.slice(0, charLimit);
+      return text.slice(0, charLimit) + "...";
     }
     return text;
-  };
+  }
   
   const handleEditEvent = (event: Event) => {
     setEditingEvent(event);
     router.push("/createEvent");
     // You can add more logic here to open a modal or navigate to an edit screen
+    
   };
 
   const filteredEvents = events.filter(
@@ -86,8 +94,8 @@ export default function Index() {
       </View>
 
       <View style={styles.separator} />
-      <Text style={styles.cardDescription}>{truncateText(item.description,200)}</Text>
-      <Text style={styles.seeMoreText}>...See More</Text>
+      <Text style={styles.cardDescription}>{truncateText(item.description,140)}</Text>
+      <Text style={styles.seeMoreText}>See More</Text>
 
       <View style={styles.tagAndButtonContainer}>
         <View style={styles.tagContainer}>
