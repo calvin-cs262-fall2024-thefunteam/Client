@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
+import eventsData from "../events.json"; // Import events from events.json
 import styles from "@/styles/globalStyles";
 
 type Tag = {
@@ -39,6 +40,7 @@ export default function CreateEvent() {
     setEventDescription("");
     setSelectedTags([]);
     setLocation("");
+    
   };
 
   return (
@@ -58,27 +60,36 @@ export default function CreateEvent() {
         value={organizer}
         onChangeText={setOrganizer}
       />
+      <View 
+      style={styles.dateAndLocationInput}>
+
       <TextInput
-        style={styles.input}
+        style={styles.dateInput}
         placeholder="Event Date"
         placeholderTextColor={"grey"}
         value={eventDate}
         onChangeText={setEventDate}
       />
       <TextInput
-        style={styles.descriptionInput}
-        placeholder="Event Description"
-        placeholderTextColor={"grey"}
-        value={eventDescription}
-        onChangeText={setEventDescription}
-      />
-      <TextInput
-        style={styles.input}
+        style={styles.locationInput}
         placeholder="Location"
         placeholderTextColor={"grey"}
         value={location}
         onChangeText={setLocation}
       />
+
+      </View>
+      <TextInput
+        style={styles.descriptionInput}
+        multiline = {true}
+        numberOfLines={4}
+        placeholder="Event Description"
+        placeholderTextColor={"grey"}
+        value={eventDescription}
+        onChangeText={setEventDescription}
+        
+      />
+      
       <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (

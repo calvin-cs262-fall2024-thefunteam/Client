@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { Text, Image, View, StyleSheet, TouchableOpacity, Dimensions, Pressable } from "react-native";
 import Login from "../app/login";
+import EventDetailsScreen from "./eventDetails";
 
 function LogoTitle() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function RootLayout() {
         headerBackTitleVisible: false,
       }}>
       <Stack.Screen name="login" />
+      <Stack.Screen name="EventDetails" options={{ title: 'Event Details' }} />
     </Stack>
   );
 }
