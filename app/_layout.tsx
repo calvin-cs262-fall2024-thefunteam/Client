@@ -15,9 +15,10 @@ function LogoTitle() {
         <Text style={styles.text}>EventSphere</Text>
       </View>
       <View style={styles.loginContainer}>
-      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('../screens/login.tsx')}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity></View>
+        <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('login')}>
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
+    width: width,  // Full width of screen
     backgroundColor: 'purple',
     height: 'auto',
     paddingHorizontal: 10,
