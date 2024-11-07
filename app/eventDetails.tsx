@@ -12,20 +12,14 @@ export default function EventDetailsScreen() {
   const { event } = route.params as { event: string };
   const parsedEvent = event ? JSON.parse(event) : null;
 
-  // if (!parsedEvent) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={styles.title}>Event not found</Text>
-  //     </View>
-  //   );
-  // }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{parsedEvent.name}</Text>
+      <Text style={styles.organizer}>Organized by: {parsedEvent.organizer}</Text>
       <Text style={styles.date}>{parsedEvent.date}</Text>
       <Text style={styles.description}>{parsedEvent.description}</Text>
       <Text style={styles.location}>{parsedEvent.location}</Text>
-      <Text style={styles.organizer}>Organized by: {parsedEvent.organizer}</Text>
       <View style={styles.tagContainer}>
         {parsedEvent.tags.map((tag: Tag) => (
           <View key={tag.label} style={[styles.tag, { backgroundColor: tag.color }]}>
