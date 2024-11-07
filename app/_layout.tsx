@@ -76,11 +76,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    top: 10, // Adjust as needed
+    right: 10, // Adjust as needed
   },
   loginButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    padding: 5,
+    position: 'absolute',
   },
   loginContainer: {
     flexDirection: 'row',
