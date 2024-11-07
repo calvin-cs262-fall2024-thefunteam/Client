@@ -1,3 +1,4 @@
+// Import essential libraries and components
 import React, { useState } from "react";
 import {
   View,
@@ -10,24 +11,25 @@ import {
   TextInput,
   Button,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
+import * as ImagePicker from "expo-image-picker"; // Import Expo's ImagePicker for image selection
 
+// Main Profile component
 const Profile = () => {
-  // Sample user data
+  // State to store sample user data, including default profile information
   const [userData, setUserData] = useState({
     username: "username",
-    followers: 0, // Default followers
-    following: 0, // Default following
-    posts: 0, // Default posts
-    profilePicture: "https://via.placeholder.com/150", // Placeholder image URL
+    followers: 0, // Initial followers count
+    following: 0, // Initial following count
+    posts: 0, // Initial posts count
+    profilePicture: "https://via.placeholder.com/150", // Placeholder image URL for profile picture
   });
 
-  // State for modal visibility and new profile data
+  // State for managing modal visibility and new profile information
   const [modalVisible, setModalVisible] = useState(false);
-  const [newUsername, setNewUsername] = useState(userData.username);
-  const [newProfilePicture, setNewProfilePicture] = useState(userData.profilePicture);
+  const [newUsername, setNewUsername] = useState(userData.username); // For editing username
+  const [newProfilePicture, setNewProfilePicture] = useState(userData.profilePicture); // For updating profile picture
 
-  // Sample posts data
+  // Sample posts array with placeholder images, simulating a list of user's posts
   const posts = [
     { id: "1", imageUrl: "https://via.placeholder.com/150" },
     { id: "2", imageUrl: "https://via.placeholder.com/150" },
@@ -37,31 +39,34 @@ const Profile = () => {
     { id: "6", imageUrl: "https://via.placeholder.com/150" },
   ];
 
+  // Function to render each post as an image in a grid layout
   const renderPost = ({ item }) => (
     <View style={styles.postContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
     </View>
   );
 
+  // Handle profile edits by updating username and profile picture and closing modal
   const handleEditProfile = () => {
     setUserData({
       ...userData,
       username: newUsername,
       profilePicture: newProfilePicture,
     });
-    setModalVisible(false); // Close modal after saving changes
+    setModalVisible(false); // Hide modal after saving changes
   };
 
+  // Function to open the image picker and allow user to select a profile picture
   const pickImage = async () => {
-    // Request permission to access the media library
+    // Request permission to access media library
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
+      alert("Permission to access camera roll is required!"); // Alert if permission denied
       return;
     }
 
-    // Open the image picker
+    // Launch image picker and allow user to edit selected image
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -70,13 +75,13 @@ const Profile = () => {
     });
 
     if (!pickerResult.canceled) {
-      setNewProfilePicture(pickerResult.assets[0].uri); // Set selected image URI
+      setNewProfilePicture(pickerResult.assets[0].uri); // Set selected image URI if not canceled
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Profile Header */}
+      {/* Profile Header: Displays profile picture, username, and stats */}
       <View style={styles.header}>
         <Pressable onPress={pickImage}>
           <Image
@@ -103,16 +108,16 @@ const Profile = () => {
         </View>
       </View>
 
-      {/* Posts Grid */}
+      {/* Posts Grid: Displays user's posts in a grid format with 3 columns */}
       <FlatList
         data={posts}
         renderItem={renderPost}
         keyExtractor={(item) => item.id}
-        numColumns={3} // Grid layout with 3 columns
+        numColumns={3} // Specifies a 3-column grid layout
         contentContainerStyle={styles.postsGrid}
       />
 
-      {/* Edit Profile Modal */}
+      {/* Edit Profile Modal: Form for editing username and profile picture */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -139,6 +144,7 @@ const Profile = () => {
   );
 };
 
+// Styles for Profile component layout and visuals
 const styles = StyleSheet.create({
   container: {
     flex: 1,
