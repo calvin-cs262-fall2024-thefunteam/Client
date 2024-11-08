@@ -16,7 +16,7 @@ function LogoTitle() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.replace("/")}>
+      <Pressable onPress={() => router.navigate("/")}>
         <View style={styles.logoContainer}>
           <Image
             style={styles.image}
@@ -29,7 +29,7 @@ function LogoTitle() {
       <View style={styles.loginContainer}>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => router.replace("/login")}
+          onPress={() => router.navigate("/login")}
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 50,
   },
   loginButton: {
     backgroundColor: "maroon",

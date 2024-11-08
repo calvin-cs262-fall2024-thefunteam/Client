@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     maxHeight: 300,
-    
   },
   cardHeader: {
     flexDirection: "row",
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   bottomBar: {
-    width: Dimensions.get('window').width, // Ensure it fully matches the screen width
+    width: Dimensions.get("window").width, // Ensure it fully matches the screen width
     height: 70,
     position: "absolute",
     bottom: 0,
@@ -193,13 +192,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   saveButton: {
-    fontSize: 14,//cant change font size for some reason
+    fontSize: 14, //cant change font size for some reason
     marginHorizontal: 5,
     borderRadius: 5,
     alignItems: "center",
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 14, // Smaller font size
   },
   cancelButton: {
@@ -226,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     position: "absolute",
-    paddingStart: '55%',
+    paddingStart: "55%",
     padding: 10,
     paddingBottom: 15,
   },
@@ -254,9 +253,24 @@ const styles = StyleSheet.create({
     right: 10,
     top: 10,
   },
-  seeMoreText:{
+  seeMoreText: {
     color: "blue",
-  }
+  },
+  communityItem: {
+    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // For Android shadow effect
+  },
+  communityName: {
+    fontSize: 18,
+    color: "#555",
+  },
 });
 
 export default styles;
