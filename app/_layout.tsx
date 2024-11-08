@@ -9,18 +9,20 @@ function LogoTitle() {
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.replace('/')}>
-      <View style={styles.logoContainer}>
-        <Image
-          style={styles.image}
-          source={require('../assets/images/logo2.png')}
-        />
-        <Text style={styles.text}>EventSphere</Text>
-      </View>
+        <View style={styles.logoContainer}>
+          <Image
+            style={styles.image}
+            source={require('../assets/images/logo2.png')}
+          />
+          <Text style={styles.text}>EventSphere</Text>
+        </View>
       </Pressable>
+      
+      {/* Login button in the top-right corner */}
       <View style={styles.loginContainer}>
-      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/login')}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/login')}>
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: width * .95,
+    width: width * 0.95,
     backgroundColor: 'white',
     height: 'auto',
   },
@@ -71,24 +73,21 @@ const styles = StyleSheet.create({
     color: 'maroon',
     fontWeight: 'bold',
   },
+  loginContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   loginButton: {
     backgroundColor: 'maroon',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 6,  // Adjusted for better sizing
+    paddingHorizontal: 16,  // Adjusted for better sizing
     borderRadius: 5,
-    top: 10, // Adjust as needed
-    right: 10, // Adjust as needed
   },
   loginButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    padding: 5,
-    position: 'absolute',
-  },
-  loginContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginRight: 10,
+    textAlign: 'center',
   },
 });
