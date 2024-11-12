@@ -28,14 +28,14 @@ export default function EventDetailsScreen() {
 
       {/* Display event tags */}
       <View style={styles.tagContainer}>
-        {parsedEvent.tags.map((tag: Tag) => (
+        {/* {parsedEvent.tags.map((tag: Tag) => (
           <View
             key={tag.label}
             style={[styles.tag, { backgroundColor: tag.color }]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
           </View>
-        ))}
+        ))} */}
       </View>
     </View>
   );

@@ -25,12 +25,13 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width * 0.9,
     backgroundColor: "#EEEEEE",
     padding: 10,
+    margin: 10,
     marginBottom: 20,
     borderRadius: 8,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    maxHeight: 300,
+    maxHeight: 350,
   },
   cardHeader: {
     flexDirection: "row",
@@ -250,8 +251,8 @@ const styles = StyleSheet.create({
   bookmarkIcon: {
     position: "absolute",
     justifyContent: "flex-end",
-    right: 10,
-    top: 10,
+    right: 0,
+    top: -15,
   },
   seeMoreText: {
     color: "blue",
