@@ -35,7 +35,9 @@ export type Event = {
 // Main component rendering the list of events
 export default function Index() {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
+
   //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
   const navigation = useNavigation(); // Initialize navigation
 
@@ -62,7 +64,6 @@ export default function Index() {
       console.error('Error fetching events:', error);
     }
   };
-
 
   // Function to delete an event by ID from the events list
   const handleDeleteEvent = (id: string) => {
