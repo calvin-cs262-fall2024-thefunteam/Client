@@ -11,10 +11,8 @@ import {
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import SearchBar from "@/components/SearchBar"; // Custom SearchBar component
 import styles from "@/styles/globalStyles"; // Import global styles
-import eventsData from "../events.json"; // Import initial events data from JSON
-//import savedEvents from "../savedEvents.json"; // (Optional) Import saved events
+import axios from "axios"; // Import Axios for API requests
 import { router } from "expo-router";
-import eventDetails from "../eventDetails"; // Import event details screen for navigation
 import { useNavigation } from '@react-navigation/native'; // Navigation hook
 
 // Define the structure of tags with label and color properties
@@ -30,7 +28,7 @@ export type Event = {
   organizer: string;
   date: string;
   description: string;
-  tags: Tag[];
+  tags?: Tag[];
   location: string;
 };
 
@@ -38,13 +36,33 @@ export type Event = {
 export default function Index() {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
+  //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
   const navigation = useNavigation(); // Initialize navigation
 
-  // Load initial events data once when the component mounts
+  //Pull in data from server URL
   useEffect(() => {
-    setEvents(eventsData); 
+    fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get('https://eventsphere-web.azurewebsites.net/events');
+      const tempEvents: any[] = response.data; // Store data in a temporary object
+      const mappedEvents: Event[] = tempEvents.map((tempEvent) => ({
+        id: tempEvent.id,
+        name: tempEvent.name,
+        organizer: tempEvent.organizer,
+        date: tempEvent.date,
+        description: tempEvent.description,
+        tags: tempEvent.tags,
+        location: tempEvent.location,
+      }));
+      setEvents(mappedEvents); // Map to Event type and set state
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
 
   // Function to delete an event by ID from the events list
   const handleDeleteEvent = (id: string) => {
@@ -66,25 +84,19 @@ export default function Index() {
     }
     return text;
   }
-  
-  // Set the event being edited and navigate to the edit screen
-  const handleEditEvent = (event: Event) => {
-    setEditingEvent(event);
-    router.push("/createEvent");
-  };
 
   // Filter events based on search query across name, organizer, and tags
   const filteredEvents = events.filter(
-    (event) =>
+    (event: Event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.tags.some((tag) =>
+      event.tags?.some((tag: any) =>
         tag.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
   );
 
   // Renders an individual event card with details and actions (edit, delete, bookmark)
-  const renderEventCard = ({ item }: { item: Event }) => (
+  const renderEventCard = ({ item }: { item: any }) => (
     <Pressable onPress={() => handleSeeMore(item)}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
@@ -101,11 +113,11 @@ export default function Index() {
 
         <View style={styles.tagAndButtonContainer}>
           <View style={styles.tagContainer}>
-            {item.tags.map((tag) => (
+            {/* {item.tags!.map((tag) => (
               <View key={tag.label} style={[styles.tag, { backgroundColor: tag.color }]}>
                 <Text style={styles.tagText}>{tag.label}</Text>
               </View>
-            ))}
+            ))} */}
           </View>
           <View style={styles.buttonContainerCard}>
             <Pressable style={styles.editButton} onPress={() => handleEditEvent(item)}>
