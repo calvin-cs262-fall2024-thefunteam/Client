@@ -17,9 +17,19 @@ import { useNavigation } from '@react-navigation/native'; // Navigation hook
 
 // Define the structure of tags with label and color properties
 export type Tag = {
+  id: number;
   label: string;
   color: string;
-};
+}; 
+
+// Array of available tags, each with a label and color
+const availableTags: Tag[] = [
+  {id:1, label: "Social", color: "#FFD700" },      // Yellow for social events
+  {id:2, label: "Sports", color: "#1E90FF" },      // Blue for sports events
+  {id:3, label: "Student Org", color: "#32CD32" }, // Green for student organization events
+  {id:4, label: "Academic", color: "#FF4500" },    // Orange for academic events
+  {id:5, label: "Workshop", color: "#8A2BE2" },    // Purple for workshops
+];
 
 // Define the structure of an event with various properties, including tags
 export type Event = {
@@ -28,7 +38,7 @@ export type Event = {
   organizer: string;
   date: string;
   description: string;
-  tags?: Tag[];
+  tags?: Tag[]; // optiional
   location: string;
 };
 
@@ -39,7 +49,8 @@ export default function Index() {
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
 
   //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
-  const navigation = useNavigation(); // Initialize navigation
+
+  const navigation = useNavigation(); 
 
   //Pull in data from server URL
   useEffect(() => {
@@ -49,26 +60,33 @@ export default function Index() {
   const fetchEvents = async () => {
     try {
       const response = await axios.get('https://eventsphere-web.azurewebsites.net/events');
-      const tempEvents: any[] = response.data; // Store data in a temporary object
-      const mappedEvents: Event[] = tempEvents.map((tempEvent) => ({
-        id: tempEvent.id,
-        name: tempEvent.name,
-        organizer: tempEvent.organizer,
-        date: tempEvent.date,
-        description: tempEvent.description,
-        tags: tempEvent.tags,
-        location: tempEvent.location,
-      }));
-      setEvents(mappedEvents); // Map to Event type and set state
+      const tempEvents: any[] = response.data; // Store data in a temporary array with type any
+  
+      const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
+        const eventTags = tempEvent.tagsarray.map((tagId: number) => {
+          return availableTags.find((tag) => tag.id === tagId);
+        }).filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+  
+        return {
+          id: String(tempEvent.id),
+          name: tempEvent.name,
+          organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
+          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
+          description: tempEvent.description,
+          tags: eventTags,
+          location: tempEvent.location,
+        };
+      });
+  
+      setEvents(mappedEvents); // Sets the mapped events to state
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
 
-  // Function to delete an event by ID from the events list
-  const handleDeleteEvent = (id: string) => {
+  const handleDeleteEvent = (id:string) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-  };
+  }
   
   // Function to navigate to event details page, passing selected event as parameter
   const handleSeeMore = (event: Event) => {
@@ -86,14 +104,15 @@ export default function Index() {
     return text;
   }
 
-  // Filter events based on search query across name, organizer, and tags
+  // Filter events based on search query across name, organizer, and tags 
   const filteredEvents = events.filter(
     (event: Event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.tags?.some((tag: any) =>
+      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (event.tags && event.tags.some((tag: any) =>
         tag.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      ))
   );
 
   // Renders an individual event card with details and actions (edit, delete, bookmark)
@@ -114,11 +133,11 @@ export default function Index() {
 
         <View style={styles.tagAndButtonContainer}>
           <View style={styles.tagContainer}>
-            {/* {item.tags!.map((tag) => (
+          {item.tags!.map((tag: Tag) => (
               <View key={tag.label} style={[styles.tag, { backgroundColor: tag.color }]}>
                 <Text style={styles.tagText}>{tag.label}</Text>
               </View>
-            ))} */}
+            ))} 
           </View>
           <View style={styles.buttonContainerCard}>
             <Pressable style={styles.editButton} onPress={() => handleEditEvent(item)}>
@@ -129,6 +148,7 @@ export default function Index() {
             </Pressable>
           </View>
           <View style={styles.bookmarkIcon}>
+            {/* Add handleSaveEvent here */}
             <Pressable onPress={() => alert('Event bookmarked!')}>
               <Ionicons name="bookmark-outline" size={24} color="black" />
             </Pressable>
