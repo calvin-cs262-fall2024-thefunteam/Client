@@ -1,23 +1,15 @@
 // Import essential libraries and components
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
-import eventsData from "../events.json"; // Import events data from a local JSON file
 import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
+import { Tag } from "../(tabs)/index"; // Import Tag type for tags
+import availableTags from "../(tabs)/index"; // Import availableTags array for tag selection
+import axios from "axios"; // Import Axios for API requests
+import Index from "/Users/danyeolchae/Desktop/funteam/Client/app/(tabs)/index";
+import { Event } from "../(tabs)/index";
 
-// Define type for event tags
-type Tag = {
-  label: string;
-  color: string;
-};
 
-// Array of available tags, each with a label and color
-const availableTags: Tag[] = [
-  { label: "Social", color: "#FFD700" },      // Yellow for social events
-  { label: "Sports", color: "#1E90FF" },      // Blue for sports events
-  { label: "Student Org", color: "#32CD32" }, // Green for student organization events
-  { label: "Academic", color: "#FF4500" },    // Orange for academic events
-  { label: "Workshop", color: "#8A2BE2" },    // Purple for workshops
-];
+const tags = availableTags
 
 // Main CreateEvent component
 export default function CreateEvent() {
@@ -40,16 +32,28 @@ export default function CreateEvent() {
 
   // Function to handle event creation
   const handleCreateEvent = () => {
-    const newEvent = { eventName, organizer, eventDate, eventDescription, tags: selectedTags, location }; // Create new event object
+    const newEvent: Event = { id:"", name: eventName, organizer, date: eventDate, description: eventDescription, tags: selectedTags, location }; // Create new event object
     setEventName("");             // Clear event name input
     setOrganizer("");             // Clear organizer input
     setEventDate("");             // Clear event date input
     setEventDescription("");      // Clear description input
     setSelectedTags([]);          // Clear selected tags
     setLocation("");              // Clear location input
+
+    createEvent(newEvent); // Call createEvent function with new event object
     
   };
 
+  const createEvent = async (event: Event) => {
+    try {
+      const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', event);
+      console.log("Event created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  };
+
+  
   return (
     // Main container with keyboard avoiding functionality for better UX
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -104,7 +108,7 @@ export default function CreateEvent() {
       />
       
       {/* Section to select tags for the event */}
-      <Text style={styles.modalText}>Select Tags</Text>
+      {/* <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
@@ -116,9 +120,9 @@ export default function CreateEvent() {
             ]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
-          </Pressable>
+          </Pressable>/
         ))}
-      </View>
+      </View> */}
 
       {/* Button to create event */}
       <Button title="Create Event" onPress={handleCreateEvent} />
