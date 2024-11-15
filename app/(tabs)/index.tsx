@@ -37,6 +37,7 @@ export type Event = {
   name: string;
   organizer: string;
   date: string;
+  time:string;
   description: string;
   tags?: Tag[]; // optiional
   location: string;
@@ -71,7 +72,8 @@ export default function Index() {
           id: String(tempEvent.id),
           name: tempEvent.name,
           organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
-          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
+          date: tempEvent.date, // Format date to 'YYYY-MM-DD'
+          time: tempEvent.time,
           description: tempEvent.description,
           tags: eventTags,
           location: tempEvent.location,

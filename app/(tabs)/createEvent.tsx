@@ -30,6 +30,30 @@ export default function CreateEvent() {
     );
   };
 
+  // Function to map an Event object to the server's expected format
+const mapEventToServerFormat = (event: Event) => {
+  // Convert tags to an array of IDs
+  const tagsarray = event.tags ? event.tags.map(tag => tag.id) : [];
+
+  // Split date and time if needed
+  //const [date, time] = event.date.split("T");
+
+  // Construct the server-compatible event object
+  const serverEvent = {
+    id: parseInt(event.id), // Ensure ID is a number
+    name: event.name,
+    location: event.location,
+    date: event.date, // Adjust date format to the server's expectation
+    //time: event.time || "00:00:00", // Default to "00:00:00" if no time provided
+    description: event.description,
+    tagsarray, // Array of tag IDs
+    organizerid: 1 // Replace this with the actual organizer ID lookup if available
+  };
+
+  return serverEvent;
+};
+
+
   // Function to handle event creation
   const handleCreateEvent = () => {
     const newEvent: Event = { id:"", name: eventName, organizer, date: eventDate, description: eventDescription, tags: selectedTags, location }; // Create new event object
@@ -53,7 +77,6 @@ export default function CreateEvent() {
     }
   };
 
-  
   return (
     // Main container with keyboard avoiding functionality for better UX
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -108,7 +131,7 @@ export default function CreateEvent() {
       />
       
       {/* Section to select tags for the event */}
-      {/* <Text style={styles.modalText}>Select Tags</Text>
+      <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
@@ -120,9 +143,9 @@ export default function CreateEvent() {
             ]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
-          </Pressable>/
+          </Pressable>
         ))}
-      </View> */}
+      </View> 
 
       {/* Button to create event */}
       <Button title="Create Event" onPress={handleCreateEvent} />
