@@ -1,4 +1,4 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useState } from "expo-router";
 import {
   Text,
   Image,
@@ -13,7 +13,7 @@ import EventDetailsScreen from "./eventDetails";
 
 function LogoTitle() {
   const router = useRouter();
-
+    
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.navigate("/")}>
@@ -25,15 +25,15 @@ function LogoTitle() {
         </View>
       </Pressable>
 
-      {/* Login button in the top-right corner */}
-      <View style={styles.loginContainer}>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.navigate("/login")}
-        >
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Login button in the top-right corner */}
+          <View style={styles.loginContainer}>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => router.navigate("/login")}
+            >
+              <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
     </View>
   );
 }

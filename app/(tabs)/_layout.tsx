@@ -2,13 +2,23 @@
 import { Tabs } from 'expo-router';                  // Import Tabs component for tab navigation
 import { Ionicons } from "@expo/vector-icons";       // Import Ionicons for tab icons
 import { Dimensions } from 'react-native';           // Import Dimensions to access screen dimensions
+import React, { useState } from "react";
+import { Slot } from "expo-router";
+import Login from "@/app/login";
+
 
 // Get the width of the device's screen for layout styling
 const screenWidth = Dimensions.get('window').width;
 
 export default function TabLayout() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    if (!isLoggedIn) {
+        return <Login onLoginSuccess={() => setIsLoggedIn(true)} onGuestLogin={() => setIsLoggedIn(true)} />;
+    }
+    
     return (
-        <Tabs 
+        <Tabs
             // Apply custom styling to all tabs
             screenOptions={{
                 tabBarActiveTintColor: 'maroon',             // Set active tab color to maroon
