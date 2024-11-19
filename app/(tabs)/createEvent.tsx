@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
 import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
-import { Tag } from "../(tabs)/index"; // Import Tag type for tags
-import availableTags from "../(tabs)/index"; // Import availableTags array for tag selection
+import { Tag } from "../(tabs)/home"; // Import Tag type for tags
+import availableTags from "../(tabs)/home"; // Import availableTags array for tag selection
 import axios from "axios"; // Import Axios for API requests
 import Index from "/Users/danyeolchae/Desktop/funteam/Client/app/(tabs)/index";
-import { Event } from "../(tabs)/index";
+import { Event } from "../(tabs)/home";
 
 
 const tags = availableTags
