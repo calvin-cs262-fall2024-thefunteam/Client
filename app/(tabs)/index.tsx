@@ -1,5 +1,5 @@
 // Import required libraries and components
-import React, { useState, useEffect } from "react";
+import React, { Stack, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ export type Tag = {
   id: number;
   label: string;
   color: string;
-}; 
+};
 
 // Array of available tags, each with a label and color
 const availableTags: Tag[] = [
@@ -50,7 +50,7 @@ export default function Index() {
 
   //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
 
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   //Pull in data from server URL
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function Index() {
   // Function to navigate to event details page, passing selected event as parameter
   const handleSeeMore = (event: Event) => {
     router.push({
-      pathname: '/eventDetails', 
+      pathname: '/eventDetails',
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
   };
@@ -104,7 +104,7 @@ export default function Index() {
     return text;
   }
 
-  // Filter events based on search query across name, organizer, and tags 
+  // Filter events based on search query across name, organizer, and tags
   const filteredEvents = events.filter(
     (event: Event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -137,7 +137,7 @@ export default function Index() {
               <View key={tag.label} style={[styles.tag, { backgroundColor: tag.color }]}>
                 <Text style={styles.tagText}>{tag.label}</Text>
               </View>
-            ))} 
+            ))}
           </View>
           <View style={styles.buttonContainerCard}>
             <Pressable style={styles.editButton} onPress={() => handleEditEvent(item)}>
@@ -186,3 +186,4 @@ export default function Index() {
     </View>
   );
 }
+

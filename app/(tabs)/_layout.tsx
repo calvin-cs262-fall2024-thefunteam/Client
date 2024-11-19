@@ -11,33 +11,17 @@ import Login from "@/app/login";
 const screenWidth = Dimensions.get('window').width;
 
 export default function TabLayout() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    if (!isLoggedIn) {
-        return <Login onLoginSuccess={() => setIsLoggedIn(true)} onGuestLogin={() => setIsLoggedIn(true)} />;
-    }
-    
     return (
-        <Tabs
-            // Apply custom styling to all tabs
-            screenOptions={{
-                tabBarActiveTintColor: 'maroon',             // Set active tab color to maroon
-                headerShown: true,                           // Display header on each tab
-                headerTitleContainerStyle: {                 // Center-align header title
-                    width: screenWidth,                      // Make header container as wide as the screen
-                    alignItems: 'center'                     // Center-align header title within the container
-                }
+        <Tabs>
+          {/* Home Tab */}
+          <Tabs.Screen
+            name="index"                                 // Screen component for home
+            options={{
+              title: 'Home',                           // Title displayed in header
+              tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
+                <Ionicons name="home-outline" size={size} color={color} />, // Home icon
             }}
-        >
-            {/* Home Tab */}
-            <Tabs.Screen
-                name="index"                                 // Screen component for home
-                options={{
-                    title: 'Home',                           // Title displayed in header
-                    tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                        <Ionicons name="home-outline" size={size} color={color} />, // Home icon
-                }}
-            />
+        />
 
             {/* Communities Tab */}
             <Tabs.Screen

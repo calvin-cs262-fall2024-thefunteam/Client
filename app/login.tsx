@@ -17,6 +17,10 @@ export default function Login() {
   const handleLogin = () => {
     Alert.alert("Login", `Username: ${username}, Password: ${password}`);
   };
+    
+  const handleSignUp = () => {
+    router.replace("/signup");  // Navigate to the Sing Up page
+  }
 
   const handleContinueAsGuest = () => {
     router.replace("/");  // Redirect the user to homepage as guest
@@ -50,7 +54,7 @@ export default function Login() {
       <View style={styles.signUpSection}>
         <Text style={styles.firstTimeText}>First time user?</Text>
         <TouchableOpacity
-          onPress={() => Alert.alert("Sign Up", "Sign up button pressed")}
+          onPress={handleSignUp}
         >
           <Text style={styles.signUpButton}>Sign Up</Text>
         </TouchableOpacity>

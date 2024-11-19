@@ -20,20 +20,20 @@ function LogoTitle() {
         <View style={styles.logoContainer}>
           <Image
             style={styles.image}
-            source={require("../assets/images/eventSphere.png")}
+            source={require("@/assets/images/eventSphere.png")}
           />
         </View>
       </Pressable>
-
-          {/* Login button in the top-right corner */}
-          <View style={styles.loginContainer}>
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={() => router.navigate("/login")}
-            >
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
-          </View>
+          
+     {/* Login button in the top-right corner */}
+     <View style={styles.loginContainer}>
+       <TouchableOpacity
+         style={styles.loginButton}
+         onPress={() => router.navigate("/login")}
+        >
+           <Text style={styles.loginButtonText}>Login</Text>
+       </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -50,11 +50,14 @@ export default function RootLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        headerTitle: () => <LogoTitle />, // Use the custom header component
+        headerTitle: () => <LogoTitle />,
         headerBackTitleVisible: false,
       }}
     >
-      <Stack.Screen name="login" />
+          
+    <Stack.Screen name="login" options={{ headerTitle: false }} />
+    <Stack.Screen name="signup" options={{ headerTitle: false }} />
+          
 
       {/* <Stack.Screen name="eventDetails" options={{ title: "Event Details" }} /> */}
     </Stack>
