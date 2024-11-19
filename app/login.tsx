@@ -23,7 +23,7 @@ export default function Login() {
   }
 
   const handleContinueAsGuest = () => {
-    router.replace("/");        // Redirect the user to homepage as guest
+    router.replace("/home");        // Redirect the user to homepage as guest
   };
 
   return (

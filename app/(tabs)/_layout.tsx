@@ -15,7 +15,7 @@ export default function TabLayout() {
         <Tabs>
           {/* Home Tab */}
           <Tabs.Screen
-            name="index"                                 // Screen component for home
+            name="home"                                 // Screen component for home
             options={{
               title: 'Home',                           // Title displayed in header
               tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
