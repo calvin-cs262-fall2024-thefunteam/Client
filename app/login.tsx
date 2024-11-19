@@ -17,9 +17,9 @@ export default function Login() {
   const handleLogin = () => {
     Alert.alert("Login", `Username: ${username}, Password: ${password}`);
   };
-    
+
   const handleSignUp = () => {
-    router.replace("/signup");  // Navigate to the Sing Up page
+    router.replace("/signup");  // Navigate users to the Sing Up page
   }
 
   const handleContinueAsGuest = () => {
