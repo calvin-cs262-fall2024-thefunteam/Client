@@ -17,13 +17,13 @@ export default function Login() {
   const handleLogin = () => {
     Alert.alert("Login", `Username: ${username}, Password: ${password}`);
   };
-    
+
   const handleSignUp = () => {
-    router.replace("/signup");  // Navigate to the Sing Up page
+    router.replace("/signup");   // Redirect users to the Sing Up page
   }
 
   const handleContinueAsGuest = () => {
-    router.replace("/");  // Redirect the user to homepage as guest
+    router.replace("/");        // Redirect the user to homepage as guest
   };
 
   return (
