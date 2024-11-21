@@ -5,9 +5,8 @@ import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSh
 import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
 import { Tag } from "../(tabs)/home"; // Import Tag type for tags
 import availableTags from "../(tabs)/home"; // Import availableTags array for tag selection
-import axios from "axios"; // Import Axios for API requests
-import Index from "/Users/danyeolchae/Desktop/funteam/Client/app/(tabs)/index";
 import { Event } from "../(tabs)/home";
+import fetch from "node-fetch";
 
 
 const tags = availableTags
@@ -45,14 +44,28 @@ export default function CreateEvent() {
     
   };
 
-  const createEvent = async (event: Event) => {
+  async function createEvent(newEvent: Event) {
+    const data = { key1: 'value1', key2: 'value2' };
+  
     try {
-      const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', event);
-      console.log("Event created successfully:", response.data);
+      const response = await fetch('https://eventsphere-web.azurewebsites.net/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('Success:', result);
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error('Error:', error);
     }
-  };
+  }
 
   
   return (
