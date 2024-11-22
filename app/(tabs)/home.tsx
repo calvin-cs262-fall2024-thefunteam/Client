@@ -14,7 +14,6 @@ import styles from "@/styles/globalStyles"; // Import global styles
 import axios from "axios"; // Import Axios for API requests
 import { router } from "expo-router";
 import { useNavigation } from "@react-navigation/native"; // Navigation hook
-import { useSavedEvents } from "../../app/saveEventsContext";
 
 // Define the structure of tags with label and color properties
 export type Tag = {
