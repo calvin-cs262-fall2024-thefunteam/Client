@@ -11,8 +11,10 @@ import { Event } from "../(tabs)/home";
 
 const tags = availableTags
 
+
 // Main CreateEvent component
 export default function CreateEvent() {
+
   // State variables for event details
   const [eventName, setEventName] = useState("");             // Event name
   const [organizer, setOrganizer] = useState("");             // Organizer name
@@ -31,38 +33,40 @@ export default function CreateEvent() {
   };
 
   // Function to handle event creation
-  async function handleCreateEvent() {
-    const newEvent: any = { name: eventName, organizer, date: eventDate, description: eventDescription, tagsArray: selectedTags, location }; // Create new event object
-    setEventName("");             // Clear event name input
-    setOrganizer("");             // Clear organizer input
-    setEventDate("");             // Clear event date input
-    setEventDescription("");      // Clear description input
-    setSelectedTags([]);          // Clear selected tags
-    setLocation("");              // Clear location input
-
-    try {
-      const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', event);
-      console.log("Event created successfully:", response.data);
-    } catch (error) {
-      console.error("Error creating event:", error);
+  const handleCreateEvent = async () => {
+    const newEvent = {
+      name: eventName,
+      organizer: organizer,
+      date: eventDate,
+      description: eventDescription,
+      tagsArray: [1,2],
+      location: location,
+      organizerid: 1 // Assuming organizerid is a fixed value for now
     }
-    };
+    
+    setEventName("");
+    setOrganizer("");
+    setEventDate("");
+    setEventDescription("");
+    setSelectedTags([]);
+    setLocation("");
+
+    fetch('https://eventsphere-web.azurewebsites.net/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newEvent),
+    })
+
+    // try {
+    //   const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', newEvent);
+    //   console.log("Event created successfully:", response.data);
+    // } catch (error) {
+    //   console.error("Error creating event:", error);
+    // }
   };
 
-  const createEvent = async (event: Event) => {
-    try {
-      const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', event);
-      console.log("Event created successfully:", response.data);
-    } catch (error) {
-      console.error("Error creating event:", error);
-    }
-  };
-
-  const handleTagToggle = (tag: Tag) => { 
-    setSelectedTags((prevSelectedTags) => prevSelectedTags.includes(tag) ? prevSelectedTags.filter((t) => t !== tag) : [...prevSelectedTags, tag]);
-  }
-
-  
   return (
     // Main container with keyboard avoiding functionality for better UX
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -115,7 +119,7 @@ export default function CreateEvent() {
         value={eventDescription}
         onChangeText={setEventDescription}
       />
-      
+
       {/* Section to select tags for the event */}
       <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
@@ -129,7 +133,7 @@ export default function CreateEvent() {
             ]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
-          </Pressable>/
+          </Pressable>
         ))}
       </View>
 
@@ -137,4 +141,4 @@ export default function CreateEvent() {
       <Button title="Create Event" onPress={handleCreateEvent} />
     </KeyboardAvoidingView>
   );
-}
+};
