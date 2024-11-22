@@ -4,9 +4,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
 import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
 import { Tag } from "../(tabs)/home"; // Import Tag type for tags
-import availableTags from "../(tabs)/home"; // Import availableTags array for tag selection
+import { availableTags } from "../(tabs)/home"; // Import availableTags array for tag selection
 import axios from "axios"; // Import Axios for API requests
-import Index from "/Users/danyeolchae/Desktop/funteam/Client/app/(tabs)/index";
 import { Event } from "../(tabs)/home";
 
 
@@ -32,8 +31,8 @@ export default function CreateEvent() {
   };
 
   // Function to handle event creation
-  const handleCreateEvent = () => {
-    const newEvent: Event = { id:"", name: eventName, organizer, date: eventDate, description: eventDescription, tags: selectedTags, location }; // Create new event object
+  async function handleCreateEvent() {
+    const newEvent: any = { name: eventName, organizer, date: eventDate, description: eventDescription, tagsArray: selectedTags, location }; // Create new event object
     setEventName("");             // Clear event name input
     setOrganizer("");             // Clear organizer input
     setEventDate("");             // Clear event date input
@@ -41,8 +40,13 @@ export default function CreateEvent() {
     setSelectedTags([]);          // Clear selected tags
     setLocation("");              // Clear location input
 
-    createEvent(newEvent); // Call createEvent function with new event object
-    
+    try {
+      const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', event);
+      console.log("Event created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+    };
   };
 
   const createEvent = async (event: Event) => {
@@ -53,6 +57,10 @@ export default function CreateEvent() {
       console.error("Error creating event:", error);
     }
   };
+
+  const handleTagToggle = (tag: Tag) => { 
+    setSelectedTags((prevSelectedTags) => prevSelectedTags.includes(tag) ? prevSelectedTags.filter((t) => t !== tag) : [...prevSelectedTags, tag]);
+  }
 
   
   return (
@@ -109,7 +117,7 @@ export default function CreateEvent() {
       />
       
       {/* Section to select tags for the event */}
-      {/* <Text style={styles.modalText}>Select Tags</Text>
+      <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
@@ -123,7 +131,7 @@ export default function CreateEvent() {
             <Text style={styles.tagText}>{tag.label}</Text>
           </Pressable>/
         ))}
-      </View> */}
+      </View>
 
       {/* Button to create event */}
       <Button title="Create Event" onPress={handleCreateEvent} />
