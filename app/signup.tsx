@@ -22,6 +22,10 @@ export default function SignUp() {
       return;
     }
     Alert.alert("Sign Up", `Email: ${email}`);
+
+    // Call the API to sign up the user
+    
+
     router.replace("/"); // Navigate to the home screen or another page after signing up
   };
 
