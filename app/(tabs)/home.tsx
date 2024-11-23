@@ -122,23 +122,31 @@ export default function Index() {
             tag.label.toLowerCase().includes(searchQuery.toLowerCase())
           ))
     )
-    .map((event) => ({
-      ...event,
-      isSaved: savedEvents.some((savedEvent) => savedEvent.id === event.id),
+    .map((events) => ({
+      ...events,
+      isSaved: savedEvents.some((savedEvent) => savedEvent.id === events.id),
     }));
 
-  const handleBookmark = (item: Event) => {
-    const isSaved = savedEvents.some((event) => event.id === item.id);
-    if (isSaved) {
-      setSavedEvents((prev) => prev.filter((event) => event.id !== item.id));
-    } else {
-      const updatedSavedEvents = [...savedEvents, item];
-      setSavedEvents(updatedSavedEvents);
+  const handleToggleBookmark = (event: Event) => {
+    const isSaved = savedEvents.some((events) => events.id === event.id);
 
-      // Navigate to SavedEvents tab and pass the updated savedEvents
-      navigation.navigate("savedEvents", { savedEvents });
+    if (isSaved) {
+      setSavedEvents((prev) => prev.filter((events) => events.id !== event.id));
+    } else {
+      const updatedEvents = [...savedEvents, event];
+      setSavedEvents(updatedEvents);
     }
   };
+
+  // const handleToggleFavorite = (tutorName) => {
+  //   setTutorsList(prevTutors => {
+  //     return prevTutors.map(tutor => {
+  //       if (tutor.name === tutorName) {
+  //         tutor.isFavorite = !tutor.isFavorite;  // Toggle favorite status
+  //       }
+  //       return tutor;
+  //     });
+  //   });
 
   // Renders an individual event card with details and actions (edit, delete, bookmark)
   const renderEventCard = ({ item }: { item: any }) => (
@@ -185,7 +193,7 @@ export default function Index() {
           </View>
           <View style={styles.bookmarkIcon}>
             {/* Add handleSaveEvent here */}
-            <Pressable onPress={() => handleBookmark(item)}>
+            <Pressable onPress={() => handleToggleBookmark(item)}>
               <Ionicons
                 name={item.isSaved ? "bookmark" : "bookmark-outline"}
                 size={24}
