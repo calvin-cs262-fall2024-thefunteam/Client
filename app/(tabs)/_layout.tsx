@@ -12,6 +12,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function TabLayout() {
     return (
+        
         <Tabs>
           {/* Home Tab */}
           <Tabs.Screen
