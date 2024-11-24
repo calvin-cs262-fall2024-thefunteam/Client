@@ -4,7 +4,7 @@ import {
   View,
   Text,
   FlatList,
-  Pressable,
+  // Pressable, sc94 fixed temporarily since it is not used.
   StyleSheet,
   KeyboardAvoidingView,
 } from "react-native";
