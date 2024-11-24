@@ -5,7 +5,7 @@ import {
   Text,
   FlatList,
   Pressable,
-  StyleSheet,
+  // StyleSheet,        // youngha kweon commented out because we don't use it
   KeyboardAvoidingView,
 } from "react-native";
 import { SavedEventsProvider } from "../../app/saveEventsContext";

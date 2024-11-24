@@ -16,7 +16,7 @@ function LogoTitle() {
     
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.navigate("/")}>
+      <Pressable onPress={() => router.navigate("/home")}>
         <View style={styles.logoContainer}>
           <Image
             style={styles.image}
