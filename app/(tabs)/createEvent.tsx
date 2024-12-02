@@ -5,6 +5,8 @@ import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSh
 import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
 import { Tag } from "../(tabs)/home"; // Import Tag type for tags
 import { availableTags } from "../(tabs)/home"; // Import availableTags array for tag selection
+import axios from "axios"; // Import Axios for API requests
+import { Event } from "../(tabs)/home";
 
 
 const tags = availableTags
@@ -37,28 +39,32 @@ export default function CreateEvent() {
       organizer: organizer,
       date: eventDate,
       description: eventDescription,
-      tagsArray: [1, 2],
+      tagsArray: [1,2],
       location: location,
       organizerid: 1 // Assuming organizerid is a fixed value for now
     }
-
+    
     setEventName("");
     setOrganizer("");
     setEventDate("");
     setEventDescription("");
     setSelectedTags([]);
     setLocation("");
-    try {
-      const response = await fetch('https://eventsphere-web.azurewebsites.net/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEvent),
-      })
-    } catch (error) {
-      console.error("Error creating event:", error);
-    }
+
+    fetch('https://eventsphere-web.azurewebsites.net/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newEvent),
+    })
+
+    // try {
+    //   const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', newEvent);
+    //   console.log("Event created successfully:", response.data);
+    // } catch (error) {
+    //   console.error("Error creating event:", error);
+    // }
   };
 
   return (

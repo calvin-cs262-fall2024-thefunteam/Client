@@ -14,7 +14,6 @@ import styles from "@/styles/globalStyles"; // Import global styles
 import axios from "axios"; // Import Axios for API requests
 import { router } from "expo-router";
 import { useNavigation } from "@react-navigation/native"; // Navigation hook
-import { useSavedEvents } from "../../app/saveEventsContext";
 
 // Define the structure of tags with label and color properties
 export type Tag = {
@@ -24,7 +23,7 @@ export type Tag = {
 };
 
 // Array of available tags, each with a label and color
-const availableTags: Tag[] = [
+export const availableTags: Tag[] = [
   { id: 1, label: "Social", color: "#FFD700" }, // Yellow for social events
   { id: 2, label: "Sports", color: "#1E90FF" }, // Blue for sports events
   { id: 3, label: "Student Org", color: "#32CD32" }, // Green for student organization events
