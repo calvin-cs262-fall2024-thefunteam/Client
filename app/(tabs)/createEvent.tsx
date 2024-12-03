@@ -44,27 +44,40 @@ export default function CreateEvent() {
       organizerid: 1 // Assuming organizerid is a fixed value for now
     }
     
-    setEventName("");
-    setOrganizer("");
-    setEventDate("");
-    setEventDescription("");
-    setSelectedTags([]);
-    setLocation("");
+    try {
+      console.log('Creating event with data:', newEvent); // Log the event data
+      const response = await fetch('https://eventsphere-web.azurewebsites.net/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newEvent),
+      });
 
-    fetch('https://eventsphere-web.azurewebsites.net/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newEvent),
-    })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    // try {
-    //   const response = await axios.post('https://eventsphere-web.azurewebsites.net/events', newEvent);
-    //   console.log("Event created successfully:", response.data);
-    // } catch (error) {
-    //   console.error("Error creating event:", error);
-    // }
+      const data = await response.json();
+      console.log('Event created successfully:', data);
+
+      // Clear the form fields after successful creation
+      setEventName("");
+      setOrganizer("");
+      setEventDate("");
+      setEventDescription("");
+      setSelectedTags([]);
+      setLocation("");
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
+    // fetch('https://eventsphere-web.azurewebsites.net/events', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(newEvent),
+    // })
   };
 
   return (

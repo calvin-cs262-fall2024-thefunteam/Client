@@ -1,7 +1,7 @@
 // Import React and necessary modules from React Native
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Tag } from "../app/(tabs)/index"; // Import Tag type for type safety
+import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute } from "@react-navigation/native"; // Import useRoute for navigation parameters
 
 // Define the EventDetailsScreen component

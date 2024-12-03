@@ -1,5 +1,5 @@
 // Import required libraries and components
-import React, { Stack, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -89,10 +89,6 @@ export default function Index() {
     }
   };
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-  };
-
   // Function to navigate to event details page, passing selected event as parameter
   const handleSeeMore = (event: Event) => {
     router.push({
@@ -136,6 +132,24 @@ export default function Index() {
       setSavedEvents(updatedEvents);
     }
   };
+
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      const response = await axios.delete(`https://eventsphere-web.azurewebsites.net/events/${id}`);
+      if (response.status === 200) {
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+        console.log(`Event with id ${id} deleted successfully.`);
+      } else {
+        console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error deleting event with id ${id}:`, error);
+    }
+  };
+
+  const handleEditEvent = (event: Event) => {
+    
+  }
 
   // const handleToggleFavorite = (tutorName) => {
   //   setTutorsList(prevTutors => {
@@ -221,6 +235,13 @@ export default function Index() {
           setSearchQuery={setSearchQuery}
           style={styles.searchInput}
         />
+      </View>
+
+      <View>
+        <Pressable
+        onPress={()=>fetchEvents()}>
+          <Text>Refresh</Text>
+        </Pressable>
       </View>
 
       {/* Render filtered events in a scrollable list */}
