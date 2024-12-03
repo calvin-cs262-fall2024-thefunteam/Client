@@ -1,248 +1,252 @@
-// Import essential libraries and components
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
-  StyleSheet,
-  FlatList,
-  Pressable,
-  Modal,
   TextInput,
-  Button,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  useColorScheme,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"; // Import Expo's ImagePicker for image selection
 
-// Main Profile component
-const Profile = () => {
-  // State to store sample user data, including default profile information
-  const [userData, setUserData] = useState({
-    username: "username",
-    followers: 0, // Initial followers count
-    following: 0, // Initial following count
-    posts: 0, // Initial posts count
-    profilePicture: "https://via.placeholder.com/150", // Placeholder image URL for profile picture
-  });
+const Profile = ({ route }) => {
+  const colorScheme = useColorScheme();
+  const [isEditing, setIsEditing] = useState(false);
+  const [profilePicture, setProfilePicture] = useState("https://via.placeholder.com/100");
+  const [username, setUsername] = useState("Guest");
+  const [description, setDescription] = useState("Events Enthusiast");
+  const [followers, setFollowers] = useState(0);
+  const [posts, setPosts] = useState(0);
+  const [following, setFollowing] = useState(0);
+  const [joinedClubs, setJoinedClubs] = useState([]); // Dynamic list for clubs
 
-  // State for managing modal visibility and new profile information
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newUsername, setNewUsername] = useState(userData.username); // For editing username
-  const [newProfilePicture, setNewProfilePicture] = useState(userData.profilePicture); // For updating profile picture
-
-  // Sample posts array with placeholder images, simulating a list of user's posts
-  const posts = [
-    { id: "1", imageUrl: "https://via.placeholder.com/150" },
-    { id: "2", imageUrl: "https://via.placeholder.com/150" },
-    { id: "3", imageUrl: "https://via.placeholder.com/150" },
-    { id: "4", imageUrl: "https://via.placeholder.com/150" },
-    { id: "5", imageUrl: "https://via.placeholder.com/150" },
-    { id: "6", imageUrl: "https://via.placeholder.com/150" },
-  ];
-
-  // Function to render each post as an image in a grid layout
-  const renderPost = ({ item }) => (
-    <View style={styles.postContainer}>
-      <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
-    </View>
-  );
-
-  // Handle profile edits by updating username and profile picture and closing modal
-  const handleEditProfile = () => {
-    setUserData({
-      ...userData,
-      username: newUsername,
-      profilePicture: newProfilePicture,
-    });
-    setModalVisible(false); // Hide modal after saving changes
-  };
-
-  // Function to open the image picker and allow user to select a profile picture
-  const pickImage = async () => {
-    // Request permission to access media library
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!"); // Alert if permission denied
-      return;
+  // Initialize username dynamically if provided through login
+  useEffect(() => {
+    if (route?.params?.username) {
+      setUsername(route.params.username);
     }
+  }, [route?.params?.username]);
 
-    // Launch image picker and allow user to edit selected image
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!pickerResult.canceled) {
-      setNewProfilePicture(pickerResult.assets[0].uri); // Set selected image URI if not canceled
-    }
+  // Save edited details and return to view mode
+  const saveProfile = () => {
+    setIsEditing(false);
+    // Add logic here to save details to the backend
+    console.log("Profile saved:", { username, description });
   };
 
   return (
-    <View style={styles.container}>
-      {/* Profile Header: Displays profile picture, username, and stats */}
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colorScheme === "dark" ? "#000" : "#fff" },
+      ]}
+    >
+      {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={pickImage}>
-          <Image
-            source={{ uri: newProfilePicture }}
-            style={styles.profilePicture}
+        <Text style={[styles.headerText, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+          Profile
+        </Text>
+        {isEditing ? (
+          <TouchableOpacity onPress={saveProfile}>
+            <Text style={[styles.editText, { color: "#007bff" }]}>Save</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            <Text style={[styles.editText, { color: "#007bff" }]}>Edit</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Profile Section */}
+      <View style={styles.profileSection}>
+        <TouchableOpacity>
+          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+        </TouchableOpacity>
+        {isEditing ? (
+          <TextInput
+            style={styles.input}
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Name"
+            placeholderTextColor="#aaa"
           />
-        </Pressable>
-        <View style={styles.userInfo}>
-          <Text style={styles.username}>{userData.username}</Text>
-          <View style={styles.statsContainer}>
-            <Text style={styles.stats}>
-              <Text style={styles.statsCount}>{userData.posts}</Text> Posts
+        ) : (
+          <Text style={[styles.profileName, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+            {username}
+          </Text>
+        )}
+        {isEditing ? (
+          <TextInput
+            style={styles.input}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Description"
+            placeholderTextColor="#aaa"
+          />
+        ) : (
+          <Text style={[styles.profileDescription, { color: "#888" }]}>{description}</Text>
+        )}
+        <View style={styles.statsContainer}>
+          <View style={styles.statBox}>
+            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+              {posts}
             </Text>
-            <Text style={styles.stats}>
-              <Text style={styles.statsCount}>{userData.followers}</Text> Followers
-            </Text>
-            <Text style={styles.stats}>
-              <Text style={styles.statsCount}>{userData.following}</Text> Following
-            </Text>
+            <Text style={styles.statLabel}>Posts</Text>
           </View>
-          <Pressable style={styles.editButton} onPress={() => setModalVisible(true)}>
-            <Text style={styles.buttonText}>Edit Profile</Text>
-          </Pressable>
+          <View style={styles.statBox}>
+            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+              {followers}
+            </Text>
+            <Text style={styles.statLabel}>Followers</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+              {following}
+            </Text>
+            <Text style={styles.statLabel}>Following</Text>
+          </View>
         </View>
       </View>
 
-      {/* Posts Grid: Displays user's posts in a grid format with 3 columns */}
-      <FlatList
-        data={posts}
-        renderItem={renderPost}
-        keyExtractor={(item) => item.id}
-        numColumns={3} // Specifies a 3-column grid layout
-        contentContainerStyle={styles.postsGrid}
-      />
+      {/* Clubs Section */}
+      <View style={styles.clubsSection}>
+        <Text style={[styles.clubsHeader, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+          Part of...
+        </Text>
+        {joinedClubs.length > 0 ? (
+          joinedClubs.map((club, index) => (
+            <View
+              key={index}
+              style={[
+                styles.clubRow,
+                { backgroundColor: colorScheme === "dark" ? "#333" : "#f9f9f9" },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.clubText,
+                  { color: colorScheme === "dark" ? "#fff" : "#000" },
+                ]}
+              >
+                {club}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <Text style={{ color: "#888", fontStyle: "italic" }}>No clubs joined yet</Text>
+        )}
+      </View>
 
-      {/* Edit Profile Modal: Form for editing username and profile picture */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Edit Profile</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Username"
-              value={newUsername}
-              onChangeText={setNewUsername}
-            />
-            <Button title="Save Changes" onPress={handleEditProfile} />
-            <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      {/* Bottom Lines */}
+      <View style={styles.bottomSection}>
+        <View
+          style={[
+            styles.bottomLine,
+            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
+          ]}
+        />
+        <View
+          style={[
+            styles.bottomLine,
+            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
+          ]}
+        />
+      </View>
     </View>
   );
 };
 
-// Styles for Profile component layout and visuals
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
+    alignItems: "center",
+    paddingTop: 50,
   },
   header: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 20,
+    justifyContent: "space-between",
+    width: "90%",
+    alignItems: "center",
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  editText: {
+    fontSize: 16,
+  },
+  profileSection: {
+    alignItems: "center",
+    marginTop: 20,
   },
   profilePicture: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginRight: 15,
+    marginBottom: 10,
   },
-  userInfo: {
-    flex: 1,
-  },
-  username: {
-    fontSize: 24,
+  profileName: {
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 5,
+  },
+  profileDescription: {
+    fontSize: 14,
+    color: "#888",
+  },
+  input: {
+    width: "90%",
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    color: "#000",
   },
   statsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 10,
-  },
-  stats: {
-    fontSize: 16,
-    color: "#777",
-    textAlign: "center",
-  },
-  statsCount: {
-    fontWeight: "bold",
-    color: "#000",
-  },
-  editButton: {
-    backgroundColor: "#0095f6",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  postsGrid: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  postContainer: {
-    flex: 1,
-    margin: 1,
-  },
-  postImage: {
-    width: "100%",
-    height: 120,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-  },
-  modalView: {
+    justifyContent: "space-around",
     width: "80%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
+    marginTop: 20,
+  },
+  statBox: {
     alignItems: "center",
   },
-  modalTitle: {
-    fontSize: 20,
+  statNumber: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#555",
+  },
+  clubsSection: {
+    width: "90%",
+    marginTop: 20,
+  },
+  clubsHeader: {
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    width: "100%",
+  clubRow: {
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
   },
-  cancelButton: {
-    marginTop: 10,
-    backgroundColor: "#ff4d4d",
-    padding: 10,
-    borderRadius: 5,
-  },
-  cancelButtonText: {
-    color: "#fff",
+  clubText: {
+    fontSize: 16,
     fontWeight: "bold",
+  },
+  bottomSection: {
+    width: "90%",
+    marginTop: 20,
+  },
+  bottomLine: {
+    height: 2,
+    width: "100%",
+    marginVertical: 5,
   },
 });
 
