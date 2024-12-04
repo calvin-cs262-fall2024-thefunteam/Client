@@ -5,8 +5,8 @@ import {
   Text,
   FlatList,
   Pressable,
-  StyleSheet,
-  KeyboardAvoidingView,
+  TextInput,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import SearchBar from "@/components/SearchBar"; // Custom SearchBar component
@@ -48,6 +48,8 @@ export default function Index() {
 
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
 
@@ -161,6 +163,12 @@ export default function Index() {
   //     });
   //   });
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchEvents();
+    setRefreshing(false);
+  };
+
   // Renders an individual event card with details and actions (edit, delete, bookmark)
   const renderEventCard = ({ item }: { item: any }) => (
     <Pressable onPress={() => handleSeeMore(item)}>
@@ -210,7 +218,6 @@ export default function Index() {
               <Ionicons
                 name={item.isSaved ? "bookmark" : "bookmark-outline"}
                 size={24}
-                color={item.isSaved ? "blue" : "black"}
               />
             </Pressable>
           </View>
@@ -237,13 +244,6 @@ export default function Index() {
         />
       </View>
 
-      <View>
-        <Pressable
-        onPress={()=>fetchEvents()}>
-          <Text>Refresh</Text>
-        </Pressable>
-      </View>
-
       {/* Render filtered events in a scrollable list */}
       <FlatList
         data={filteredEvents}
@@ -255,6 +255,9 @@ export default function Index() {
           justifyContent: "center",
           alignItems: "center",
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );
