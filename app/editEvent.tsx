@@ -1,85 +1,71 @@
-
-// Import essential libraries and components
+// Import React and necessary modules from React Native
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
-import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
-import { Tag } from "../(tabs)/home"; // Import Tag type for tags
-import { availableTags } from "../(tabs)/home"; // Import availableTags array for tag selection
+import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
+import { useRoute, useNavigation } from "@react-navigation/native"; // Import useRoute for navigation parameters
 import axios from "axios"; // Import Axios for API requests
-import { Event } from "../(tabs)/home";
-import { router } from "expo-router";
+import styles from "@/styles/globalStyles"; // Import global styles
 
+// Define the EditEventScreen component
+export default function EditEventScreen() {
+  // Get route data to retrieve parameters passed from the previous screen
+  const route = useRoute();
+  const navigation = useNavigation();
 
-const tags = availableTags
+  // Extract 'event' parameter from route parameters, specifying it as a string type
+  const { event } = route.params as { event: string };
 
+  // Parse the event data (from JSON string to JavaScript object)
+  const parsedEvent = event ? JSON.parse(event) : null;
 
-// Main CreateEvent component
-export default function CreateEvent() {
-
-  // State variables for event details
-  const [eventName, setEventName] = useState("");             // Event name
-  const [organizer, setOrganizer] = useState("");             // Organizer name
-  const [eventDate, setEventDate] = useState("");             // Date of event
-  const [eventDescription, setEventDescription] = useState(""); // Event description
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);  // Selected tags for event
-  const [location, setLocation] = useState("");               // Location of event
+  // State variables for event details, prefilled with the event data
+  const [eventName, setEventName] = useState(parsedEvent.name);
+  const [organizer, setOrganizer] = useState(parsedEvent.organizer);
+  const [eventDate, setEventDate] = useState(parsedEvent.date);
+  const [eventDescription, setEventDescription] = useState(parsedEvent.description);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(parsedEvent.tags);
+  const [location, setLocation] = useState(parsedEvent.location);
 
   // Function to add or remove a tag from selectedTags
   const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
         ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
-        : [...prevSelectedTags, tag]               // Add tag if not selected
+        : [...prevSelectedTags, tag] // Add tag if not selected
     );
   };
 
-  // Function to handle event creation
-  const handleCreateEvent = async () => {
-    const newEvent = {
+  // Function to handle event update
+  const handleUpdateEvent = async () => {
+    const updatedEvent = {
+      id: parsedEvent.id,
       name: eventName,
       organizer: organizer,
       date: eventDate,
       description: eventDescription,
-      tagsArray: [1,2],
+      tagsArray: selectedTags.map(tag => tag.id), // Map selected tags to their IDs
       location: location,
-      organizerid: 1 // Assuming organizerid is a fixed value for now
-    }
-    
+    };
+
     try {
-      console.log('Creating event with data:', newEvent); // Log the event data
-      const response = await fetch('https://eventsphere-web.azurewebsites.net/events', {
-        method: 'POST',
+      console.log('Updating event with data:', updatedEvent); // Log the event data
+      const response = await axios.put(`https://eventsphere-web.azurewebsites.net/events/${parsedEvent.id}`, updatedEvent, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEvent),
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log('Event created successfully:', data);
+      console.log('Event updated successfully:', response.data);
 
-      // Clear the form fields after successful creation
-      setEventName("");
-      setOrganizer("");
-      setEventDate("");
-      setEventDescription("");
-      setSelectedTags([]);
-      setLocation("");
+      // Navigate back to the previous screen after successful update
+      navigation.goBack();
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error updating event:', error);
     }
-    // fetch('https://eventsphere-web.azurewebsites.net/events', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(newEvent),
-    // })
-    router.navigate("/home");
   };
 
   return (
@@ -137,7 +123,7 @@ export default function CreateEvent() {
 
       {/* Section to select tags for the event */}
       <Text style={styles.modalText}>Select Tags</Text>
-      <View style={styles.tagSelectionContainer}>
+      {/* <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
             key={tag.label}
@@ -150,10 +136,10 @@ export default function CreateEvent() {
             <Text style={styles.tagText}>{tag.label}</Text>
           </Pressable>
         ))}
-      </View>
+      </View> */}
 
-      {/* Button to create event */}
-      <Button title="Create Event" onPress={handleCreateEvent} />
+      {/* Button to update event */}
+      <Button title="Update Event" onPress={handleUpdateEvent} />
     </KeyboardAvoidingView>
   );
-};
+}

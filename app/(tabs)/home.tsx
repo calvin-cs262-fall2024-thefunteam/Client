@@ -45,14 +45,9 @@ export type Event = {
 // Main component rendering the list of events
 export default function Index() {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
-
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
-
   const [refreshing, setRefreshing] = useState(false);
-
-  //const [editingEvent, setEditingEvent] = useState<Event | null>(null); // Track the currently edited event
-
   const navigation = useNavigation();
 
   //Pull in data from server URL
@@ -98,6 +93,13 @@ export default function Index() {
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
   };
+
+  const handleEditEvent = (event: Event) => {
+    router.push({
+      pathname: "/editEvent",
+      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
+    });
+  }
 
   // Helper function to truncate long text descriptions to a character limit
   function truncateText(text: string, charLimit: number) {
@@ -149,9 +151,7 @@ export default function Index() {
     }
   };
 
-  const handleEditEvent = (event: Event) => {
-    
-  }
+ 
 
   // const handleToggleFavorite = (tutorName) => {
   //   setTutorsList(prevTutors => {
