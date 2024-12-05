@@ -44,7 +44,10 @@ export default function CreateEvent() {
       organizer: organizer,
       date: eventDate ? eventDate.toISOString() : null, // Convert date to ISO string
       description: eventDescription,
-      tagsArray: [1, 2],
+      tagsArray: selectedTags.map((tag) => {
+        const foundTag = availableTags.find((availableTag) => availableTag.label === tag.label);
+        return foundTag ? foundTag.id : null;
+      }).filter(tagId => tagId !== null), // Reverse map tags to their IDs
       location: location,
       organizerid: 1,
     };
