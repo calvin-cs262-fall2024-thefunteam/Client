@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
+    "@react-native-community/datetimepicker": "^8.2.0",
     "@react-navigation/native": "^7.0.4",
     "@react-navigation/stack": "^7.0.6",
     "axios": "^1.7.7",
@@ -50,7 +51,6 @@
     "metro": "^0.81.0",
     "react-test-renderer": "^18.3.1",
     "typescript": "^5.7.2"
-
   },
   "private": true
 }

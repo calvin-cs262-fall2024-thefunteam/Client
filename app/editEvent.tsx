@@ -1,6 +1,14 @@
 // Import React and necessary modules from React Native
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Pressable,
+  KeyboardAvoidingView,
+  StyleSheet,
+} from "react-native";
 import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute, useNavigation } from "@react-navigation/native"; // Import useRoute for navigation parameters
 import axios from "axios"; // Import Axios for API requests
@@ -22,16 +30,19 @@ export default function EditEventScreen() {
   const [eventName, setEventName] = useState(parsedEvent.name);
   const [organizer, setOrganizer] = useState(parsedEvent.organizer);
   const [eventDate, setEventDate] = useState(parsedEvent.date);
-  const [eventDescription, setEventDescription] = useState(parsedEvent.description);
+  const [eventDescription, setEventDescription] = useState(
+    parsedEvent.description
+  );
   const [selectedTags, setSelectedTags] = useState<Tag[]>(parsedEvent.tags);
   const [location, setLocation] = useState(parsedEvent.location);
 
   // Function to add or remove a tag from selectedTags
   const handleTagToggle = (tag: Tag) => {
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(tag)
-        ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
-        : [...prevSelectedTags, tag] // Add tag if not selected
+    setSelectedTags(
+      (prevSelectedTags) =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
+          : [...prevSelectedTags, tag] // Add tag if not selected
     );
   };
 
@@ -43,28 +54,30 @@ export default function EditEventScreen() {
       organizer: organizer,
       date: eventDate,
       description: eventDescription,
-      tagsArray: selectedTags.map(tag => tag.id), // Map selected tags to their IDs
+      tagsArray: selectedTags.map((tag) => tag.id), // Map selected tags to their IDs
       location: location,
     };
 
     try {
-      console.log('Updating event with data:', updatedEvent); // Log the event data
-      const response = await axios.put(`https://eventsphere-web.azurewebsites.net/events/${parsedEvent.id}`, updatedEvent, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status !== 200) {
+      console.log("Updating event with data:", updatedEvent); // Log the event data
+      const response = await fetch(
+        "https://eventsphere-web.azurewebsites.net/events/${parsedEvent.id}",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedEvent),
+        }
+      );
+      if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log('Event updated successfully:', response.data);
-
-      // Navigate back to the previous screen after successful update
-      navigation.goBack();
+      const data = await response.json();
+      console.log("Event updated successfully:", data);
     } catch (error) {
-      console.error('Error updating event:', error);
+      console.error("Error creating event:", error);
     }
   };
 
@@ -94,7 +107,7 @@ export default function EditEventScreen() {
         {/* Event date input */}
         <TextInput
           style={styles.dateInput}
-          placeholder="Event Date"
+          placeholder="Event Date (MM/DD/YYYY)"
           placeholderTextColor={"grey"}
           value={eventDate}
           onChangeText={setEventDate}

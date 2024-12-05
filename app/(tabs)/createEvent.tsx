@@ -1,56 +1,60 @@
-
-// Import essential libraries and components
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Pressable, KeyboardAvoidingView, StyleSheet } from "react-native";
-import styles from "@/styles/globalStyles"; // Import global styles for consistent styling
-import { Tag } from "../(tabs)/home"; // Import Tag type for tags
-import { availableTags } from "../(tabs)/home"; // Import availableTags array for tag selection
-import axios from "axios"; // Import Axios for API requests
-import { Event } from "../(tabs)/home";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker"; // Import DateTimePicker
+import styles from "@/styles/globalStyles";
+import { Tag } from "../(tabs)/home";
+import { availableTags } from "../(tabs)/home";
 import { router } from "expo-router";
 
+const tags = availableTags;
 
-const tags = availableTags
-
-
-// Main CreateEvent component
 export default function CreateEvent() {
+  const [eventName, setEventName] = useState("");
+  const [organizer, setOrganizer] = useState("");
+  const [eventDate, setEventDate] = useState<Date | null>(new Date()); // Default to current date
+  const [eventDescription, setEventDescription] = useState("");
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [location, setLocation] = useState("");
 
-  // State variables for event details
-  const [eventName, setEventName] = useState("");             // Event name
-  const [organizer, setOrganizer] = useState("");             // Organizer name
-  const [eventDate, setEventDate] = useState("");             // Date of event
-  const [eventDescription, setEventDescription] = useState(""); // Event description
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);  // Selected tags for event
-  const [location, setLocation] = useState("");               // Location of event
-
-  // Function to add or remove a tag from selectedTags
   const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
-        ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
-        : [...prevSelectedTags, tag]               // Add tag if not selected
+        ? prevSelectedTags.filter((t) => t !== tag)
+        : [...prevSelectedTags, tag]
     );
   };
 
-  // Function to handle event creation
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setEventDate(selectedDate); // Update the event date
+    }
+  };
+
   const handleCreateEvent = async () => {
     const newEvent = {
       name: eventName,
       organizer: organizer,
-      date: eventDate,
+      date: eventDate ? eventDate.toISOString() : null, // Convert date to ISO string
       description: eventDescription,
-      tagsArray: [1,2],
+      tagsArray: [1, 2],
       location: location,
-      organizerid: 1 // Assuming organizerid is a fixed value for now
-    }
-    
+      organizerid: 1,
+    };
+
     try {
-      console.log('Creating event with data:', newEvent); // Log the event data
-      const response = await fetch('https://eventsphere-web.azurewebsites.net/events', {
-        method: 'POST',
+      console.log("Creating event with data:", newEvent);
+      const response = await fetch("https://eventsphere-web.azurewebsites.net/events", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newEvent),
       });
@@ -60,32 +64,22 @@ export default function CreateEvent() {
       }
 
       const data = await response.json();
-      console.log('Event created successfully:', data);
+      console.log("Event created successfully:", data);
 
-      // Clear the form fields after successful creation
       setEventName("");
       setOrganizer("");
-      setEventDate("");
+      setEventDate(new Date());
       setEventDescription("");
       setSelectedTags([]);
       setLocation("");
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error("Error creating event:", error);
     }
-    // fetch('https://eventsphere-web.azurewebsites.net/events', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(newEvent),
-    // })
     router.navigate("/home");
   };
 
   return (
-    // Main container with keyboard avoiding functionality for better UX
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      {/* Event name input */}
       <TextInput
         style={styles.input}
         placeholder="Event Name"
@@ -94,7 +88,6 @@ export default function CreateEvent() {
         onChangeText={setEventName}
       />
 
-      {/* Organizer input */}
       <TextInput
         style={styles.input}
         placeholder="Organizer"
@@ -103,18 +96,16 @@ export default function CreateEvent() {
         onChangeText={setOrganizer}
       />
 
-      {/* Date and Location input container */}
       <View style={styles.dateAndLocationInput}>
-        {/* Event date input */}
-        <TextInput
-          style={styles.dateInput}
-          placeholder="Event Date"
-          placeholderTextColor={"grey"}
-          value={eventDate}
-          onChangeText={setEventDate}
+        {/* Always visible DateTimePicker */}
+        <DateTimePicker
+          value={eventDate || new Date()}
+          mode="date"
+          display="default" // Use default display mode for Android/iOS
+          onChange={handleDateChange}
+          // style={styles.datePicker} // Optional custom styling
         />
 
-        {/* Event location input */}
         <TextInput
           style={styles.locationInput}
           placeholder="Location"
@@ -124,27 +115,25 @@ export default function CreateEvent() {
         />
       </View>
 
-      {/* Event description input */}
       <TextInput
         style={styles.descriptionInput}
         multiline={true}
-        numberOfLines={4}
+        numberOfLines={3}
         placeholder="Event Description"
         placeholderTextColor={"grey"}
         value={eventDescription}
         onChangeText={setEventDescription}
       />
 
-      {/* Section to select tags for the event */}
       <Text style={styles.modalText}>Select Tags</Text>
       <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
             key={tag.label}
-            onPress={() => handleTagToggle(tag)} // Toggle tag selection on press
+            onPress={() => handleTagToggle(tag)}
             style={[
               styles.tag,
-              selectedTags.includes(tag) && { backgroundColor: tag.color }, // Highlight tag if selected
+              selectedTags.includes(tag) && { backgroundColor: tag.color },
             ]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
@@ -152,8 +141,10 @@ export default function CreateEvent() {
         ))}
       </View>
 
-      {/* Button to create event */}
-      <Button title="Create Event" onPress={handleCreateEvent} />
+      <Pressable style={styles.createButton} onPress={handleCreateEvent}>
+        <Text style={styles.createButtonText}>Create Event</Text>
+      </Pressable>
+
     </KeyboardAvoidingView>
   );
-};
+}
