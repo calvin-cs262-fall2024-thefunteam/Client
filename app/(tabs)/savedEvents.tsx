@@ -8,14 +8,16 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
 } from "react-native";
-import { savedEvents } from "./home";
+import savedEvents from "../../app/(tabs)/home";
 
 const eventSaved = savedEvents;
+
+console.log(eventSaved);
 
 export default function displaySavedEvents() {
   return (
     <View style={styles.container}>
-      {eventSaved.length === 0 ? (
+      {!Array.isArray(eventSaved) && eventSaved.length === 0 ? (
         <Text>No saved events yet.</Text>
       ) : (
         <FlatList
