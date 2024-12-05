@@ -13,6 +13,7 @@ import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute, useNavigation } from "@react-navigation/native"; // Import useRoute for navigation parameters
 import axios from "axios"; // Import Axios for API requests
 import styles from "@/styles/globalStyles"; // Import global styles
+import { availableTags } from "../app/(tabs)/home"; // Import availableTags from home screen
 
 // Define the EditEventScreen component
 export default function EditEventScreen() {
@@ -136,7 +137,7 @@ export default function EditEventScreen() {
 
       {/* Section to select tags for the event */}
       <Text style={styles.modalText}>Select Tags</Text>
-      {/* <View style={styles.tagSelectionContainer}>
+      <View style={styles.tagSelectionContainer}>
         {availableTags.map((tag) => (
           <Pressable
             key={tag.label}
@@ -149,7 +150,7 @@ export default function EditEventScreen() {
             <Text style={styles.tagText}>{tag.label}</Text>
           </Pressable>
         ))}
-      </View> */}
+      </View>
 
       {/* Button to update event */}
       <Button title="Update Event" onPress={handleUpdateEvent} />
