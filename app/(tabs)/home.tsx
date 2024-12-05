@@ -29,6 +29,9 @@ export const availableTags: Tag[] = [
   { id: 3, label: "Student Org", color: "#32CD32" }, // Green for student organization events
   { id: 4, label: "Academic", color: "#FF4500" }, // Orange for academic events
   { id: 5, label: "Workshop", color: "#8A2BE2" }, // Purple for workshops
+  { id: 6, label: "Concert", color: "#FF69B4" }, // Pink for concerts
+  { id: 7, label: "Student Life", color: "#FF6347" }, // Red for student life events
+  { id: 8, label: "Food", color: "#4682B4" }, // Steel blue for food events
 ];
 
 // Define the structure of an event with various properties, including tags
@@ -40,6 +43,7 @@ export type Event = {
   description: string;
   tags?: Tag[]; // optiional
   location: string;
+
 };
 
 // Main component rendering the list of events
@@ -151,8 +155,6 @@ export default function Index() {
     }
   };
 
- 
-
   // const handleToggleFavorite = (tutorName) => {
   //   setTutorsList(prevTutors => {
   //     return prevTutors.map(tutor => {
@@ -177,8 +179,9 @@ export default function Index() {
           <Text style={styles.cardText}>{item.name}</Text>
           <Text style={styles.cardText}>{item.organizer}</Text>
         </View>
-        <View style={styles.cardDateContainer}>
+        <View style={styles.cardDateLocationContainer}>
           <Text style={styles.cardDate}>{item.date}</Text>
+          <Text style={styles.cardLocation}>{item.location}</Text>
         </View>
 
         <View style={styles.separator} />

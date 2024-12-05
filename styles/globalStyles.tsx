@@ -39,9 +39,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 5,
   },
-  cardDateContainer: {
+  cardDateLocationContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  cardLocation: {
+    fontSize: 14,
+    color: "gray",
+    marginLeft: 150,
   },
   cardDate: {
     fontSize: 14,
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 10,
-    height: 200,
+    height: 150,
   },
   tagSelectionContainer: {
     flexDirection: "row",
@@ -271,6 +276,18 @@ const styles = StyleSheet.create({
   communityName: {
     fontSize: 18,
     color: "#555",
+  },
+  createButton: {
+    backgroundColor: '#1E90FF', // Blue background color
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  createButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
