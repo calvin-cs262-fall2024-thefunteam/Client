@@ -12,16 +12,17 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function TabLayout() {
     return (
-        
         <Tabs>
           {/* Home Tab */}
           <Tabs.Screen
-            name="home"                                 // Screen component for home
+            name="home"                                 // Screen component for home                         
             options={{
               title: 'Home',                           // Title displayed in header
               tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
                 <Ionicons name="home-outline" size={size} color={color} />, // Home icon
+                headerShown: false, // Hide the header
             }}
+            
         />
 
             {/* Communities Tab */}
@@ -41,6 +42,7 @@ export default function TabLayout() {
                     title: 'Create Event',                   // Title displayed in header
                     tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
                         <Ionicons name="add-circle-outline" size={size} color={color} />, // Add event icon
+                        headerShown: false, // Hide the header
                 }}
             />
 
@@ -51,6 +53,7 @@ export default function TabLayout() {
                     title: 'Saved Events',                   // Title displayed in header
                     tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
                         <Ionicons name="bookmark-outline" size={size} color={color} />, // Bookmark icon
+                        headerShown: false, // Hide the header
                 }}
             />
 

@@ -13,6 +13,7 @@ import styles from "@/styles/globalStyles";
 import { Tag } from "../(tabs)/home";
 import { availableTags } from "../(tabs)/home";
 import { router } from "expo-router";
+// import TimePicker from 'react-time-picker'
 
 const tags = availableTags;
 
@@ -23,6 +24,7 @@ export default function CreateEvent() {
   const [eventDescription, setEventDescription] = useState("");
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [location, setLocation] = useState("");
+  //const [time, setTime] = useState<>();
 
   const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
@@ -104,7 +106,7 @@ export default function CreateEvent() {
         <DateTimePicker
           value={eventDate || new Date()}
           mode="date"
-          display="default" // Use default display mode for Android/iOS
+          display="default" //
           onChange={handleDateChange}
           // style={styles.datePicker} // Optional custom styling
         />
