@@ -125,8 +125,7 @@ export default function Index() {
     }));
 
   const handleToggleBookmark = (event: Event) => {
-    
-    }
+      // Add your bookmark toggle logic here
   };
 
   const onRefresh = async () => {
