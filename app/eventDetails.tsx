@@ -1,8 +1,10 @@
 // Import React and necessary modules from React Native
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute } from "@react-navigation/native"; // Import useRoute for navigation parameters
+import { router } from "expo-router";
+import axios from "axios";
 
 // Define the EventDetailsScreen component
 export default function EventDetailsScreen() {
@@ -15,6 +17,31 @@ export default function EventDetailsScreen() {
   // Parse the event data (from JSON string to JavaScript object)
   const parsedEvent = event ? JSON.parse(event) : null;
 
+  const handleEditEvent = (event: Event) => {
+    router.push({
+      pathname: "/editEvent",
+      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
+    });
+  }
+
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      const response = await axios.delete(`https://eventsphere-web.azurewebsites.net/events/${id}`);
+      if (response.status >= 200 && response.status < 300) {
+        setEvents((prevEvents) => prevEvents.filter((event: { id: string; }) => event.id !== id));
+        console.log(`Event with id ${id} deleted successfully.`);
+      } else {
+        console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
+      }
+    } catch (error) { 
+      console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
+    }
+
+    // Navigate back to the home screen after deleting the event
+    router.navigate("/home");
+
+  };
+  
   return (
     <View style={styles.container}>
       {/* Display event details */}
@@ -28,15 +55,29 @@ export default function EventDetailsScreen() {
 
       {/* Display event tags */}
       <View style={styles.tagContainer}>
-        {/* {parsedEvent.tags.map((tag: Tag) => (
+        {parsedEvent.tags.map((tag: Tag) => (
           <View
             key={tag.label}
             style={[styles.tag, { backgroundColor: tag.color }]}
           >
             <Text style={styles.tagText}>{tag.label}</Text>
           </View>
-        ))} */}
+        ))}
       </View>
+        <View 
+        style={styles.editAndDeleteButton}>
+          <Pressable
+          style={styles.editButton}
+          onPress={() => handleEditEvent(parsedEvent)}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </Pressable>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() => handleDeleteEvent(parsedEvent.id)}>
+
+            <Text style={styles.deleteButtonText}>Delete</Text>
+          </Pressable>
+        </View>
     </View>
   );
 }
@@ -73,6 +114,7 @@ const styles = StyleSheet.create({
   tagContainer: {
     flexDirection: "row",
     flexWrap: "wrap", // Ensures tags wrap onto the next line if needed
+    paddingVertical: 20,
   },
   tag: {
     backgroundColor: "#ddd",
@@ -84,4 +126,36 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
   },
+  deleteButton: {
+    padding: 5,
+    borderRadius: 5,
+    marginLeft: 5,
+    backgroundColor: 'red',
+    width: 80, // Set a fixed width
+    alignItems: 'center', // Center the text horizontally
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  editButton: {
+    padding: 5,
+    borderRadius: 5,
+    marginRight: 5,
+    backgroundColor: 'blue',
+    width: 80, // Set a fixed width
+    alignItems: 'center', // Center the text horizontally
+  },
+  editButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  editAndDeleteButton: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
 });
+function setEvents(arg0: (prevEvents: any) => any) {
+  throw new Error("Function not implemented.");
+}
+
