@@ -48,19 +48,29 @@ export default function EditEventScreen() {
     );
   };
 
-
+  let updatedEvent = {
+    id: parsedEvent.id,
+    name: eventName,
+    organizer: organizer,
+    date: eventDate,
+    description: eventDescription,
+    tagsArray: selectedTags.map((tag) => tag.id), // Map selected tags to their IDs
+    location: location,
+    organizerid: parsedEvent.organizerid,
+  };
 
   // Function to handle event update
   const handleUpdateEvent = async () => {
 
-    const updatedEvent = {
+    updatedEvent = {
       id: parsedEvent.id,
       name: eventName,
-      organizerID: organizer,
+      organizer: organizer,
       date: eventDate,
       description: eventDescription,
       tagsArray: selectedTags.map((tag) => tag.id), // Map selected tags to their IDs
       location: location,
+      organizerid: 1,
     };
 
     try {
