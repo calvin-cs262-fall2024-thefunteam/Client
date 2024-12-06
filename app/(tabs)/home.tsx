@@ -81,6 +81,7 @@ export default function Index() {
           description: tempEvent.description,
           tags: eventTags,
           location: tempEvent.location,
+          time: tempEvent.time,
         };
       });
 
@@ -97,13 +98,6 @@ export default function Index() {
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
   };
-
-  const handleEditEvent = (event: Event) => {
-    router.push({
-      pathname: "/editEvent",
-      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
-    });
-  }
 
   // Helper function to truncate long text descriptions to a character limit
   function truncateText(text: string, charLimit: number) {
@@ -131,39 +125,9 @@ export default function Index() {
     }));
 
   const handleToggleBookmark = (event: Event) => {
-    const isSaved = savedEvents.some((events) => events.id === event.id);
-
-    if (isSaved) {
-      setSavedEvents((prev) => prev.filter((events) => events.id !== event.id));
-    } else {
-      const updatedEvents = [...savedEvents, event];
-      setSavedEvents(updatedEvents);
+    
     }
   };
-
-  const handleDeleteEvent = async (id: string) => {
-    try {
-      const response = await axios.delete(`https://eventsphere-web.azurewebsites.net/events/${id}`);
-      if (response.status === 200) {
-        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
-        console.log(`Event with id ${id} deleted successfully.`);
-      } else {
-        console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`Error deleting event with id ${id}:`, error);
-    }
-  };
-
-  // const handleToggleFavorite = (tutorName) => {
-  //   setTutorsList(prevTutors => {
-  //     return prevTutors.map(tutor => {
-  //       if (tutor.name === tutorName) {
-  //         tutor.isFavorite = !tutor.isFavorite;  // Toggle favorite status
-  //       }
-  //       return tutor;
-  //     });
-  //   });
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -200,20 +164,6 @@ export default function Index() {
                 <Text style={styles.tagText}>{tag.label}</Text>
               </View>
             ))}
-          </View>
-          <View style={styles.buttonContainerCard}>
-            <Pressable
-              style={styles.editButton}
-              onPress={() => handleEditEvent(item)}
-            >
-              <Text style={styles.editButtonText}>Edit</Text>
-            </Pressable>
-            <Pressable
-              style={styles.deleteButton}
-              onPress={() => handleDeleteEvent(item.id)}
-            >
-              <Text style={styles.deleteButtonText}>Delete</Text>
-            </Pressable>
           </View>
           <View style={styles.bookmarkIcon}>
             {/* Add handleSaveEvent here */}

@@ -11,6 +11,7 @@ import {
 import Login from "../app/login";
 import EventDetailsScreen from "./eventDetails";
 
+
 function LogoTitle() {
   const router = useRouter();
     
@@ -50,7 +51,7 @@ export default function RootLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        headerTitle: () => <LogoTitle />,
+        headerTitle: () => <LogoTitle/>,
         headerBackTitleVisible: false,
       }}
     >
