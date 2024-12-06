@@ -14,6 +14,7 @@ import { useRoute, useNavigation } from "@react-navigation/native"; // Import us
 import axios from "axios"; // Import Axios for API requests
 import styles from "@/styles/globalStyles"; // Import global styles
 import { availableTags } from "../app/(tabs)/home"; // Import availableTags from home screen
+import { parse } from "@babel/core";
 
 // Define the EditEventScreen component
 export default function EditEventScreen() {
@@ -47,12 +48,15 @@ export default function EditEventScreen() {
     );
   };
 
+
+
   // Function to handle event update
   const handleUpdateEvent = async () => {
+
     const updatedEvent = {
       id: parsedEvent.id,
       name: eventName,
-      organizer: organizer,
+      organizerID: organizer,
       date: eventDate,
       description: eventDescription,
       tagsArray: selectedTags.map((tag) => tag.id), // Map selected tags to their IDs
@@ -137,20 +141,6 @@ export default function EditEventScreen() {
 
       {/* Section to select tags for the event */}
       <Text style={styles.modalText}>Select Tags</Text>
-      <View style={styles.tagSelectionContainer}>
-        {availableTags.map((tag) => (
-          <Pressable
-            key={tag.label}
-            onPress={() => handleTagToggle(tag)} // Toggle tag selection on press
-            style={[
-              styles.tag,
-              selectedTags.includes(tag) && { backgroundColor: tag.color }, // Highlight tag if selected
-            ]}
-          >
-            <Text style={styles.tagText}>{tag.label}</Text>
-          </Pressable>
-        ))}
-      </View>
 
       {/* Button to update event */}
       <Button title="Update Event" onPress={handleUpdateEvent} />

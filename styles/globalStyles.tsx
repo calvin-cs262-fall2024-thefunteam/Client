@@ -40,13 +40,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   cardDateLocationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center', // Optional: to vertically center the text
   },
   cardLocation: {
     fontSize: 14,
     color: "gray",
-    marginLeft: 150,
+    marginLeft: 160,
   },
   cardDate: {
     fontSize: 14,
@@ -288,6 +289,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  selectedTag: {
+    backgroundColor: "",
   },
 });
 
