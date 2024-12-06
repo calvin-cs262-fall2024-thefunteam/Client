@@ -6,9 +6,10 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   useColorScheme,
+  ScrollView,
 } from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const Profile = ({ route }) => {
   const colorScheme = useColorScheme();
@@ -19,24 +20,28 @@ const Profile = ({ route }) => {
   const [followers, setFollowers] = useState(0);
   const [posts, setPosts] = useState(0);
   const [following, setFollowing] = useState(0);
-  const [joinedClubs, setJoinedClubs] = useState([]); // Dynamic list for clubs
+  const [joinedClubs, setJoinedClubs] = useState([]);
 
-  // Initialize username dynamically if provided through login
   useEffect(() => {
     if (route?.params?.username) {
       setUsername(route.params.username);
     }
   }, [route?.params?.username]);
 
-  // Save edited details and return to view mode
   const saveProfile = () => {
     setIsEditing(false);
-    // Add logic here to save details to the backend
-    console.log("Profile saved:", { username, description });
+    console.log("Profile saved:", { username, description, profilePicture });
+  };
+
+  const handleProfilePictureChange = async () => {
+    const result = await launchImageLibrary({ mediaType: "photo" });
+    if (result?.assets?.length > 0) {
+      setProfilePicture(result.assets[0].uri);
+    }
   };
 
   return (
-    <View
+    <ScrollView
       style={[
         styles.container,
         { backgroundColor: colorScheme === "dark" ? "#000" : "#fff" },
@@ -47,20 +52,16 @@ const Profile = ({ route }) => {
         <Text style={[styles.headerText, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
           Profile
         </Text>
-        {isEditing ? (
-          <TouchableOpacity onPress={saveProfile}>
-            <Text style={[styles.editText, { color: "#007bff" }]}>Save</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text style={[styles.editText, { color: "#007bff" }]}>Edit</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={isEditing ? saveProfile : () => setIsEditing(true)}>
+          <Text style={[styles.editText, { color: "#007bff" }]}>
+            {isEditing ? "Save" : "Edit"}
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Profile Section */}
+      {/* Profile Info */}
       <View style={styles.profileSection}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={isEditing ? handleProfilePictureChange : null}>
           <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
         </TouchableOpacity>
         {isEditing ? (
@@ -87,26 +88,18 @@ const Profile = ({ route }) => {
         ) : (
           <Text style={[styles.profileDescription, { color: "#888" }]}>{description}</Text>
         )}
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
+      </View>
+
+      {/* Stats Section */}
+      <View style={styles.statsContainer}>
+        {["Posts", "Followers", "Following"].map((label, index) => (
+          <View style={styles.statBox} key={index}>
             <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {posts}
+              {label === "Posts" ? posts : label === "Followers" ? followers : following}
             </Text>
-            <Text style={styles.statLabel}>Posts</Text>
+            <Text style={styles.statLabel}>{label}</Text>
           </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {followers}
-            </Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {following}
-            </Text>
-            <Text style={styles.statLabel}>Following</Text>
-          </View>
-        </View>
+        ))}
       </View>
 
       {/* Clubs Section */}
@@ -138,36 +131,28 @@ const Profile = ({ route }) => {
         )}
       </View>
 
-      {/* Bottom Lines */}
-      <View style={styles.bottomSection}>
-        <View
-          style={[
-            styles.bottomLine,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
-          ]}
-        />
-        <View
-          style={[
-            styles.bottomLine,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
-          ]}
-        />
+      {/* Navigation Links */}
+      <View style={styles.navigationContainer}>
+        {["Notifications", "FAQs", "Contact Us", "Sign Out"].map((item, index) => (
+          <View style={styles.navigationRow} key={index}>
+            <Text style={styles.navigationText}>{item}</Text>
+            <Text style={styles.arrow}>→</Text>
+          </View>
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    paddingTop: 50,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "90%",
-    alignItems: "center",
+    paddingHorizontal: 20,
+    marginVertical: 10,
   },
   headerText: {
     fontSize: 24,
@@ -175,6 +160,7 @@ const styles = StyleSheet.create({
   },
   editText: {
     fontSize: 16,
+    color: "#007bff",
   },
   profileSection: {
     alignItems: "center",
@@ -196,19 +182,17 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "90%",
-    height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    padding: 10,
+    marginVertical: 5,
     color: "#000",
   },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "80%",
-    marginTop: 20,
+    marginVertical: 20,
   },
   statBox: {
     alignItems: "center",
@@ -222,8 +206,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   clubsSection: {
-    width: "90%",
-    marginTop: 20,
+    paddingHorizontal: 20,
   },
   clubsHeader: {
     fontSize: 18,
@@ -231,22 +214,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   clubRow: {
-    padding: 15,
+    padding: 10,
     borderRadius: 8,
     marginBottom: 10,
   },
-  clubText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  bottomSection: {
-    width: "90%",
+  navigationContainer: {
     marginTop: 20,
+    borderTopWidth: 1,
+    borderColor: "#ccc",
   },
-  bottomLine: {
-    height: 2,
-    width: "100%",
-    marginVertical: 5,
+  navigationRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  navigationText: {
+    fontSize: 16,
+  },
+  arrow: {
+    fontSize: 16,
+    color: "#888",
   },
 });
 
