@@ -1,4 +1,5 @@
-import { Stack, useRouter, useState } from "expo-router";
+import { useState } from "react";
+import { Stack, useRouter } from "expo-router";
 import {
   Text,
   Image,
@@ -8,13 +9,11 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import Login from "../app/login";
-import EventDetailsScreen from "./eventDetails";
 
-
-function LogoTitle() {
+// LogoTitle now receives the `isGuest` state as a prop
+function LogoTitle({ isGuest }) {
   const router = useRouter();
-    
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.navigate("/")}>
@@ -25,21 +24,25 @@ function LogoTitle() {
           />
         </View>
       </Pressable>
-          
-     {/* Login button in the top-right corner */}
-     <View style={styles.loginContainer}>
-       <TouchableOpacity
-         style={styles.loginButton}
-         onPress={() => router.navigate("/login")}
-        >
-           <Text style={styles.loginButtonText}>Login</Text>
-       </TouchableOpacity>
-      </View>
+
+      {/* Conditionally render Login button */}
+      {isGuest && (
+        <View style={styles.loginContainer}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.navigate("/login")}
+          >
+            <Text style={styles.loginButtonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
 
 export default function RootLayout() {
+  const [isGuest, setIsGuest] = useState(true); // Assuming the user is a guest by default
+
   return (
     <Stack
       initialRouteName="login"
@@ -51,16 +54,13 @@ export default function RootLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        headerTitle: () => <LogoTitle/>,
+        headerTitle: () => <LogoTitle isGuest={isGuest} />, // Pass `isGuest` to LogoTitle
         headerBackTitleVisible: false,
       }}
     >
-          
-    <Stack.Screen name="login" options={{ headerTitle: false }} />
-    <Stack.Screen name="signup" options={{ headerTitle: false }} />
-          
-
-      {/* <Stack.Screen name="eventDetails" options={{ title: "Event Details" }} /> */}
+      <Stack.Screen name="login" options={{ headerTitle: false }} />
+      <Stack.Screen name="signup" options={{ headerTitle: false }} />
+      {/* Add more screens as needed */}
     </Stack>
   );
 }
