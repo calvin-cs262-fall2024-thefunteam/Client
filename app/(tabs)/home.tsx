@@ -53,6 +53,9 @@ export default function Index() {
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+  const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
+  const flatListRef = React.useRef<FlatList<Event>>(null);
+
 
   //Pull in data from server URL
   useEffect(() => {
@@ -134,6 +137,16 @@ export default function Index() {
     setRefreshing(false);
   };
 
+  const goToTop = () => {
+    // Scroll to top of the list
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+  };
+
+  const handleScroll = (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setIsScrollButtonVisible(offsetY > 100); // Show button if scrolled down more than 100 pixels
+  };
+
   // Renders an individual event card with details and actions (edit, delete, bookmark)
   const renderEventCard = ({ item }: { item: any }) => (
     <Pressable onPress={() => handleSeeMore(item)}>
@@ -210,7 +223,14 @@ export default function Index() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        onScroll={handleScroll}
+        scrollEventThrottle={16} // Adjust the frequency of scroll events
       />
+      {isScrollButtonVisible && (
+        <Pressable style={styles.scrollToTopButton} onPress={goToTop}>
+          <Ionicons name="chevron-up" size={24} color="white" />
+        </Pressable>
+      )}
     </View>
   );
 }
