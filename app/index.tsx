@@ -1,77 +1,47 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
-  Alert,
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 
-export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+export default function Welcome() {
   const router = useRouter();
 
-  const handleLogin = () => {
-    Alert.alert("Login", `Username: ${username}, Password: ${password}`);
+  const handleSignUp = () => {
+    router.push("/signup"); // Navigate to the signup form page
   };
 
-  const handleSignUp = () => {
-    router.replace("/signup");   // Redirect users to the Sing Up page
-  }
+  const handleLogin = () => {
+    router.push("/loginForm"); // Navigate to the login form page
+  };
 
   const handleContinueAsGuest = () => {
-    router.replace("/home");        // Redirect the user to homepage as guest
+    router.push("/home"); // Navigate to the home screen directly as a guest
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>EventSphere Login</Text>
+      <Text style={styles.title}>Welcome to EventSphere</Text>
+      <Text style={styles.subtitle}>
+        Create an account with us and experience seamless event planning.
+      </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      {/* Create Account Button */}
+      <TouchableOpacity style={styles.createAccountButton} onPress={handleSignUp}>
+        <Text style={styles.createAccountButtonText}>Create Account</Text>
+      </TouchableOpacity>
 
       {/* Login Button */}
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Sign Up Section */}
-      <View style={styles.signUpSection}>
-        <Text style={styles.firstTimeText}>First time user?</Text>
-        <TouchableOpacity
-          onPress={handleSignUp}
-        >
-          <Text style={styles.signUpButton}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Forgot Password */}
-      <TouchableOpacity
-        onPress={() =>
-          Alert.alert("Forgot Password", "Forgot password button pressed")
-        }
-      >
-        <Text style={styles.customButtonText}>Forgot Password?</Text>
-      </TouchableOpacity>
-
-      {/* Continue as Guest */}
-      <TouchableOpacity onPress={handleContinueAsGuest}>
-        <Text style={styles.customButtonText}>Continue as Guest</Text>
+      {/* Sign in as Guest Button */}
+      <TouchableOpacity style={styles.guestButton} onPress={handleContinueAsGuest}>
+        <Text style={styles.guestButtonText}>Sign in as Guest</Text>
       </TouchableOpacity>
     </View>
   );
@@ -81,53 +51,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
+    backgroundColor: "white",
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: "center",
+    fontSize: 28,
     fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+    color: "#000",
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#666",
+    marginBottom: 40,
+  },
+  createAccountButton: {
+    backgroundColor: "#4A6DF7",
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     marginBottom: 20,
-    paddingHorizontal: 10,
-  },
-  loginButton: {
-    backgroundColor: "blue",
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    width: "80%",
     alignItems: "center",
-    marginBottom: 20,
   },
-  loginButtonText: {
+  createAccountButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
-  signUpSection: {
-    flexDirection: "row",
-    justifyContent: "center",
+  loginButton: {
+    borderWidth: 1,
+    borderColor: "#4A6DF7",
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    width: "80%",
     alignItems: "center",
-    marginBottom: 10,
   },
-  firstTimeText: {
-    fontSize: 14,
-    color: "gray",
-    marginRight: 5,
-  },
-  signUpButton: {
-    color: "blue",
-    textAlign: "center",
+  loginButtonText: {
+    color: "#4A6DF7",
+    fontSize: 16,
     fontWeight: "bold",
   },
-  customButtonText: {
-    color: "grey",
-    textAlign: "center",
-    paddingVertical: 10,
+  guestButton: {
+    borderWidth: 1,
+    borderColor: "#4A6DF7",
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    marginTop: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  guestButtonText: {
+    color: "#4A6DF7",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

@@ -4,53 +4,56 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function SignUp() {
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
   const router = useRouter();
 
   const handleSignUp = () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match!");
-      return;
+    // Validate if all fields are filled and if passwords match
+    if (username && email && password && confirmPassword) {
+      if (password === confirmPassword) {
+        Alert.alert("Sign Up", `Username: ${username}, Email: ${email}`);
+        // You can replace this with actual sign-up functionality (e.g., API call)
+        router.replace("/home"); // Redirect to home screen after sign-up
+      } else {
+        Alert.alert("Error", "Passwords do not match.");
+      }
+    } else {
+      Alert.alert("Error", "Please fill in all fields.");
     }
-    Alert.alert("Sign Up", `Email: ${email}`);
+  };
 
-    // Call the API to sign up the user
-    
-
-    router.replace("/"); // Navigate to the home screen or another page after signing up
+  const handleBackToLogin = () => {
+    router.replace("/loginForm"); // Redirect to the login page
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an Account</Text>
 
-      {/* Username Input */}
       <TextInput
         style={styles.input}
         placeholder="Username"
-        value={userName}
-        onChangeText={setUserName}
+        value={username}
+        onChangeText={setUsername}
       />
-          
-          
-      {/* Email Input */}
+
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
       />
 
-      {/* Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -59,7 +62,6 @@ export default function SignUp() {
         secureTextEntry
       />
 
-      {/* Confirm Password Input */}
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
@@ -72,6 +74,11 @@ export default function SignUp() {
       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
         <Text style={styles.signUpButtonText}>Sign Up</Text>
       </TouchableOpacity>
+
+      {/* Back to Login Button */}
+      <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
+        <Text style={styles.backButtonText}>Already have an account? Log in</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -81,6 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
+    backgroundColor: "white",
   },
   title: {
     fontSize: 24,
@@ -89,20 +97,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   input: {
-    height: 40,
-    borderColor: "gray",
+    height: 50,
+    borderColor: "#ccc",
     borderWidth: 1,
+    borderRadius: 8, // Rounded corners
     marginBottom: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
+    backgroundColor: "#f9f9f9", // Subtle input background
+    fontSize: 16,
+    color: "#333",
   },
   signUpButton: {
-    backgroundColor: "blue",
-    borderRadius: 5,
-    paddingVertical: 10,
+    backgroundColor: "#4A6DF7",
+    borderRadius: 25,  // Make the button more round
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    marginTop: 20,
     alignItems: "center",
   },
   signUpButtonText: {
     color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  backButton: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  backButtonText: {
+    color: "#4A6DF7",
     fontSize: 16,
     fontWeight: "bold",
   },
