@@ -8,20 +8,33 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
+import axios from "axios";
 
 export default function SignUp() {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
+  const [name, setName] = useState("");
   const router = useRouter();
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     // Validate if all fields are filled and if passwords match
-    if (username && email && password && confirmPassword) {
-      if (password === confirmPassword) {
-        Alert.alert("Sign Up", `Username: ${username}, Email: ${email}`);
-        // You can replace this with actual sign-up functionality (e.g., API call)
+    if (username && password && confirmPassword) {
+      if (password === confirmPassword && password.length >= 8) {
+        try {
+          const response = await axios.post("https://eventsphere-web.azurewebsites.net/users", {
+            Accountname: username,
+            password: password,
+            name: name,
+          });
+          if (response.status === 201) {
+            Alert.alert("Success", "User created successfully");
+            router.push("/loginForm"); // Navigate to the login form page
+          }
+        } catch (error) {
+          console.error("Error creating user:", error);
+          Alert.alert("Error", "Failed to create user");
+        }
         router.replace("/home"); // Redirect to home screen after sign-up
       } else {
         Alert.alert("Error", "Passwords do not match.");
@@ -41,17 +54,16 @@ export default function SignUp() {
 
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
       />
 
       <TextInput

@@ -24,18 +24,6 @@ function LogoTitle({ isGuest }) {
           />
         </View>
       </Pressable>
-
-      {/* Conditionally render Login button */}
-      {isGuest && (
-        <View style={styles.loginContainer}>
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => router.navigate("/login")}
-          >
-            <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
