@@ -293,6 +293,19 @@ const styles = StyleSheet.create({
   selectedTag: {
     backgroundColor: "",
   },
+  scrollToTopButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'grey',
+    padding: 10,
+    borderRadius: 5,
+    opacity: 0.5,
+  },
+  scrollToTopButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
 });
 
 export default styles;
