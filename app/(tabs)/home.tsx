@@ -7,6 +7,7 @@ import {
   Pressable,
   TextInput,
   RefreshControl,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import SearchBar from "@/components/SearchBar"; // Custom SearchBar component
@@ -43,7 +44,6 @@ export type Event = {
   description: string;
   tags?: Tag[]; // optiional
   location: string;
-
 };
 
 // Main component rendering the list of events
@@ -52,6 +52,8 @@ export default function Index() {
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
+  const flatListRef = React.useRef<FlatList<Event>>(null);
   const navigation = useNavigation();
 
   //Pull in data from server URL
@@ -125,13 +127,23 @@ export default function Index() {
     }));
 
   const handleToggleBookmark = (event: Event) => {
-      // Add your bookmark toggle logic here
+    // Add your bookmark toggle logic here
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchEvents();
     setRefreshing(false);
+  };
+
+  const goToTop = () => {
+    // Scroll to top of the list
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+  };
+
+  const handleScroll = (event: { contentOffset: { y: any; }; }) => {
+    const offsetY = event.contentOffset.y;
+    setIsScrollButtonVisible(offsetY > 100); // Show button if scrolled down more than 100 pixels
   };
 
   // Renders an individual event card with details and actions (edit, delete, bookmark)
@@ -198,6 +210,7 @@ export default function Index() {
 
       {/* Render filtered events in a scrollable list */}
       <FlatList
+        ref={flatListRef}
         data={filteredEvents}
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
@@ -210,7 +223,14 @@ export default function Index() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
+        scrollEventThrottle={16} // Adjust the frequency of scroll events
       />
+      {isScrollButtonVisible && (
+        <Pressable style={styles.scrollToTopButton} onPress={goToTop}>
+          <Ionicons name="chevron-up" size={24} color="white" />
+        </Pressable>
+      )}
     </View>
   );
 }
