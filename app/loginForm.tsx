@@ -8,28 +8,37 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
+import axios from "axios";
+
+export const [userID, setUserID] = useState("");
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [accountName, setAccountName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    if (!username || !password) {
-      Alert.alert("Error", "Please enter both username and password.");
-      return;
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
+      const userData = response.data;
+      if (userData && userData.Accountname === accountName && userData.password === password) {
+        Alert.alert("Success", "Login successful");
+        router.push("/home"); // Navigate to the home screen
+      } else {
+        Alert.alert("Error", "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      Alert.alert("Error", "Failed to log in");
     }
-    // Simulate successful login
-    Alert.alert("Login Success", `Welcome, ${username}!`);
-    router.push("/home"); // Navigate to the home screen
   };
 
   const handleSignUp = () => {
-    router.push("/signup"); // Navigate to the signup screen
+    router.replace("/signup"); // Navigate to the signup screen
   };
 
   const handleContinueAsGuest = () => {
-    router.push("/home"); // Navigate to the home screen without login
+    router.replace("/home"); // Navigate to the home screen without login
   };
 
   return (
@@ -40,8 +49,8 @@ export default function Login() {
       <TextInput
         style={styles.input}
         placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        value={accountName}
+        onChangeText={setAccountName}
       />
 
       {/* Password Input */}

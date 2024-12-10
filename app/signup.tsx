@@ -29,15 +29,15 @@ export default function SignUp() {
           });
           if (response.status === 201) {
             Alert.alert("Success", "User created successfully");
-            router.push("/loginForm"); // Navigate to the login form page
+            router.replace("/loginForm"); // Navigate to the login form page
           }
         } catch (error) {
           console.error("Error creating user:", error);
           Alert.alert("Error", "Failed to create user");
         }
-        router.replace("/home"); // Redirect to home screen after sign-up
+        router.replace("/loginForm"); // Redirect to home screen after sign-up
       } else {
-        Alert.alert("Error", "Passwords do not match.");
+        Alert.alert("Error", "Passwords do not match or are less than 8 characters.");
       }
     } else {
       Alert.alert("Error", "Please fill in all fields.");

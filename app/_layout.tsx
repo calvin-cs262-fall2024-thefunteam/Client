@@ -11,19 +11,17 @@ import {
 } from "react-native";
 
 // LogoTitle now receives the `isGuest` state as a prop
-function LogoTitle({ isGuest }) {
+function LogoTitle() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.navigate("/")}>
         <View style={styles.logoContainer}>
           <Image
             style={styles.image}
             source={require("@/assets/images/eventSphere.png")}
           />
         </View>
-      </Pressable>
     </View>
   );
 }
@@ -33,7 +31,6 @@ export default function RootLayout() {
 
   return (
     <Stack
-      initialRouteName="login"
       screenOptions={{
         headerStyle: {
           backgroundColor: "white",
@@ -42,12 +39,12 @@ export default function RootLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        headerTitle: () => <LogoTitle isGuest={isGuest} />, // Pass `isGuest` to LogoTitle
+        headerTitle: () => <LogoTitle />, 
         headerBackTitleVisible: false,
       }}
     >
-      <Stack.Screen name="login" options={{ headerTitle: false }} />
-      <Stack.Screen name="signup" options={{ headerTitle: false }} />
+      <Stack.Screen name="login" options={{ headerTitle: "Login" }} />
+      <Stack.Screen name="signup" options={{ headerTitle: "Sign Up" }} />
       {/* Add more screens as needed */}
     </Stack>
   );
