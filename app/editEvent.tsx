@@ -15,6 +15,8 @@ import axios from "axios"; // Import Axios for API requests
 import styles from "@/styles/globalStyles"; // Import global styles
 import { availableTags } from "../app/(tabs)/home"; // Import availableTags from home screen
 import { parse } from "@babel/core";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { router } from "expo-router";
 
 // Define the EditEventScreen component
 export default function EditEventScreen() {
@@ -31,7 +33,7 @@ export default function EditEventScreen() {
   // State variables for event details, prefilled with the event data
   const [eventName, setEventName] = useState(parsedEvent.name);
   const [organizer, setOrganizer] = useState(parsedEvent.organizer);
-  const [eventDate, setEventDate] = useState(parsedEvent.date);
+  const [eventDate, setEventDate] = useState(new Date(parsedEvent.date));
   const [eventDescription, setEventDescription] = useState(
     parsedEvent.description
   );
@@ -46,6 +48,12 @@ export default function EditEventScreen() {
           ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
           : [...prevSelectedTags, tag] // Add tag if not selected
     );
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setEventDate(selectedDate); // Update the event date
+    }
   };
 
   let updatedEvent = {
@@ -94,6 +102,8 @@ export default function EditEventScreen() {
     } catch (error) {
       console.error("Error creating event:", error);
     }
+
+    router.navigate("/home"); // Navigate back to the home screen
   };
 
   return (
@@ -120,12 +130,11 @@ export default function EditEventScreen() {
       {/* Date and Location input container */}
       <View style={styles.dateAndLocationInput}>
         {/* Event date input */}
-        <TextInput
-          style={styles.dateInput}
-          placeholder="Event Date (MM/DD/YYYY)"
-          placeholderTextColor={"grey"}
-          value={eventDate}
-          onChangeText={setEventDate}
+        <DateTimePicker
+          value={eventDate || new Date()}
+          mode="date"
+          display="default" //
+          onChange={handleDateChange}
         />
 
         {/* Event location input */}
