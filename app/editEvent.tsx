@@ -1,5 +1,5 @@
 // Import React and necessary modules from React Native
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute, useNavigation } from "@react-navigation/native"; // Import useRoute for navigation parameters
@@ -15,7 +16,7 @@ import axios from "axios"; // Import Axios for API requests
 import styles from "@/styles/globalStyles"; // Import global styles
 import { availableTags } from "../app/(tabs)/home"; // Import availableTags from home screen
 import { parse } from "@babel/core";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 
 // Define the EditEventScreen component
@@ -34,19 +35,20 @@ export default function EditEventScreen() {
   const [eventName, setEventName] = useState(parsedEvent.name);
   const [organizer, setOrganizer] = useState(parsedEvent.organizer);
   const [eventDate, setEventDate] = useState(new Date(parsedEvent.date));
-  const [eventDescription, setEventDescription] = useState(
-    parsedEvent.description
+  const [eventDescription, setEventDescription] = useState(parsedEvent.description);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(
+    parsedEvent?.tags ? availableTags.filter(tag => parsedEvent.tags.includes(tag.id)) : []
   );
-  const [selectedTags, setSelectedTags] = useState<Tag[]>(parsedEvent.tags);
   const [location, setLocation] = useState(parsedEvent.location);
+
+  const tags = availableTags;
 
   // Function to add or remove a tag from selectedTags
   const handleTagToggle = (tag: Tag) => {
-    setSelectedTags(
-      (prevSelectedTags) =>
-        prevSelectedTags.includes(tag)
-          ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
-          : [...prevSelectedTags, tag] // Add tag if not selected
+    setSelectedTags((prevSelectedTags) =>
+      prevSelectedTags.includes(tag)
+        ? prevSelectedTags.filter((t) => t !== tag) // Remove tag if already selected
+        : [...prevSelectedTags, tag] // Add tag if not selected
     );
   };
 
@@ -69,7 +71,6 @@ export default function EditEventScreen() {
 
   // Function to handle event update
   const handleUpdateEvent = async () => {
-
     updatedEvent = {
       id: parsedEvent.id,
       name: eventName,
@@ -158,8 +159,31 @@ export default function EditEventScreen() {
         onChangeText={setEventDescription}
       />
 
-      {/* Section to select tags for the event */}
-      <Text style={styles.modalText}>Select Tags</Text>
+       {/* Section to select tags for the event */}
+       <Text style={styles.modalText}>Select Tags</Text>
+
+{/* Display tags as buttons or selectable options */}
+<View style={styles.tagSelectionContainer}>
+  {availableTags.map((tag) => (
+    <Pressable
+      key={tag.id}
+      onPress={() => handleTagToggle(tag)}
+      style={[
+        styles.tag,
+        selectedTags.includes(tag) && { backgroundColor: tag.color }, // Change background color if selected
+      ]}
+    >
+      <Text
+        style={[
+          styles.tagText,
+          selectedTags.includes(tag) ? { fontWeight: "bold" } : {},
+        ]}
+      >
+        {tag.label}
+      </Text>
+    </Pressable>
+  ))}
+</View>
 
       {/* Button to update event */}
       <Button title="Update Event" onPress={handleUpdateEvent} />

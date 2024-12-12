@@ -53,7 +53,9 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+
   const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(true);
   const flatListRef = useRef<FlatList<Event>>(null);
 
 
@@ -63,31 +65,31 @@ const Home = () => {
     }, [])
   );
   // Fetch events and their saved status when component mounts
-  useEffect(() => {
-    const fetchSavedEventIds = async () => {
-      try {
-        const userID = 1; // hardcoded for now
-        const response = await axios.get(
-          `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
-        );
+  // useEffect(() => {
+  //   const fetchSavedEventIds = async () => {
+  //     try {
+  //       const userID = 1; // hardcoded for now
+  //       const response = await axios.get(
+  //         `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
+  //       );
         
-        // Get an array of saved event IDs
-        const savedEventIds = response.data.map((savedEvent: any) => String(savedEvent.eventID));
+  //       // Get an array of saved event IDs
+  //       const savedEventIds = response.data.map((savedEvent: any) => String(savedEvent.eventID));
         
-        // Update events to mark saved events
-        setEvents(currentEvents => 
-          currentEvents.map(event => ({
-            ...event,
-            isSaved: savedEventIds.includes(event.id)
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching saved events:", error);
-      }
-    };
+  //       // Update events to mark saved events
+  //       setEvents(currentEvents => 
+  //         currentEvents.map(event => ({
+  //           ...event,
+  //           isSaved: savedEventIds.includes(event.id)
+  //         }))
+  //       );
+  //     } catch (error) {
+  //       console.error("Error fetching saved events:", error);
+  //     }
+  //   };
 
-    fetchEvents().then(fetchSavedEventIds);
-  }, []);
+  //   fetchEvents().then(fetchSavedEventIds);
+  // }, []);
 
   // Fetch events from the server
   const fetchEvents = async () => {
@@ -248,6 +250,7 @@ const Home = () => {
   }) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     setIsScrollButtonVisible(offsetY > 100);
+    setIsSearchBarVisible(offsetY <= 0); // Hide search bar when scrolling down
   };
 
   // Render individual event card
@@ -267,8 +270,6 @@ const Home = () => {
         <Text style={styles.cardDescription}>
           {truncateText(item.description, 140)}
         </Text>
-
-
 
         <View style={styles.tagAndButtonContainer}>
           <View style={styles.tagContainer}>
@@ -298,21 +299,6 @@ const Home = () => {
   // Main render method
   return (
     <View style={styles.container}>
-      {/* Search bar */}
-      <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={24}
-          color="black"
-          style={styles.searchIcon}
-        />
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          style={styles.searchInput}
-        />
-      </View>
-
       {/* Events list */}
       <FlatList
         data={filteredEvents}
@@ -327,6 +313,23 @@ const Home = () => {
         }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListHeaderComponent={
+          isSearchBarVisible && (
+            <View style={styles.searchContainer}>
+              <Ionicons
+                name="search"
+                size={24}
+                color="black"
+                style={styles.searchIcon}
+              />
+              <SearchBar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                style={styles.searchInput}
+              />
+            </View>
+          )
         }
         onScroll={handleScroll}
         scrollEventThrottle={16}
