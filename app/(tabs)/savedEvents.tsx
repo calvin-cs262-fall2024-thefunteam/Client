@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "@/styles/globalStyles";
 import {
   View,
@@ -8,28 +8,21 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
 } from "react-native";
-import { savedEvents } from "./home";
 
-const eventSaved = savedEvents;
 
 export default function displaySavedEvents() {
+  const [savedEvents, setSavedEvents] = useState<Event[]>([]);
+  
+
+  // const function getSavedEvents() = async (userID: number) => {
+  //   try{
+  //     const response = await fetch(`https://eventsphere-web.azurewebsites.net/users/savedEvents`);
+  //   }
+  // }
+
   return (
     <View style={styles.container}>
-      {eventSaved && eventSaved.length === 0 ? (
-        <Text>No saved events yet.</Text>
-      ) : (
-        <FlatList
-          data={eventSaved}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.cardText}>{item.name}</Text>
-              <Text style={styles.cardText}>{item.date}</Text>
-              <Text style={styles.cardDescription}>{item.description}</Text>
-            </View>
-          )}
-        />
-      )}
+      
     </View>
   );
 }

@@ -57,6 +57,9 @@ export default function SignUp() {
         placeholder="Name"
         value={name}
         onChangeText={setName}
+        textContentType="username"
+        autoComplete="username"
+        
       />
 
       <TextInput
@@ -72,6 +75,8 @@ export default function SignUp() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        textContentType="none"
+        autoComplete="off"
       />
 
       <TextInput
@@ -80,6 +85,8 @@ export default function SignUp() {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
+        textContentType="none"
+        autoComplete="off"
       />
 
       {/* Sign Up Button */}
