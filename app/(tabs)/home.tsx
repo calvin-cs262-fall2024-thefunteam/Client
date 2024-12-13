@@ -64,32 +64,7 @@ const Home = () => {
       fetchEvents(); // Fetch events when screen is focused
     }, [])
   );
-  // Fetch events and their saved status when component mounts
-  // useEffect(() => {
-  //   const fetchSavedEventIds = async () => {
-  //     try {
-  //       const userID = 1; // hardcoded for now
-  //       const response = await axios.get(
-  //         `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
-  //       );
-        
-  //       // Get an array of saved event IDs
-  //       const savedEventIds = response.data.map((savedEvent: any) => String(savedEvent.eventID));
-        
-  //       // Update events to mark saved events
-  //       setEvents(currentEvents => 
-  //         currentEvents.map(event => ({
-  //           ...event,
-  //           isSaved: savedEventIds.includes(event.id)
-  //         }))
-  //       );
-  //     } catch (error) {
-  //       console.error("Error fetching saved events:", error);
-  //     }
-  //   };
-
-  //   fetchEvents().then(fetchSavedEventIds);
-  // }, []);
+ 
 
   // Fetch events from the server
   const fetchEvents = async () => {
@@ -180,7 +155,7 @@ const Home = () => {
   // Save event to backend
   const handleSaveEvent = async (event: Event) => {
     const eventID = event.id;
-    const userID = 1; // for now just 1
+    const userID = 2; // for now just 1
     const item = {
       accountID: userID,
       eventID: eventID,

@@ -22,7 +22,7 @@ export default function Login() {
       const response = await axios.get(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
       const userData = response.data;
       console.log(userData);
-      if (userData && userData.Accountname === accountName && userData.password === password) {
+      if (userData && userData.accountname === accountName && userData.password === password) {
         Alert.alert("Success", "Login successful");
         router.push("/home"); // Navigate to the home screen
       } else {
