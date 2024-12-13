@@ -8,7 +8,48 @@ import {
   TouchableOpacity,
   FlatList,
   useColorScheme,
+  Alert,
 } from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
+
+const ProfileStats = ({ posts, followers, following, colorScheme }) => (
+  <View style={styles.statsContainer}>
+    {[
+      { label: "Posts", value: posts },
+      { label: "Followers", value: followers },
+      { label: "Following", value: following },
+    ].map((stat, index) => (
+      <View key={index} style={styles.statBox}>
+        <Text
+          style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}
+        >
+          {stat.value}
+        </Text>
+        <Text style={styles.statLabel}>{stat.label}</Text>
+      </View>
+    ))}
+  </View>
+);
+
+const ClubsList = ({ clubs, colorScheme }) => (
+  <View style={styles.clubsSection}>
+    <Text style={[styles.clubsHeader, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>Part of...</Text>
+    {clubs.length > 0 ? (
+      clubs.map((club, index) => (
+        <View
+          key={club.id || index}
+          style={[styles.clubRow, { backgroundColor: colorScheme === "dark" ? "#333" : "#f9f9f9" }]}
+        >
+          <Text style={[styles.clubText, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
+            {club.name || club}
+          </Text>
+        </View>
+      ))
+    ) : (
+      <Text style={{ color: "#888", fontStyle: "italic" }}>No clubs joined yet</Text>
+    )}
+  </View>
+);
 
 const Profile = ({ route }) => {
   const colorScheme = useColorScheme();
@@ -28,25 +69,31 @@ const Profile = ({ route }) => {
     }
   }, [route?.params?.username]);
 
-  // Save edited details and return to view mode
+  const handleImageUpload = async () => {
+    const result = await launchImageLibrary({ mediaType: "photo", quality: 0.5 });
+    if (result.assets && result.assets.length > 0) {
+      setProfilePicture(result.assets[0].uri);
+    } else {
+      Alert.alert("Upload Failed", "No image was selected.");
+    }
+  };
+
   const saveProfile = () => {
+    if (!username.trim() || !description.trim()) {
+      Alert.alert("Validation Error", "Username and description cannot be empty.");
+      return;
+    }
     setIsEditing(false);
-    // Add logic here to save details to the backend
     console.log("Profile saved:", { username, description });
   };
 
   return (
     <View
-      style={[
-        styles.container,
-        { backgroundColor: colorScheme === "dark" ? "#000" : "#fff" },
-      ]}
+      style={[styles.container, { backgroundColor: colorScheme === "dark" ? "#000" : "#fff" }]}
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerText, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-          Profile
-        </Text>
+        <Text style={[styles.headerText, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>Profile</Text>
         {isEditing ? (
           <TouchableOpacity onPress={saveProfile}>
             <Text style={[styles.editText, { color: "#007bff" }]}>Save</Text>
@@ -60,7 +107,7 @@ const Profile = ({ route }) => {
 
       {/* Profile Section */}
       <View style={styles.profileSection}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleImageUpload}>
           <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
         </TouchableOpacity>
         {isEditing ? (
@@ -87,72 +134,11 @@ const Profile = ({ route }) => {
         ) : (
           <Text style={[styles.profileDescription, { color: "#888" }]}>{description}</Text>
         )}
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {posts}
-            </Text>
-            <Text style={styles.statLabel}>Posts</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {followers}
-            </Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-              {following}
-            </Text>
-            <Text style={styles.statLabel}>Following</Text>
-          </View>
-        </View>
+        <ProfileStats posts={posts} followers={followers} following={following} colorScheme={colorScheme} />
       </View>
 
       {/* Clubs Section */}
-      <View style={styles.clubsSection}>
-        <Text style={[styles.clubsHeader, { color: colorScheme === "dark" ? "#fff" : "#000" }]}>
-          Part of...
-        </Text>
-        {joinedClubs.length > 0 ? (
-          joinedClubs.map((club, index) => (
-            <View
-              key={index}
-              style={[
-                styles.clubRow,
-                { backgroundColor: colorScheme === "dark" ? "#333" : "#f9f9f9" },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.clubText,
-                  { color: colorScheme === "dark" ? "#fff" : "#000" },
-                ]}
-              >
-                {club}
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text style={{ color: "#888", fontStyle: "italic" }}>No clubs joined yet</Text>
-        )}
-      </View>
-
-      {/* Bottom Lines */}
-      <View style={styles.bottomSection}>
-        <View
-          style={[
-            styles.bottomLine,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
-          ]}
-        />
-        <View
-          style={[
-            styles.bottomLine,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
-          ]}
-        />
-      </View>
+      <ClubsList clubs={joinedClubs} colorScheme={colorScheme} />
     </View>
   );
 };
@@ -206,12 +192,13 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     width: "80%",
     marginTop: 20,
   },
   statBox: {
     alignItems: "center",
+    width: "30%",
   },
   statNumber: {
     fontSize: 18,
@@ -238,15 +225,6 @@ const styles = StyleSheet.create({
   clubText: {
     fontSize: 16,
     fontWeight: "bold",
-  },
-  bottomSection: {
-    width: "90%",
-    marginTop: 20,
-  },
-  bottomLine: {
-    height: 2,
-    width: "100%",
-    marginVertical: 5,
   },
 });
 
