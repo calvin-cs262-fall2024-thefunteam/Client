@@ -1,9 +1,9 @@
 // Import React and necessary modules from React Native
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute } from "@react-navigation/native"; // Import useRoute for navigation parameters
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import axios from "axios";
 
 // Define the EventDetailsScreen component
@@ -16,6 +16,8 @@ export default function EventDetailsScreen() {
 
   // Parse the event data (from JSON string to JavaScript object)
   const parsedEvent = event ? JSON.parse(event) : null;
+
+  const router = useRouter();
 
   const handleEditEvent = (event: Event) => {
     router.push({
@@ -34,12 +36,31 @@ export default function EventDetailsScreen() {
         console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
       }
     } catch (error) { 
-      console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
+      //console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
     }
 
     // Navigate back to the home screen after deleting the event
     router.navigate("/home");
 
+  };
+
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this event?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => handleDeleteEvent(id),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
   };
   
   return (
@@ -73,7 +94,7 @@ export default function EventDetailsScreen() {
           </Pressable>
           <Pressable
             style={styles.deleteButton}
-            onPress={() => handleDeleteEvent(parsedEvent.id)}>
+            onPress={() => confirmDelete(parsedEvent.id)}>
 
             <Text style={styles.deleteButtonText}>Delete</Text>
           </Pressable>

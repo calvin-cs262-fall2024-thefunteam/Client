@@ -1,5 +1,5 @@
 // Import required libraries and components
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import styles from "@/styles/globalStyles"; // Import global styles
 import axios from "axios"; // Import Axios for API requests
 import { router } from "expo-router";
 import { useNavigation } from "@react-navigation/native"; // Navigation hook
+import { useFocusEffect } from "@react-navigation/native";
 
 // Define the structure of tags with label and color properties
 export type Tag = {
@@ -41,27 +42,54 @@ export type Event = {
   organizer: string;
   date: string;
   description: string;
-  tags?: Tag[]; // optiional
+  tags?: Tag[]; // optional
   location: string;
-
+  isSaved: boolean;
 };
 
 // Main component rendering the list of events
-export default function Index() {
+const Home = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
-  const [savedEvents, setSavedEvents] = useState<Event[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
-  const flatListRef = React.useRef<FlatList<Event>>(null);
+  const flatListRef = useRef<FlatList<Event>>(null);
 
 
-  //Pull in data from server URL
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents(); // Fetch events when screen is focused
+    }, [])
+  );
+  // Fetch events and their saved status when component mounts
   useEffect(() => {
-    fetchEvents();
+    const fetchSavedEventIds = async () => {
+      try {
+        const userID = 1; // hardcoded for now
+        const response = await axios.get(
+          `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
+        );
+        
+        // Get an array of saved event IDs
+        const savedEventIds = response.data.map((savedEvent: any) => String(savedEvent.eventID));
+        
+        // Update events to mark saved events
+        setEvents(currentEvents => 
+          currentEvents.map(event => ({
+            ...event,
+            isSaved: savedEventIds.includes(event.id)
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching saved events:", error);
+      }
+    };
+
+    fetchEvents().then(fetchSavedEventIds);
   }, []);
 
+  // Fetch events from the server
   const fetchEvents = async () => {
     try {
       const response = await axios.get(
@@ -84,7 +112,7 @@ export default function Index() {
           description: tempEvent.description,
           tags: eventTags,
           location: tempEvent.location,
-          time: tempEvent.time,
+          isSaved: false, // Default to false
         };
       });
 
@@ -94,7 +122,7 @@ export default function Index() {
     }
   };
 
-  // Function to navigate to event details page, passing selected event as parameter
+  // Function to navigate to event details page
   const handleSeeMore = (event: Event) => {
     router.push({
       pathname: "/eventDetails",
@@ -102,7 +130,7 @@ export default function Index() {
     });
   };
 
-  // Helper function to truncate long text descriptions to a character limit
+  // Helper function to truncate long text descriptions
   function truncateText(text: string, charLimit: number) {
     if (text.length > charLimit) {
       return text.slice(0, charLimit) + "...";
@@ -110,45 +138,120 @@ export default function Index() {
     return text;
   }
 
-  // Filter events based on search query across name, organizer, and tags
-  const filteredEvents = events
-    .filter(
-      (event: Event) =>
-        event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (event.tags &&
-          event.tags.some((tag: any) =>
-            tag.label.toLowerCase().includes(searchQuery.toLowerCase())
-          ))
-    )
-    .map((events) => ({
-      ...events,
-      isSaved: savedEvents.some((savedEvent) => savedEvent.id === events.id),
-    }));
+  // Filter events based on search query
+  const filteredEvents = events.filter(
+    (event: Event) =>
+      event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (event.tags &&
+        event.tags.some((tag: any) =>
+          tag.label.toLowerCase().includes(searchQuery.toLowerCase())
+        ))
+  );
 
+  // Handle bookmark toggle
   const handleToggleBookmark = (event: Event) => {
-      // Add your bookmark toggle logic here
+    // Update event saved status
+    setEvents((currentEvents) =>
+      currentEvents.map((currentEvent) =>
+        currentEvent.id === event.id
+          ? { ...currentEvent, isSaved: !currentEvent.isSaved }
+          : currentEvent
+      )
+    );
+    
+    if (!event.isSaved) {
+      handleSaveEvent(event);
+    } else {
+      handleUnsaveEvent(event);
+    }
   };
 
+  // Refresh events list
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchEvents();
     setRefreshing(false);
   };
 
+  // Save event to backend
+  const handleSaveEvent = async (event: Event) => {
+    const eventID = event.id;
+    const userID = 1; // for now just 1
+    const item = {
+      accountID: userID,
+      eventID: eventID,
+    };
+    try {
+      const response = await fetch(
+        "https://eventsphere-web.azurewebsites.net/savedEvents",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(item),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error saving event:", error);
+    }
+  };
+
+  // Unsave event from backend
+  const handleUnsaveEvent = async (event: Event) => {
+    const eventID = event.id;
+    const userID = 1; // for now just 1
+    try {
+      const response = await fetch(
+        `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}/${eventID}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      // Log the raw response for debugging
+      const text = await response.text();
+      console.log("Raw response:", text);
+  
+      if (!response.ok) {
+        throw new Error(`Failed to unsave event: ${response.statusText}`);
+      }
+  
+      // Parse JSON only if applicable
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const data = JSON.parse(text);
+        console.log("Success:", data);
+      } else {
+        console.log("Event unsaved successfully with no additional response data.");
+      }
+    } catch (error) {
+      console.error("Error unsaving event:", error);
+    }
+  };
+
+  // Scroll to top functionality
   const goToTop = () => {
-    // Scroll to top of the list
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   };
 
-  const handleScroll = (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => {
+  // Handle scroll to show/hide scroll to top button
+  const handleScroll = (event: {
+    nativeEvent: { contentOffset: { y: any } };
+  }) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-    setIsScrollButtonVisible(offsetY > 100); // Show button if scrolled down more than 100 pixels
+    setIsScrollButtonVisible(offsetY > 100);
   };
 
-  // Renders an individual event card with details and actions (edit, delete, bookmark)
-  const renderEventCard = ({ item }: { item: any }) => (
+  // Render individual event card
+  const renderEventCard = ({ item }: { item: Event }) => (
     <Pressable onPress={() => handleSeeMore(item)}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
@@ -164,7 +267,8 @@ export default function Index() {
         <Text style={styles.cardDescription}>
           {truncateText(item.description, 140)}
         </Text>
-        <Text style={styles.seeMoreText}>See More</Text>
+
+
 
         <View style={styles.tagAndButtonContainer}>
           <View style={styles.tagContainer}>
@@ -178,7 +282,6 @@ export default function Index() {
             ))}
           </View>
           <View style={styles.bookmarkIcon}>
-            {/* Add handleSaveEvent here */}
             <Pressable onPress={() => handleToggleBookmark(item)}>
               <Ionicons
                 name={item.isSaved ? "bookmark" : "bookmark-outline"}
@@ -187,14 +290,15 @@ export default function Index() {
             </Pressable>
           </View>
         </View>
+        
       </View>
     </Pressable>
   );
 
-  // Main component rendering the search bar and event list
+  // Main render method
   return (
     <View style={styles.container}>
-      {/* Render search bar */}
+      {/* Search bar */}
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -209,9 +313,10 @@ export default function Index() {
         />
       </View>
 
-      {/* Render filtered events in a scrollable list */}
+      {/* Events list */}
       <FlatList
         data={filteredEvents}
+        ref={flatListRef}
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text>No events yet. Create one!</Text>}
@@ -224,7 +329,7 @@ export default function Index() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         onScroll={handleScroll}
-        scrollEventThrottle={16} // Adjust the frequency of scroll events
+        scrollEventThrottle={16}
       />
       {isScrollButtonVisible && (
         <Pressable style={styles.scrollToTopButton} onPress={goToTop}>
@@ -233,4 +338,6 @@ export default function Index() {
       )}
     </View>
   );
-}
+};
+
+export default Home;
