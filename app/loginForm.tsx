@@ -10,7 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import axios from "axios";
 
-export const userID = 0; 
+export const userID = 1; 
 
 export default function Login() {
   const [accountName, setAccountName] = useState("");
@@ -19,9 +19,14 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.get(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
-      const userData = response.data;
+      const response = await fetch(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const userData = await response.json();
       console.log(userData);
+
+      console.log(userData.accountname);
       if (userData && userData.accountname === accountName && userData.password === password) {
         Alert.alert("Success", "Login successful");
         router.push("/home"); // Navigate to the home screen

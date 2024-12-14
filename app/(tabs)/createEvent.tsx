@@ -13,6 +13,7 @@ import styles from "@/styles/globalStyles";
 import { Tag } from "../(tabs)/home";
 import { availableTags } from "../(tabs)/home";
 import { router } from "expo-router";
+import { userID } from "../loginForm";
 // import TimePicker from 'react-time-picker'
 
 const tags = availableTags;
@@ -51,7 +52,7 @@ export default function CreateEvent() {
         return foundTag ? foundTag.id : null;
       }).filter(tagId => tagId !== null), // Reverse map tags to their IDs
       location: location,
-      organizerid: 1,
+      organizerid: userID,
     };
     try {
       console.log("Creating event with data:", newEvent);
