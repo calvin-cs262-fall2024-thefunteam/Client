@@ -13,8 +13,8 @@ import styles from "@/styles/globalStyles";
 import { Tag } from "../(tabs)/home";
 import { availableTags } from "../(tabs)/home";
 import { router } from "expo-router";
-import { userID } from "../loginForm";
-// import TimePicker from 'react-time-picker'
+import { useUser } from "../../components/UserContext";
+
 
 const tags = availableTags;
 
@@ -25,6 +25,7 @@ export default function CreateEvent() {
   const [eventDescription, setEventDescription] = useState("");
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [location, setLocation] = useState("");
+  const { userID } = useUser();
   //const [time, setTime] = useState<>();
 
   const handleTagToggle = (tag: Tag) => {
@@ -122,8 +123,6 @@ export default function CreateEvent() {
 
       <TextInput
         style={styles.descriptionInput}
-        multiline={true}
-        numberOfLines={3}
         placeholder="Event Description"
         placeholderTextColor={"grey"}
         value={eventDescription}

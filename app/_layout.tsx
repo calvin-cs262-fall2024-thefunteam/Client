@@ -9,6 +9,8 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
+import { UserProvider } from "../components/UserContext";
+
 
 // LogoTitle now receives the `isGuest` state as a prop
 function LogoTitle() {
@@ -30,6 +32,7 @@ export default function RootLayout() {
   const [isGuest, setIsGuest] = useState(true); // Assuming the user is a guest by default
 
   return (
+    <UserProvider>
     <Stack
       screenOptions={{
         headerStyle: {
@@ -47,6 +50,7 @@ export default function RootLayout() {
       <Stack.Screen name="signup" options={{ headerTitle: "Sign Up" }} />
       {/* Add more screens as needed */}
     </Stack>
+    </UserProvider>
   );
 }
 

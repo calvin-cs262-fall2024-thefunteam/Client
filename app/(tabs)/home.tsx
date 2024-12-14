@@ -44,7 +44,7 @@ export type Event = {
   description: string;
   tags?: Tag[]; // optional
   location: string;
-  isSaved: boolean;
+ 
 };
 
 // Main component rendering the list of events
@@ -84,7 +84,7 @@ const Home = () => {
         return {
           id: String(tempEvent.id),
           name: tempEvent.name,
-          organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
+          organizer: tempEvent.organizer,
           date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
           description: tempEvent.description,
           tags: eventTags,
@@ -105,7 +105,7 @@ const Home = () => {
       pathname: "/eventDetails",
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
-  };
+  }; 
 
   // Helper function to truncate long text descriptions
   function truncateText(text: string, charLimit: number) {
@@ -225,7 +225,7 @@ const Home = () => {
   }) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     setIsScrollButtonVisible(offsetY > 100);
-    setIsSearchBarVisible(offsetY <= 0); // Hide search bar when scrolling down
+    // setIsSearchBarVisible(offsetY <= 0); // Hide search bar when scrolling down
   };
 
   // Render individual event card
@@ -234,7 +234,7 @@ const Home = () => {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardText}>{item.name}</Text>
-          <Text style={styles.cardText}>{item.organizer}</Text>
+          {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
         </View>
         <View style={styles.cardDateLocationContainer}>
           <Text style={styles.cardDate}>{item.date}</Text>
@@ -243,7 +243,7 @@ const Home = () => {
 
         <View style={styles.separator} />
         <Text style={styles.cardDescription}>
-          {truncateText(item.description, 140)}
+          {truncateText(item.description, 45)}
         </Text>
 
         <View style={styles.tagAndButtonContainer}>
@@ -290,7 +290,8 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListHeaderComponent={
-          isSearchBarVisible && (
+          // isSearchBarVisible && 
+          (
             <View style={styles.searchContainer}>
               <Ionicons
                 name="search"
