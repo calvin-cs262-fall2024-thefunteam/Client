@@ -54,7 +54,6 @@ export default function CreateEvent() {
       location: location,
       organizerid: userID,
     };
-
     try {
       console.log("Creating event with data:", newEvent);
       const response = await fetch("https://eventsphere-web.azurewebsites.net/events", {

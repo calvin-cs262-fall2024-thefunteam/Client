@@ -25,6 +25,7 @@ export default function Login() {
       }
       const userData = await response.json();
       console.log(userData);
+
       console.log(userData.accountname);
       if (userData && userData.accountname === accountName && userData.password === password) {
         Alert.alert("Success", "Login successful");
