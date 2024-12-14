@@ -12,6 +12,7 @@ import Event, { Tag } from "../(tabs)/home";
 import tag from "../(tabs)/home";
 import { availableTags } from "../(tabs)/home";
 import axios from "axios";
+import { useUser } from "../../components/UserContext";
 
 export type Event = {
   id: string;
@@ -26,10 +27,8 @@ export type Event = {
 
 export default function displaySavedEvents() {
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
+  const { userID } = useUser();
   
-  
-  const userID = 1; // Temporary user ID for testing
-
   const fetchSavedEvents = async () => {
     try {
       const response = await axios.get(

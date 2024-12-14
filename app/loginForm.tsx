@@ -8,14 +8,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
-import axios from "axios";
-
-export const userID = 1; 
+import { useUser } from "../components/UserContext";
 
 export default function Login() {
   const [accountName, setAccountName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { userID, setUserID } = useUser();
 
   const handleLogin = async () => {
     try {
@@ -28,8 +27,9 @@ export default function Login() {
 
       console.log(userData.accountname);
       if (userData && userData.accountname === accountName && userData.password === password) {
-        Alert.alert("Success", "Login successful");
-        router.push("/home"); // Navigate to the home screen
+        console.log("Logged in successfully");
+        setUserID(userData.id); // Set the user ID in the context
+        router.replace("/home"); // Navigate to the home screen
       } else {
         Alert.alert("Error", "Invalid credentials");
       }
