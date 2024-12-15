@@ -14,7 +14,7 @@ export default function Login() {
   const [accountName, setAccountName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { userID, setUserID } = useUser();
+  const { userID, setUserID, username, setUsername } = useUser();
 
   const handleLogin = async () => {
     try {
@@ -29,6 +29,7 @@ export default function Login() {
       if (userData && userData.accountname === accountName && userData.password === password) {
         console.log("Logged in successfully");
         setUserID(userData.id); // Set the user ID in the context
+        setUsername(userData.accountname);
         router.replace("/home"); // Navigate to the home screen
       } else {
         Alert.alert("Error", "Invalid credentials");
