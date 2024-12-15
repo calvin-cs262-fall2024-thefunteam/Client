@@ -145,6 +145,23 @@ const renderEventCard = ({ item }: { item: Event }) => (
     setIsEditing(false);
     console.log("Profile saved:", { username, description });
   };
+    
+    const handleLogout = () => {
+      // Clear user context or any stored data
+      Alert.alert("Logout", "Are you sure you want to log out?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            // Clear the user context
+            router.replace("/"); // Replace with your login page route
+          },
+        },
+      ]);
+    };
 
   return (
     <>
@@ -241,6 +258,22 @@ const renderEventCard = ({ item }: { item: Event }) => (
           />
         </View>
       </Modal>
+          
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#ff4d4d",
+              padding: 10,
+              borderRadius: 5,
+              marginVertical: 20,
+              alignSelf: "center",
+            }}
+            onPress={() => {
+              // Logic for logging out
+              handleLogout();
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>Logout</Text>
+          </TouchableOpacity>
 
       {/* display event cards */}
       <Text style={profile_styles.headerText}>My Events</Text>
