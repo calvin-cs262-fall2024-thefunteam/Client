@@ -5,11 +5,13 @@ import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute } from "@react-navigation/native"; // Import useRoute for navigation parameters
 import { useRouter } from "expo-router";
 import axios from "axios";
+import { useUser } from "@/components/UserContext";
 
 // Define the EventDetailsScreen component
 export default function EventDetailsScreen() {
   // Get route data to retrieve parameters passed from the previous screen
   const route = useRoute();
+  const {userID} = useUser();
 
   // Extract 'event' parameter from route parameters, specifying it as a string type
   const { event } = route.params as { event: string };
@@ -18,6 +20,9 @@ export default function EventDetailsScreen() {
   const parsedEvent = event ? JSON.parse(event) : null;
 
   const router = useRouter();
+
+  console.log("organizerID:",parsedEvent.organizerID);
+  console.log(userID);
 
   const handleEditEvent = (event: Event) => {
     router.push({
@@ -85,20 +90,24 @@ export default function EventDetailsScreen() {
           </View>
         ))}
       </View>
-        <View 
-        style={styles.editAndDeleteButton}>
+
+         {/* Conditional rendering of Edit and Delete buttons */}
+      {userID === parsedEvent.organizerID && (
+        <View style={styles.editAndDeleteButton}>
           <Pressable
-          style={styles.editButton}
-          onPress={() => handleEditEvent(parsedEvent)}>
+            style={styles.editButton}
+            onPress={() => handleEditEvent(parsedEvent)}
+          >
             <Text style={styles.editButtonText}>Edit</Text>
           </Pressable>
           <Pressable
             style={styles.deleteButton}
-            onPress={() => confirmDelete(parsedEvent.id)}>
-
+            onPress={() => confirmDelete(parsedEvent.id)}
+          >
             <Text style={styles.deleteButtonText}>Delete</Text>
           </Pressable>
         </View>
+      )}
     </View>
   );
 }
