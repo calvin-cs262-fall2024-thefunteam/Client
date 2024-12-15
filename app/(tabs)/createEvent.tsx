@@ -26,6 +26,9 @@ export default function CreateEvent() {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [location, setLocation] = useState("");
   const { userID } = useUser();
+
+  const{username} = useUser();
+
   //const [time, setTime] = useState<>();
 
   const handleTagToggle = (tag: Tag) => {
@@ -85,7 +88,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.createContainer} behavior="padding">
       <TextInput
         style={styles.input}
         placeholder="Event Name"
@@ -96,7 +99,7 @@ export default function CreateEvent() {
 
       <TextInput
         style={styles.input}
-        placeholder="Organizer"
+        placeholder={username || "Organizer"}
         placeholderTextColor={"grey"}
         value={organizer}
         onChangeText={setOrganizer}
@@ -127,6 +130,8 @@ export default function CreateEvent() {
         placeholderTextColor={"grey"}
         value={eventDescription}
         onChangeText={setEventDescription}
+        multiline
+        numberOfLines={3}
       />
 
       <Text style={styles.modalText}>Select Tags</Text>

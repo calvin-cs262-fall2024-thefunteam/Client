@@ -3,7 +3,12 @@ import { StyleSheet, Dimensions } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 0,
+    padding: 2,
+    backgroundColor: "white",
+  },
+  createContainer:{
+    flex: 1,
+    padding: 15,
     backgroundColor: "white",
   },
   searchContainer: {
@@ -43,6 +48,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     maxHeight: 350,
+    minHeight: 130,
   },
   cardHeader: {
     flexDirection: "row",
@@ -202,7 +208,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 10,
-    height: 150,
+    height: 100,
   },
   tagSelectionContainer: {
     flexDirection: "row",
@@ -273,7 +279,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     justifyContent: "flex-end",
     right: 0,
-    top: -15,
+    top: 0,
   },
   seeMoreText: {
     color: "blue",
@@ -321,6 +327,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
+  
 });
 
 export default styles;
