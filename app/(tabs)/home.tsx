@@ -16,6 +16,8 @@ import { router } from "expo-router";
 import { useNavigation } from "@react-navigation/native"; // Navigation hook
 import { useFocusEffect } from "@react-navigation/native";
 
+import { useUser } from "../../components/UserContext";
+
 // Define the structure of tags with label and color properties
 export type Tag = {
   id: number;
@@ -40,23 +42,27 @@ export type Event = {
   id: string;
   name: string;
   organizer: string;
+  organizerID: number;
   date: string;
   description: string;
   tags?: Tag[]; // optional
   location: string;
- 
+  isSaved: boolean;
 };
 
 // Main component rendering the list of events
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
+
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
   const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(true);
   const flatListRef = useRef<FlatList<Event>>(null);
+  const { userID } = useUser();
 
 
   useFocusEffect(
@@ -89,6 +95,7 @@ const Home = () => {
           description: tempEvent.description,
           tags: eventTags,
           location: tempEvent.location,
+          organizerID: tempEvent.organizerid,
           isSaved: false, // Default to false
         };
       });
@@ -155,7 +162,6 @@ const Home = () => {
   // Save event to backend
   const handleSaveEvent = async (event: Event) => {
     const eventID = event.id;
-    const userID = 2; // for now just 1
     const item = {
       accountID: userID,
       eventID: eventID,
@@ -182,7 +188,6 @@ const Home = () => {
   // Unsave event from backend
   const handleUnsaveEvent = async (event: Event) => {
     const eventID = event.id;
-    const userID = 1; // for now just 1
     try {
       const response = await fetch(
         `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}/${eventID}`,
