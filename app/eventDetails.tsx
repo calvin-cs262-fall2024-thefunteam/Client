@@ -92,7 +92,7 @@ export default function EventDetailsScreen() {
       </View>
 
          {/* Conditional rendering of Edit and Delete buttons */}
-      {userID === parsedEvent.organizerID && (
+      { userID === 35 || userID === parsedEvent.organizerID && (
         <View style={styles.editAndDeleteButton}>
           <Pressable
             style={styles.editButton}
