@@ -109,7 +109,7 @@ export default function EditEventScreen() {
 
   return (
     // Main container with keyboard avoiding functionality for better UX
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.createContainer} behavior="padding">
       {/* Event name input */}
       <TextInput
         style={styles.input}
