@@ -25,6 +25,7 @@ export type Event = {
   tags?: Tag[]; // optional
   location: string;
   isSaved: boolean;
+  organizerID: number;
 };
 
 export default function displaySavedEvents() {
@@ -65,6 +66,7 @@ export default function displaySavedEvents() {
         description: tempEvent.description,
         tags: eventTags,
         location: tempEvent.location,
+        organizerID: tempEvent.organizerid,
         isSaved: false, // Default to false
       };
     });
