@@ -64,6 +64,7 @@ export default function TabLayout() {
                     title: 'Profile',                        // Title displayed in header
                     tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
                         <Ionicons name="person-outline" size={size} color={color} />, // Profile icon
+                        headerShown: false, // Hide the header
                 }}
             />
         </Tabs>

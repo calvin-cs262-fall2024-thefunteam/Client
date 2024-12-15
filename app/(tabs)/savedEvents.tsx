@@ -34,53 +34,51 @@ export default function displaySavedEvents() {
   useEffect(() => {
     fetchSavedEvents();
   }, []);
-  
 
-   useFocusEffect(
-      useCallback(() => {
-        fetchSavedEvents(); // Fetch events when screen is focused
-      }, [])
-    );
-  
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSavedEvents(); // Fetch events when screen is focused
+    }, [])
+  );
+
   const fetchSavedEvents = async () => {
-    try {
-      const response = await axios.get(
-        `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
-      );
-      const tempEvents: any[] = response.data; // Store data in a temporary array with type any
 
-      const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
-        
-        const eventTags = tempEvent.tagsarray
-          .map((tagId: number) => {
-            return availableTags.find((tag) => tag.id === tagId);
-          })
-          .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+    const response = await axios.get(
+      `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
+    );
+    const tempEvents: any[] = response.data; // Store data in a temporary array with type any
 
-        return {
-          id: String(tempEvent.id),
-          name: tempEvent.name,
-          organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
-          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
-          description: tempEvent.description,
-          tags: eventTags,
-          location: tempEvent.location,
-          isSaved: false, // Default to false
-        };
-      });
+    const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
 
-      setSavedEvents(mappedEvents); // Sets the mapped events to state
-    } catch (error) {
-      console.error("Error fetching saved events:", error);
-    }
+      const eventTags = tempEvent.tagsarray
+        .map((tagId: number) => {
+          return availableTags.find((tag) => tag.id === tagId);
+        })
+        .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+
+      return {
+        id: String(tempEvent.id),
+        name: tempEvent.name,
+        organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
+        date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
+        description: tempEvent.description,
+        tags: eventTags,
+        location: tempEvent.location,
+        isSaved: false, // Default to false
+      };
+    });
+
+    setSavedEvents(mappedEvents); // Sets the mapped events to state
+
   };
 
   const handleSeeMore = (event: Event) => {
-      router.push({
-        pathname: "/eventDetails",
-        params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
-      });
-    }; 
+    router.push({
+      pathname: "/eventDetails",
+      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
+    });
+  };
 
   const renderEventCard = ({ item }: { item: Event }) => (
     <Pressable onPress={() => handleSeeMore(item)}>
@@ -107,7 +105,7 @@ export default function displaySavedEvents() {
             ))}
           </View>
         </View>
-        
+
       </View>
     </Pressable>
   );
@@ -121,7 +119,7 @@ export default function displaySavedEvents() {
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
       />
-      
+
     </View>
   );
 }

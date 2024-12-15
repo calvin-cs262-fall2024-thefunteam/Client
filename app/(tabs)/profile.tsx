@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,73 +6,119 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
-  useColorScheme,
   Alert,
   Dimensions,
+  Modal,
+  Pressable,
+  FlatList,
 } from "react-native";
 import { launchImageLibrary } from "react-native-image-picker";
-import { Pressable } from "react-native";
-import { router } from "expo-router";
+import { useColorScheme } from "react-native";
 import { useUser } from "../../components/UserContext";
-import Event, { availableTags, Tag } from "../(tabs)/home";
 import axios from "axios";
-import savedEvents from "./savedEvents";
+import { availableTags, Tag, Event } from "./home";
+import {router} from "expo-router";
+import styles from "@/styles/globalStyles";
+import { useFocusEffect } from "@react-navigation/native";
 
-const ProfileStats = ({ posts, followers, following, colorScheme }) => (
-  <View style={styles.statsContainer}>
-    {[
-      { label: "Posts", value: posts },
-      { label: "Followers", value: followers },
-      { label: "Following", value: following },
-    ].map((stat, index) => (
-      <View key={index} style={styles.statBox}>
-        <Text
-          style={[
-            styles.statNumber,
-            { color: colorScheme === "dark" ? "#fff" : "#000" },
-          ]}
-        >
-          {stat.value}
-        </Text>
-        <Text style={styles.statLabel}>{stat.label}</Text>
-      </View>
-    ))}
-  </View>
-);
 
-export type Event = {
-  id: string;
-  name: string;
-  organizer: string;
-  date: string;
-  description: string;
-  tags?: Tag[]; // optional
-  location: string;
-  isSaved: boolean;
-};
-
-const Profile = ({ route }) => {
+const Profile = ({  }) => {
+  const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const colorScheme = useColorScheme();
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicture, setProfilePicture] = useState(
-    "https://via.placeholder.com/100"
+    "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cde468fa-90fa-4d3f-8377-4477c8372e4c/d2dbocx-5a37f544-3f7a-46eb-93af-80d906a6abef.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NkZTQ2OGZhLTkwZmEtNGQzZi04Mzc3LTQ0NzdjODM3MmU0Y1wvZDJkYm9jeC01YTM3ZjU0NC0zZjdhLTQ2ZWItOTNhZi04MGQ5MDZhNmFiZWYuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.bb3ZHcqr8Wio7OkHgbxFz4iH1f8eL-C5zWoKdRdvRGE"
   );
-  const [username, setUsername] = useState("Guest");
-  const [description, setDescription] = useState("Events Enthusiast");
-  const [followers, setFollowers] = useState(0);
-  const [posts, setPosts] = useState(0);
-  const [following, setFollowing] = useState(0);
-  const [joinedClubs, setJoinedClubs] = useState([]); // Dynamic list for clubs
-  const { userID } = useUser();
-  const [myEvents, setMyEvents] = useState<Event[]>([]); // Dynamic list for events
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Initialize username dynamically if provided through login
-  useEffect(() => {
-    if (route?.params?.username) {
-      setUsername(route.params.username);
+  const [description, setDescription] = useState("Events Enthusiast");
+  const { userID, username: initialUsername } = useUser();
+  const [username, setUsername] = useState(initialUsername);
+  
+  const fetchEvents = async () => {
+    const response = await axios.get(
+      `https://eventsphere-web.azurewebsites.net/eventsbyuser/${userID}`
+    );
+    const tempEvents: any[] = response.data; // Store data in a temporary array with type any
+    console.log(tempEvents);
+
+    const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
+      const eventTags = tempEvent.tagsarray
+        .map((tagId: number) => {
+          return availableTags.find((tag) => tag.id === tagId);
+        })
+        .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+
+      return {
+        id: String(tempEvent.id),
+          name: tempEvent.name,
+          organizer: tempEvent.organizer,
+          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
+          description: tempEvent.description,
+          tags: eventTags,
+          location: tempEvent.location,
+          organizerID: tempEvent.organizerid,
+          isSaved: false,
+      };
+    });
+
+    setEvents(mappedEvents);
+  };
+
+  useFocusEffect(
+      useCallback(() => {
+        fetchEvents(); // Fetch events when screen is focused
+      }, [])
+    );
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    } else {
+      return text;
     }
-  }, [route?.params?.username]);
+  };
+
+const handleSeeMore = (event: Event) => {
+    router.push({
+      pathname: "/eventDetails",
+      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
+    });
+  }; 
+
+const renderEventCard = ({ item }: { item: Event }) => (
+  <Pressable onPress={() => handleSeeMore(item)}>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardText}>{item.name}</Text>
+        {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
+      </View>
+      <View style={styles.cardDateLocationContainer}>
+        <Text style={styles.cardDate}>{item.date}</Text>
+        <Text style={styles.cardLocation}>{item.location}</Text>
+      </View>
+
+      <View style={styles.separator} />
+      <Text style={styles.cardDescription}>
+        {truncateText(item.description, 45)}
+      </Text>
+
+      <View style={styles.tagAndButtonContainer}>
+        <View style={styles.tagContainer}>
+          {item.tags!.map((tag: Tag) => (
+            <View
+              key={tag.label}
+              style={[styles.tag, { backgroundColor: tag.color }]}
+            >
+              <Text style={styles.tagText}>{tag.label}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+      
+    </View>
+  </Pressable>
+);
 
   const handleImageUpload = async () => {
     const result = await launchImageLibrary({
@@ -81,7 +127,7 @@ const Profile = ({ route }) => {
     });
     if (result.assets && result.assets.length > 0) {
       setProfilePicture(
-        result.assets[0].uri ?? "https://via.placeholder.com/100"
+        result.assets[0].uri ?? "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cde468fa-90fa-4d3f-8377-4477c8372e4c/d2dbocx-5a37f544-3f7a-46eb-93af-80d906a6abef.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NkZTQ2OGZhLTkwZmEtNGQzZi04Mzc3LTQ0NzdjODM3MmU0Y1wvZDJkYm9jeC01YTM3ZjU0NC0zZjdhLTQ2ZWItOTNhZi04MGQ5MDZhNmFiZWYuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.bb3ZHcqr8Wio7OkHgbxFz4iH1f8eL-C5zWoKdRdvRGE"
       );
     } else {
       Alert.alert("Upload Failed", "No image was selected.");
@@ -100,112 +146,50 @@ const Profile = ({ route }) => {
     console.log("Profile saved:", { username, description });
   };
 
-  const handleSeeMore = (event: Event) => {
-    router.push({
-      pathname: "/eventDetails",
-      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
-    });
-  };
-
-  const fetchmyEvents = async () => {
-    try {
-      const response = await axios.get(
-        `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
-      );
-      const tempEvents: any[] = response.data; // Store data in a temporary array with type any
-
-      const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
-        const eventTags = tempEvent.tagsarray
-          .map((tagId: number) => {
-            return availableTags.find((tag) => tag.id === tagId);
-          })
-          .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
-
-        return {
-          id: String(tempEvent.id),
-          name: tempEvent.name,
-          organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
-          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
-          description: tempEvent.description,
-          tags: eventTags,
-          location: tempEvent.location,
-          isSaved: false, // Default to false
-        };
-      });
-
-      setMyEvents(mappedEvents); // Sets the mapped events to state
-    } catch (error) {
-      console.error("Error fetching saved events:", error);
-    }
-  };
-
-  const renderEventCard = ({ item }: { item: Event }) => (
-    <Pressable onPress={() => handleSeeMore(item)}>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardText}>{item.name}</Text>
-          {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
-        </View>
-        <View style={styles.cardDateLocationContainer}>
-          <Text style={styles.cardDate}>{item.date}</Text>
-          <Text style={styles.cardLocation}>{item.location}</Text>
-        </View>
-
-        <View style={styles.separator} />
-        <View style={styles.tagAndButtonContainer}>
-          <View style={styles.tagContainer}>
-            {item.tags!.map((tag: Tag) => (
-              <View
-                key={tag.label}
-                style={[styles.tag, { backgroundColor: tag.color }]}
-              >
-                <Text style={styles.tagText}>{tag.label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-        
-      </View>
-    </Pressable>
-  );
-
   return (
     <>
       <View
         style={[
           styles.container,
-          { backgroundColor: colorScheme === "dark" ? "#000" : "#fff" },
+          { backgroundColor: colorScheme === "dark" ? "#fff" : "#000" },
         ]}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <View style={profile_styles.header}>
           <Text
             style={[
-              styles.headerText,
-              { color: colorScheme === "dark" ? "#fff" : "#000" },
+              profile_styles.headerText,
+              { color: colorScheme === "dark" ? "#000" : "#fff" },
             ]}
           >
             Profile
           </Text>
           {isEditing ? (
             <TouchableOpacity onPress={saveProfile}>
-              <Text style={[styles.editText, { color: "#007bff" }]}>Save</Text>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>Save</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={() => setIsEditing(true)}>
-              <Text style={[styles.editText, { color: "#007bff" }]}>Edit</Text>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>Edit</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <TouchableOpacity onPress={handleImageUpload}>
+        <View style={profile_styles.profileSection}>
+          <TouchableOpacity onPress={() => setIsModalVisible(true)}>
             <Image
               source={{ uri: profilePicture }}
-              style={styles.profilePicture}
+              style={profile_styles.profilePicture}
             />
           </TouchableOpacity>
+          {isEditing && (
+            <TouchableOpacity onPress={handleImageUpload}>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>
+                Choose Photo
+              </Text>
+            </TouchableOpacity>
+          )}
           {isEditing ? (
             <TextInput
               style={styles.input}
@@ -217,8 +201,8 @@ const Profile = ({ route }) => {
           ) : (
             <Text
               style={[
-                styles.profileName,
-                { color: colorScheme === "dark" ? "#fff" : "#000" },
+                profile_styles.profileName,
+                { color: colorScheme === "dark" ? "#000" : "#fff" },
               ]}
             >
               {username}
@@ -233,27 +217,52 @@ const Profile = ({ route }) => {
               placeholderTextColor="#aaa"
             />
           ) : (
-            <Text style={[styles.profileDescription, { color: "#888" }]}>
+            <Text style={[profile_styles.profileDescription, { color: "#888" }]}>
               {description}
             </Text>
           )}
-          <ProfileStats
-            posts={posts}
-            followers={followers}
-            following={following}
-            colorScheme={colorScheme}
-          />
         </View>
       </View>
-      <View>
-        
-      </View>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={profile_styles.modalCloseButton}
+            onPress={() => setIsModalVisible(false)}
+          >
+            <Text style={profile_styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+          <Image
+            source={{ uri: profilePicture }}
+            style={profile_styles.enlargedProfilePicture}
+          />
+        </View>
+      </Modal>
 
+      {/* display event cards */}
+      <Text style={profile_styles.headerText}>My Events</Text>
+      <FlatList
+        data={events}
+        renderItem={renderEventCard}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text>No events yet. Create one!</Text>}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+        }} 
+        scrollEventThrottle={16}
+      />
     </>
+
   );
 };
 
-const styles = StyleSheet.create({
+const profile_styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -280,6 +289,8 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
+    backgroundColor: "white",
+    marginLeft: 10,
   },
   editText: {
     fontSize: 16,
@@ -293,6 +304,13 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     marginBottom: 10,
+    borderColor: "#ccc",
+    
+  },
+  enlargedProfilePicture: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
   },
   profileName: {
     fontSize: 22,
@@ -312,260 +330,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#000",
   },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-    marginTop: 20,
-  },
-  statBox: {
-    alignItems: "center",
-    width: "30%",
-  },
-  statNumber: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#555",
-  },
-  clubsSection: {
-    width: "90%",
-    marginTop: 20,
-  },
-  clubsHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  clubRow: {
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  clubText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f0f0f0", // Light background for search bar
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 20, // Adds space below the search bar
-    width: "100%", // Adjust width to your preference
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5, // Adds a subtle shadow for iOS
-  },
-  searchIcon: {
-    marginRight: 10, // Space between icon and input field
-  },
-  searchInput: {
-    flex: 1,
-    height: 40, // Ensures the input field has a consistent height
-    fontSize: 16, // Adjust font size for readability
-    color: "#333", // Dark text for contrast
-    borderRadius: 20, // Rounded corners for input field
-    paddingLeft: 10, // Padding to keep the text away from the edges
-    backgroundColor: "#fff", // Ensure the text input has a clean white background
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  cardDateLocationContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center", // Optional: to vertically center the text
-  },
-  cardLocation: {
-    fontSize: 14,
-    color: "gray",
-    marginLeft: 160,
-  },
-  cardDate: {
-    fontSize: 14,
-    color: "gray",
-  },
-  cardText: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  separator: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-    marginVertical: 5,
-  },
-  cardDescription: {
-    marginBottom: 5,
-    maxHeight: 60,
-  },
-  tagContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  tag: {
-    backgroundColor: "#ddd",
-    padding: 5,
-    borderRadius: 5,
-    marginRight: 5,
-    marginTop: 5,
-  },
-  tagText: {
-    fontSize: 12,
-  },
-
-  pressable: {
-    padding: 10,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
-  modalView: {
-    width: "90%",
-    height: "70%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  eventNameInput: {
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  nameOrgInput: {
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  dateAndLocationInput: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  dateInput: {
-    width: "48%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  locationInput: {
-    width: "48%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  descriptionInput: {
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    marginBottom: 10,
-    height: 150,
-  },
-  tagSelectionContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 10,
-    padding: 12,
-  },
-  saveButton: {
-    fontSize: 14, //cant change font size for some reason
-    marginHorizontal: 5,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 14, // Smaller font size
-  },
-  cancelButton: {
-    marginHorizontal: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    backgroundColor: "#FF0000",
-    alignItems: "center",
-  },
-  cancelButtonText: {
-    color: "white",
-  },
-  saveOrCancelButton: {
-    paddingVertical: 0,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 20,
+  modalCloseButton: {
     position: "absolute",
-    bottom: 20,
+    top: 40,
     right: 20,
-  },
-  buttonContainerCard: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    position: "absolute",
-    paddingStart: "55%",
-    padding: 10,
-    paddingBottom: 15,
-  },
-  tagAndButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    padding: 10,
-    marginLeft: 10,
-    paddingLeft: 10,
-  },
-  button: {
-    backgroundColor: "blue",
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
   },
-  bookmarkIcon: {
-    position: "absolute",
-    justifyContent: "flex-end",
-    right: 0,
-    top: -15,
-  },
-  seeMoreText: {
-    color: "blue",
+  modalCloseButtonText: {
+    color: "#007bff",
+    fontSize: 16,
   },
 });
 
