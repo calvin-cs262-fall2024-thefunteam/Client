@@ -25,7 +25,23 @@ function LogoTitle() {
     </View>
   );
 }
+// LogoTitle now receives the `isGuest` state as a prop
+function HelpInfo({ isGuest }) {
+  const router = useRouter(); // Access the router for navigation
 
+  return (
+    <View style={styles.logoContainer}>
+      <Pressable onPress={() => router.navigate("/help")}>
+        <Image
+          style={styles.helpIcon}
+          source={require("../assets/images/helpIcon.png")} // Replace with your help icon image
+        />
+      </Pressable>
+    </View>
+  );
+}
+
+// RootLayout component
 export default function RootLayout() {
   const [isGuest, setIsGuest] = useState(true); // Assuming the user is a guest by default
   const router = useRouter();
@@ -98,5 +114,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  helpIcon: {
+    width: 24, // Adjusted for better visibility
+    height: 24,
+    marginRight: 10, // Optional: Spacing for better layout
   },
 });

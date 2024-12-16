@@ -28,6 +28,9 @@ export type Event = {
   organizerID: number;
 };
 
+console.log(typeof eventSaved);
+console.log(eventSaved);
+
 export default function displaySavedEvents() {
   const [savedEvents, setSavedEvents] = useState<Event[]>([]);
   const { userID } = useUser();
