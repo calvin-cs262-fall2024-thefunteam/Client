@@ -27,7 +27,23 @@ function LogoTitle({ isGuest }) {
     </View>
   );
 }
+// LogoTitle now receives the `isGuest` state as a prop
+function HelpInfo({ isGuest }) {
+  const router = useRouter(); // Access the router for navigation
 
+  return (
+    <View style={styles.logoContainer}>
+      <Pressable onPress={() => router.navigate("/help")}>
+        <Image
+          style={styles.helpIcon}
+          source={require("../assets/images/helpIcon.png")} // Replace with your help icon image
+        />
+      </Pressable>
+    </View>
+  );
+}
+
+// RootLayout component
 export default function RootLayout() {
   const [isGuest, setIsGuest] = useState(true); // Assuming the user is a guest by default
 
@@ -43,11 +59,14 @@ export default function RootLayout() {
           fontWeight: "bold",
         },
         headerTitle: () => <LogoTitle isGuest={isGuest} />, // Pass `isGuest` to LogoTitle
+        headerRight: () => <HelpInfo isGuest={isGuest} />, // Add the help
         headerBackTitleVisible: false,
       }}
     >
       <Stack.Screen name="login" options={{ headerTitle: false }} />
       <Stack.Screen name="signup" options={{ headerTitle: false }} />
+      <Stack.Screen name="help" options={{ headerTitle: "Help" }} />
+      {/* Help page */}
       {/* Add more screens as needed */}
     </Stack>
   );
@@ -65,12 +84,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   image: {
     width: 70,
     height: 40,
-    marginRight: 10,
+    marginRight: 5,
     padding: 5,
   },
   text: {
@@ -95,5 +114,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  helpIcon: {
+    width: 24, // Adjusted for better visibility
+    height: 24,
+    marginRight: 10, // Optional: Spacing for better layout
   },
 });
