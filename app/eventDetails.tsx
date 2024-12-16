@@ -1,21 +1,28 @@
 // Import React and necessary modules from React Native
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { Tag } from "../app/(tabs)/home"; // Import Tag type for type safety
 import { useRoute } from "@react-navigation/native"; // Import useRoute for navigation parameters
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import axios from "axios";
+import { useUser } from "@/components/UserContext";
 
 // Define the EventDetailsScreen component
 export default function EventDetailsScreen() {
   // Get route data to retrieve parameters passed from the previous screen
   const route = useRoute();
+  const {userID} = useUser();
 
   // Extract 'event' parameter from route parameters, specifying it as a string type
   const { event } = route.params as { event: string };
 
   // Parse the event data (from JSON string to JavaScript object)
   const parsedEvent = event ? JSON.parse(event) : null;
+
+  const router = useRouter();
+
+  console.log("organizerID:",parsedEvent.organizerID);
+  console.log(userID);
 
   const handleEditEvent = (event: Event) => {
     router.push({
@@ -34,12 +41,31 @@ export default function EventDetailsScreen() {
         console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
       }
     } catch (error) { 
-      console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
+      //console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
     }
 
     // Navigate back to the home screen after deleting the event
     router.navigate("/home");
 
+  };
+
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this event?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => handleDeleteEvent(id),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
   };
   
   return (
@@ -64,20 +90,24 @@ export default function EventDetailsScreen() {
           </View>
         ))}
       </View>
-        <View 
-        style={styles.editAndDeleteButton}>
+
+         {/* Conditional rendering of Edit and Delete buttons */}
+      { (userID === 35 || userID === parsedEvent.organizerID) && (
+        <View style={styles.editAndDeleteButton}>
           <Pressable
-          style={styles.editButton}
-          onPress={() => handleEditEvent(parsedEvent)}>
+            style={styles.editButton}
+            onPress={() => handleEditEvent(parsedEvent)}
+          >
             <Text style={styles.editButtonText}>Edit</Text>
           </Pressable>
           <Pressable
             style={styles.deleteButton}
-            onPress={() => handleDeleteEvent(parsedEvent.id)}>
-
+            onPress={() => confirmDelete(parsedEvent.id)}
+          >
             <Text style={styles.deleteButtonText}>Delete</Text>
           </Pressable>
         </View>
+      )}
     </View>
   );
 }

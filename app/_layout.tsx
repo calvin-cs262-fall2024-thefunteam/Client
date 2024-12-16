@@ -5,25 +5,23 @@ import {
   Image,
   View,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
   Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
+import { UserProvider } from "../components/UserContext";
+import React from "react";
 
 // LogoTitle now receives the `isGuest` state as a prop
-function LogoTitle({ isGuest }) {
+function LogoTitle() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.navigate("/")}>
-        <View style={styles.logoContainer}>
-          <Image
-            style={styles.image}
-            source={require("@/assets/images/eventSphere.png")}
-          />
-        </View>
-      </Pressable>
+    <View style={styles.logoContainer}>
+      <Image
+        style={styles.image}
+        source={require("@/assets/images/eventSphere.png")}
+      />
     </View>
   );
 }
@@ -46,34 +44,59 @@ function HelpInfo({ isGuest }) {
 // RootLayout component
 export default function RootLayout() {
   const [isGuest, setIsGuest] = useState(true); // Assuming the user is a guest by default
+  const router = useRouter();
 
   return (
-    <Stack
-      initialRouteName="login"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: "white",
-        },
-        headerTintColor: "maroon",
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
-        headerTitle: () => <LogoTitle isGuest={isGuest} />, // Pass `isGuest` to LogoTitle
-        headerRight: () => <HelpInfo isGuest={isGuest} />, // Add the help
-        headerBackTitleVisible: false,
-      }}
-    >
-      <Stack.Screen name="login" options={{ headerTitle: false }} />
-      <Stack.Screen name="signup" options={{ headerTitle: false }} />
-      <Stack.Screen name="help" options={{ headerTitle: "Help" }} />
-      {/* Help page */}
-      {/* Add more screens as needed */}
-    </Stack>
+    <UserProvider>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "white",
+          },
+          headerTintColor: "maroon",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: () => (
+            <View style={styles.headerContainer}>
+              <LogoTitle />
+            </View>
+          ),
+          headerBackTitleVisible: false,
+          // headerRight: () => (
+          //   <Pressable onPress={() => router.push("/calendar")}>
+          //     <Ionicons name="calendar" size={24} color="maroon" style={styles.calendarIcon} />
+          //   </Pressable>
+          // ),
+        }}
+      >
+        {/* Add more screens as needed */}
+      </Stack>
+    </UserProvider>
   );
 }
 
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start", // Align items to the start (left)
+    flex: 1,
+    marginLeft: -60, // Add some margin to the left
+  },
+  logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 150,
+    height: 40,
+    resizeMode: "contain",
+  },
+  calendarIcon: {
+    marginRight: 10, // Add some margin to the right
+  },
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -81,16 +104,6 @@ const styles = StyleSheet.create({
     width: width * 0.95,
     backgroundColor: "white",
     height: "auto",
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  image: {
-    width: 70,
-    height: 40,
-    marginRight: 5,
-    padding: 5,
   },
   text: {
     fontSize: 20,
@@ -101,19 +114,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 50,
-  },
-  loginButton: {
-    backgroundColor: "maroon",
-    paddingVertical: 6, // Adjusted for better sizing
-    paddingHorizontal: 16, // Adjusted for better sizing
-    borderRadius: 5,
-  },
-  loginButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   helpIcon: {
     width: 24, // Adjusted for better visibility

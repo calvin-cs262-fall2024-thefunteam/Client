@@ -13,7 +13,8 @@ import styles from "@/styles/globalStyles";
 import { Tag } from "../(tabs)/home";
 import { availableTags } from "../(tabs)/home";
 import { router } from "expo-router";
-// import TimePicker from 'react-time-picker'
+import { useUser } from "../../components/UserContext";
+
 
 const tags = availableTags;
 
@@ -24,6 +25,10 @@ export default function CreateEvent() {
   const [eventDescription, setEventDescription] = useState("");
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [location, setLocation] = useState("");
+  const { userID } = useUser();
+
+  const{username} = useUser();
+
   //const [time, setTime] = useState<>();
 
   const handleTagToggle = (tag: Tag) => {
@@ -51,9 +56,8 @@ export default function CreateEvent() {
         return foundTag ? foundTag.id : null;
       }).filter(tagId => tagId !== null), // Reverse map tags to their IDs
       location: location,
-      organizerid: 1,
+      organizerid: userID,
     };
-
     try {
       console.log("Creating event with data:", newEvent);
       const response = await fetch("https://eventsphere-web.azurewebsites.net/events", {
@@ -84,7 +88,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.createContainer} behavior="padding">
       <TextInput
         style={styles.input}
         placeholder="Event Name"
@@ -95,7 +99,7 @@ export default function CreateEvent() {
 
       <TextInput
         style={styles.input}
-        placeholder="Organizer"
+        placeholder={username || "Organizer"}
         placeholderTextColor={"grey"}
         value={organizer}
         onChangeText={setOrganizer}
@@ -122,12 +126,12 @@ export default function CreateEvent() {
 
       <TextInput
         style={styles.descriptionInput}
-        multiline={true}
-        numberOfLines={3}
         placeholder="Event Description"
         placeholderTextColor={"grey"}
         value={eventDescription}
         onChangeText={setEventDescription}
+        multiline
+        numberOfLines={3}
       />
 
       <Text style={styles.modalText}>Select Tags</Text>

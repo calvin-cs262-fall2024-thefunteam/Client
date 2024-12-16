@@ -3,23 +3,39 @@ import { StyleSheet, Dimensions } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 2,
+    backgroundColor: "white",
+  },
+  createContainer:{
+    flex: 1,
+    padding: 15,
     backgroundColor: "white",
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Light background for search bar
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 20, // Adds space below the search bar
+    width: '100%', // Adjust width to your preference
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5, // Adds a subtle shadow for iOS
   },
   searchIcon: {
-    marginRight: 10,
+    marginRight: 10, // Space between icon and input field
   },
   searchInput: {
-    flex: 1, // Makes the SearchBar take the remaining space
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    paddingLeft: 10,
+    flex: 1,
+    height: 40, // Ensures the input field has a consistent height
+    fontSize: 16, // Adjust font size for readability
+    color: '#333', // Dark text for contrast
+    borderRadius: 20, // Rounded corners for input field
+    paddingLeft: 10, // Padding to keep the text away from the edges
+    backgroundColor: '#fff', // Ensure the text input has a clean white background
   },
   card: {
     width: Dimensions.get("window").width * 0.9,
@@ -32,6 +48,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     maxHeight: 350,
+    minHeight: 130,
   },
   cardHeader: {
     flexDirection: "row",
@@ -191,12 +208,13 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 5,
     marginBottom: 10,
-    height: 150,
+    height: 100,
   },
   tagSelectionContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 10,
+    padding: 12,
   },
   saveButton: {
     fontSize: 14, //cant change font size for some reason
@@ -245,6 +263,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
+    padding: 10,
+    marginLeft: 10,
+    paddingLeft: 10,
   },
   button: {
     backgroundColor: "blue",
@@ -258,7 +279,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     justifyContent: "flex-end",
     right: 0,
-    top: -15,
+    top: 0,
   },
   seeMoreText: {
     color: "blue",
@@ -306,6 +327,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
+  
 });
 
 export default styles;

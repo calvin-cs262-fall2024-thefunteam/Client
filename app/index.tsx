@@ -12,41 +12,13 @@ import axios from "axios";
 
 export default function Welcome() {
   const router = useRouter();
-  const [accountName, setAccountName] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
 
   const handleSignUp = async () => {
-    try {
-      const response = await axios.post("https://eventsphere-web.azurewebsites.net/users", {
-        Accountname: accountName,
-        password: password,
-        name: name,
-      });
-      if (response.status === 201) {
-        Alert.alert("Success", "User created successfully");
-        router.push("/loginForm"); // Navigate to the login form page
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
-      Alert.alert("Error", "Failed to create user");
-    }
+    router.replace("/signup"); // Navigate to the signup form page
   };
 
   const handleLogin = async () => {
-    try {
-      const response = await axios.get(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
-      const userData = response.data;
-      if (userData && userData.Accountname === accountName && userData.password === password) {
-        Alert.alert("Success", "Login successful");
-        router.push("/home"); // Navigate to the home screen
-      } else {
-        Alert.alert("Error", "Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      Alert.alert("Error", "Failed to log in");
-    }
+    router.replace("/loginForm"); // Navigate to the login form page
   };
 
   return (
@@ -55,26 +27,6 @@ export default function Welcome() {
       <Text style={styles.subtitle}>
         Create an account with us and experience seamless event planning.
       </Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Account Name"
-        value={accountName}
-        onChangeText={setAccountName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
 
       {/* Create Account Button */}
       <TouchableOpacity style={styles.createAccountButton} onPress={handleSignUp}>
