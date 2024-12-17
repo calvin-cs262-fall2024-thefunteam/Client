@@ -17,45 +17,48 @@ import { useColorScheme } from "react-native";
 import { useUser } from "../../components/UserContext";
 import axios from "axios";
 import { availableTags, Tag, Event } from "./home";
-import { router } from "expo-router";
+import {router} from "expo-router";
 import styles from "@/styles/globalStyles";
 import { useFocusEffect } from "@react-navigation/native";
 
-const Profile = ({}) => {
-  const [events, setEvents] = useState<Event[]>([]);
+
+const Profile = ({  }) => {
+  const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const colorScheme = useColorScheme();
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicture, setProfilePicture] = useState(
     "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cde468fa-90fa-4d3f-8377-4477c8372e4c/d2dbocx-5a37f544-3f7a-46eb-93af-80d906a6abef.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NkZTQ2OGZhLTkwZmEtNGQzZi04Mzc3LTQ0NzdjODM3MmU0Y1wvZDJkYm9jeC01YTM3ZjU0NC0zZjdhLTQ2ZWItOTNhZi04MGQ5MDZhNmFiZWYuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.bb3ZHcqr8Wio7OkHgbxFz4iH1f8eL-C5zWoKdRdvRGE"
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
+
   const [description, setDescription] = useState("Events Enthusiast");
   const { userID, username: initialUsername } = useUser();
   const [username, setUsername] = useState(initialUsername);
-
+  
   const fetchEvents = async () => {
     const response = await axios.get(
       `https://eventsphere-web.azurewebsites.net/eventsbyuser/${userID}`
     );
-    const tempEvents: any[] = response.data;
+    const tempEvents: any[] = response.data; // Store data in a temporary array with type any
+    console.log(tempEvents);
 
     const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
       const eventTags = tempEvent.tagsarray
         .map((tagId: number) => {
           return availableTags.find((tag) => tag.id === tagId);
         })
-        .filter(Boolean) as Tag[];
+        .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
 
       return {
         id: String(tempEvent.id),
-        name: tempEvent.name,
-        organizer: tempEvent.organizer,
-        date: tempEvent.date.split("T")[0],
-        description: tempEvent.description,
-        tags: eventTags,
-        location: tempEvent.location,
-        organizerID: tempEvent.organizerid,
-        isSaved: false,
+          name: tempEvent.name,
+          organizer: tempEvent.organizer,
+          date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
+          description: tempEvent.description,
+          tags: eventTags,
+          location: tempEvent.location,
+          organizerID: tempEvent.organizerid,
+          isSaved: false,
       };
     });
 
@@ -63,42 +66,59 @@ const Profile = ({}) => {
   };
 
   useFocusEffect(
-    useCallback(() => {
-      fetchEvents(); // Fetch events when screen is focused
-    }, [])
-  );
+      useCallback(() => {
+        fetchEvents(); // Fetch events when screen is focused
+      }, [])
+    );
 
   const truncateText = (text: string, maxLength: number) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + "...";
+    } else {
+      return text;
+    }
   };
 
-  const handleSeeMore = (event: Event) => {
+const handleSeeMore = (event: Event) => {
     router.push({
       pathname: "/eventDetails",
-      params: { event: JSON.stringify(event) },
+      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
-  };
+  }; 
 
-  const renderEventCard = ({ item }: { item: Event }) => (
-    <Pressable onPress={() => handleSeeMore(item)}>
-      <View style={profile_styles.eventCard}>
-        <View style={profile_styles.eventHeader}>
-          <Text style={profile_styles.eventTitle}>{item.name}</Text>
-        </View>
-        <Text style={profile_styles.eventDate}>{item.date}</Text>
-        <Text style={profile_styles.eventLocation}>{item.location}</Text>
-        <Text style={profile_styles.eventDescription}>{truncateText(item.description, 60)}</Text>
+const renderEventCard = ({ item }: { item: Event }) => (
+  <Pressable onPress={() => handleSeeMore(item)}>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardText}>{item.name}</Text>
+        {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
+      </View>
+      <View style={styles.cardDateLocationContainer}>
+        <Text style={styles.cardDate}>{item.date}</Text>
+        <Text style={styles.cardLocation}>{item.location}</Text>
+      </View>
 
-        <View style={profile_styles.tagContainer}>
-          {item.tags.map((tag: Tag) => (
-            <View key={tag.label} style={[profile_styles.tag, { backgroundColor: tag.color }]}>
-              <Text style={profile_styles.tagText}>{tag.label}</Text>
+      <View style={styles.separator} />
+      <Text style={styles.cardDescription}>
+        {truncateText(item.description, 45)}
+      </Text>
+
+      <View style={styles.tagAndButtonContainer}>
+        <View style={styles.tagContainer}>
+          {item.tags!.map((tag: Tag) => (
+            <View
+              key={tag.label}
+              style={[styles.tag, { backgroundColor: tag.color }]}
+            >
+              <Text style={styles.tagText}>{tag.label}</Text>
             </View>
           ))}
         </View>
       </View>
-    </Pressable>
-  );
+      
+    </View>
+  </Pressable>
+);
 
   const handleImageUpload = async () => {
     const result = await launchImageLibrary({
@@ -106,44 +126,68 @@ const Profile = ({}) => {
       quality: 0.5,
     });
     if (result.assets && result.assets.length > 0) {
-      const imageUri = result.assets[0].uri;
-      setProfilePicture(imageUri);
+      setProfilePicture(
+        result.assets[0].uri ?? "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cde468fa-90fa-4d3f-8377-4477c8372e4c/d2dbocx-5a37f544-3f7a-46eb-93af-80d906a6abef.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2NkZTQ2OGZhLTkwZmEtNGQzZi04Mzc3LTQ0NzdjODM3MmU0Y1wvZDJkYm9jeC01YTM3ZjU0NC0zZjdhLTQ2ZWItOTNhZi04MGQ5MDZhNmFiZWYuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.bb3ZHcqr8Wio7OkHgbxFz4iH1f8eL-C5zWoKdRdvRGE"
+      );
+    } else {
+      Alert.alert("Upload Failed", "No image was selected.");
     }
   };
 
-  const saveProfile = async () => {
+  const saveProfile = () => {
     if (!username.trim() || !description.trim()) {
-      Alert.alert("Validation Error", "Username and description cannot be empty.");
+      Alert.alert(
+        "Validation Error",
+        "Username and description cannot be empty."
+      );
       return;
     }
     setIsEditing(false);
+    console.log("Profile saved:", { username, description });
   };
-
-  const handleLogout = () => {
-    Alert.alert("Logout", "Are you sure you want to log out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        onPress: () => {
-          router.replace("/"); // Replace with your login page route
+    
+    const handleLogout = () => {
+      // Clear user context or any stored data
+      Alert.alert("Logout", "Are you sure you want to log out?", [
+        {
+          text: "Cancel",
+          style: "cancel",
         },
-      },
-    ]);
-  };
+        {
+          text: "Logout",
+          onPress: () => {
+            // Clear the user context
+            router.replace("/"); // Replace with your login page route
+          },
+        },
+      ]);
+    };
 
   return (
     <>
-      <View style={profile_styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: colorScheme === "dark" ? "#fff" : "#000" },
+        ]}
+      >
         {/* Header */}
         <View style={profile_styles.header}>
-          <Text style={profile_styles.headerText}>Profile</Text>
+          <Text
+            style={[
+              profile_styles.headerText,
+              { color: colorScheme === "dark" ? "#000" : "#fff" },
+            ]}
+          >
+            Profile
+          </Text>
           {isEditing ? (
-            <TouchableOpacity onPress={saveProfile} style={profile_styles.saveButton}>
-              <Text style={profile_styles.saveButtonText}>Save</Text>
+            <TouchableOpacity onPress={saveProfile}>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>Save</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => setIsEditing(true)} style={profile_styles.editButton}>
-              <Text style={profile_styles.editButtonText}>Edit</Text>
+            <TouchableOpacity onPress={() => setIsEditing(true)}>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>Edit</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -151,228 +195,190 @@ const Profile = ({}) => {
         {/* Profile Section */}
         <View style={profile_styles.profileSection}>
           <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-            <Image source={{ uri: profilePicture }} style={profile_styles.profilePicture} />
+            <Image
+              source={{ uri: profilePicture }}
+              style={profile_styles.profilePicture}
+            />
           </TouchableOpacity>
           {isEditing && (
-            <TouchableOpacity onPress={handleImageUpload} style={profile_styles.changePhotoButton}>
-              <Text style={profile_styles.changePhotoButtonText}>Change Photo</Text>
+            <TouchableOpacity onPress={handleImageUpload}>
+              <Text style={[profile_styles.editText, { color: "#007bff" }]}>
+                Choose Photo
+              </Text>
             </TouchableOpacity>
           )}
           {isEditing ? (
             <TextInput
-              style={profile_styles.input}
+              style={styles.input}
               value={username}
               onChangeText={setUsername}
-              placeholder="Username"
+              placeholder="Name"
+              placeholderTextColor="#aaa"
             />
           ) : (
-            <Text style={profile_styles.username}>{username}</Text>
+            <Text
+              style={[
+                profile_styles.profileName,
+                { color: colorScheme === "dark" ? "#000" : "#fff" },
+              ]}
+            >
+              {username}
+            </Text>
           )}
           {isEditing ? (
             <TextInput
-              style={profile_styles.input}
+              style={styles.input}
               value={description}
               onChangeText={setDescription}
               placeholder="Description"
+              placeholderTextColor="#aaa"
             />
           ) : (
-            <Text style={profile_styles.description}>{description}</Text>
+            <Text style={[profile_styles.profileDescription, { color: "#888" }]}>
+              {description}
+            </Text>
           )}
         </View>
-
-        {/* Event List */}
-        <FlatList
-          data={events}
-          renderItem={renderEventCard}
-          keyExtractor={(item) => item.id}
-        />
-
-        {/* Modal for Image Upload */}
-        <Modal
-          visible={isModalVisible}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={() => setIsModalVisible(false)}
-        >
-          <Pressable
-            style={profile_styles.modalBackground}
+      </View>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={profile_styles.modalCloseButton}
             onPress={() => setIsModalVisible(false)}
           >
-            <View style={profile_styles.modalContent}>
-              <Text style={profile_styles.modalTitle}>Choose Profile Picture</Text>
-              <TouchableOpacity onPress={handleImageUpload} style={profile_styles.modalButton}>
-                <Text style={profile_styles.modalButtonText}>Choose Photo</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setIsModalVisible(false)}
-                style={profile_styles.modalButton}
-              >
-                <Text style={profile_styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </Pressable>
-        </Modal>
-      </View>
+            <Text style={profile_styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+          <Image
+            source={{ uri: profilePicture }}
+            style={profile_styles.enlargedProfilePicture}
+          />
+        </View>
+      </Modal>
+          
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#ff4d4d",
+              padding: 10,
+              borderRadius: 5,
+              marginVertical: 20,
+              alignSelf: "center",
+            }}
+            onPress={() => {
+              // Logic for logging out
+              handleLogout();
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>Logout</Text>
+          </TouchableOpacity>
+
+      {/* display event cards */}
+      <Text style={profile_styles.headerText}>My Events</Text>
+      <FlatList
+        data={events}
+        renderItem={renderEventCard}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text>No events yet. Create one!</Text>}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+        }} 
+        scrollEventThrottle={16}
+      />
     </>
+
   );
 };
 
 const profile_styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9", // Softer background color for better contrast
+    alignItems: "center",
+    paddingTop: 50,
+  },
+  card: {
+    width: Dimensions.get("window").width * 0.9,
+    backgroundColor: "#EEEEEE",
+    padding: 10,
+    margin: 10,
+    marginBottom: 20,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    maxHeight: 350,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "90%",
     alignItems: "center",
-    paddingBottom: 20,
-    marginBottom: 15,
   },
   headerText: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    backgroundColor: "white",
+    marginLeft: 10,
   },
-  saveButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-  },
-  saveButtonText: {
-    color: "#007bff", // Blue text for Save
+  editText: {
     fontSize: 16,
-    fontWeight: "600",
-  },
-  editButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-  },
-  editButtonText: {
-    color: "#e74c3c", // Red text for Edit
-    fontSize: 16,
-    fontWeight: "600",
   },
   profileSection: {
     alignItems: "center",
-    marginBottom: 25,
-    flexDirection: "column", // Ensures that the profile picture and button stack vertically
-    justifyContent: "center", // Centers the items vertically within the section
+    marginTop: 20,
   },
   profilePicture: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: "#ddd", // Soft border to make the image stand out
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     marginBottom: 10,
+    borderColor: "#ccc",
+    
   },
-  changePhotoButton: {
-    marginTop: 15, // Increased margin to ensure there's enough space between the profile image and the button
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    borderRadius: 5,
-    backgroundColor: "#007bff",
+  enlargedProfilePicture: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
   },
-  changePhotoButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  username: {
-    fontSize: 24,
+  profileName: {
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#333",
   },
-  description: {
-    fontSize: 16,
-    fontStyle: "italic",
-    color: "#555",
-    marginTop: 5,
+  profileDescription: {
+    fontSize: 14,
+    color: "#888",
   },
   input: {
-    width: 250,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "#fff",
+    width: "90%",
+    height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
     marginBottom: 10,
-    textAlign: "center",
+    color: "#000",
   },
-  eventCard: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginVertical: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  eventHeader: {
-    marginBottom: 10,
-  },
-  eventTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  eventDate: {
-    fontSize: 14,
-    color: "#888",
-  },
-  eventLocation: {
-    fontSize: 14,
-    color: "#888",
-  },
-  eventDescription: {
-    fontSize: 14,
-    marginTop: 5,
-    color: "#555",
-  },
-  tagContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 10,
-  },
-  tag: {
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 15,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  tagText: {
-    fontSize: 12,
-    color: "#333",
-  },
-  modalBackground: {
+  modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 25,
-    borderRadius: 10,
-    width: Dimensions.get("window").width - 40,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-  modalButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    marginBottom: 15,
+  modalCloseButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "#fff",
+    padding: 10,
     borderRadius: 5,
   },
-  modalButtonText: {
-    color: "white",
-    textAlign: "center",
+  modalCloseButtonText: {
+    color: "#007bff",
     fontSize: 16,
   },
 });
