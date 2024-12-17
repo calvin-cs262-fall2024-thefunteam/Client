@@ -24,7 +24,7 @@ export type Tag = {
   label: string;
   color: string;
 };
-
+ 
 // Array of available tags, each with a label and color
 export const availableTags: Tag[] = [
   { id: 1, label: "Social", color: "#FFD700" }, // Yellow for social events

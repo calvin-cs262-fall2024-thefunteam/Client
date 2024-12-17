@@ -23,7 +23,7 @@ function LogoTitle() {
         style={styles.image}
         source={require("@/assets/images/eventSphere.png")}
       />
-      <AntDesign style={styles.questionIcon} name="questioncircleo" size={24} color="black" />
+      <Pressable onPress={() => router.push("/help")}><AntDesign style={styles.questionIcon} name="questioncircleo" size={24} color="black" /></Pressable>
     </View>
   );
 }
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   questionIcon: {
-    marginRight: 10, // Add some margin to the right
+    marginRight: 0, // Add some margin to the right
   },
   calendarIcon: {
     marginRight: 10, // Add some margin to the right
