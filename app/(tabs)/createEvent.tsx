@@ -99,7 +99,7 @@ export default function CreateEvent() {
 
       <TextInput
         style={styles.input}
-        placeholder={username || "Organizer"}
+        placeholder={"Organizer"}
         placeholderTextColor={"grey"}
         value={organizer}
         onChangeText={setOrganizer}

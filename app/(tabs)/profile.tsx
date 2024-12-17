@@ -17,12 +17,12 @@ import { useColorScheme } from "react-native";
 import { useUser } from "../../components/UserContext";
 import axios from "axios";
 import { availableTags, Tag, Event } from "./home";
-import {router} from "expo-router";
+import { router } from "expo-router";
 import styles from "@/styles/globalStyles";
 import { useFocusEffect } from "@react-navigation/native";
 
 
-const Profile = ({  }) => {
+const Profile = ({ }) => {
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
   const colorScheme = useColorScheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -34,23 +34,23 @@ const Profile = ({  }) => {
   const [description, setDescription] = useState("Events Enthusiast");
   const { userID, username: initialUsername } = useUser();
   const [username, setUsername] = useState(initialUsername);
-  
+
   const fetchEvents = async () => {
-    const response = await axios.get(
-      `https://eventsphere-web.azurewebsites.net/eventsbyuser/${userID}`
-    );
-    const tempEvents: any[] = response.data; // Store data in a temporary array with type any
-    console.log(tempEvents);
+    try {
+      const response = await axios.get(
+        `https://eventsphere-web.azurewebsites.net/eventsbyuser/${userID}`
+      );
+      const tempEvents: any[] = response.data; // Store data in a temporary array with type any
 
-    const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
-      const eventTags = tempEvent.tagsarray
-        .map((tagId: number) => {
-          return availableTags.find((tag) => tag.id === tagId);
-        })
-        .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+      const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
+        const eventTags = tempEvent.tagsarray
+          .map((tagId: number) => {
+            return availableTags.find((tag) => tag.id === tagId);
+          })
+          .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
 
-      return {
-        id: String(tempEvent.id),
+        return {
+          id: String(tempEvent.id),
           name: tempEvent.name,
           organizer: tempEvent.organizer,
           date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
@@ -59,17 +59,20 @@ const Profile = ({  }) => {
           location: tempEvent.location,
           organizerID: tempEvent.organizerid,
           isSaved: false,
-      };
-    });
+        };
+      });
 
-    setEvents(mappedEvents);
+      setEvents(mappedEvents);
+    } catch (error) {
+      setEvents([]); // If an error occurs, set the state to an empty array
+    }
   };
 
   useFocusEffect(
-      useCallback(() => {
-        fetchEvents(); // Fetch events when screen is focused
-      }, [])
-    );
+    useCallback(() => {
+      fetchEvents(); // Fetch events when screen is focused
+    }, [])
+  );
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length > maxLength) {
@@ -79,46 +82,46 @@ const Profile = ({  }) => {
     }
   };
 
-const handleSeeMore = (event: Event) => {
+  const handleSeeMore = (event: Event) => {
     router.push({
       pathname: "/eventDetails",
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
-  }; 
+  };
 
-const renderEventCard = ({ item }: { item: Event }) => (
-  <Pressable onPress={() => handleSeeMore(item)}>
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardText}>{item.name}</Text>
-        {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
-      </View>
-      <View style={styles.cardDateLocationContainer}>
-        <Text style={styles.cardDate}>{item.date}</Text>
-        <Text style={styles.cardLocation}>{item.location}</Text>
-      </View>
-
-      <View style={styles.separator} />
-      <Text style={styles.cardDescription}>
-        {truncateText(item.description, 45)}
-      </Text>
-
-      <View style={styles.tagAndButtonContainer}>
-        <View style={styles.tagContainer}>
-          {item.tags!.map((tag: Tag) => (
-            <View
-              key={tag.label}
-              style={[styles.tag, { backgroundColor: tag.color }]}
-            >
-              <Text style={styles.tagText}>{tag.label}</Text>
-            </View>
-          ))}
+  const renderEventCard = ({ item }: { item: Event }) => (
+    <Pressable onPress={() => handleSeeMore(item)}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardText}>{item.name}</Text>
+          {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
         </View>
+        <View style={styles.cardDateLocationContainer}>
+          <Text style={styles.cardDate}>{item.date}</Text>
+          <Text style={styles.cardLocation}>{item.location}</Text>
+        </View>
+
+        <View style={styles.separator} />
+        <Text style={styles.cardDescription}>
+          {truncateText(item.description, 45)}
+        </Text>
+
+        <View style={styles.tagAndButtonContainer}>
+          <View style={styles.tagContainer}>
+            {item.tags!.map((tag: Tag) => (
+              <View
+                key={tag.label}
+                style={[styles.tag, { backgroundColor: tag.color }]}
+              >
+                <Text style={styles.tagText}>{tag.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
       </View>
-      
-    </View>
-  </Pressable>
-);
+    </Pressable>
+  );
 
   const handleImageUpload = async () => {
     const result = await launchImageLibrary({
@@ -145,23 +148,23 @@ const renderEventCard = ({ item }: { item: Event }) => (
     setIsEditing(false);
     console.log("Profile saved:", { username, description });
   };
-    
-    const handleLogout = () => {
-      // Clear user context or any stored data
-      Alert.alert("Logout", "Are you sure you want to log out?", [
-        {
-          text: "Cancel",
-          style: "cancel",
+
+  const handleLogout = () => {
+    // Clear user context or any stored data
+    Alert.alert("Logout", "Are you sure you want to log out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        onPress: () => {
+          // Clear the user context
+          router.replace("/"); // Replace with your login page route
         },
-        {
-          text: "Logout",
-          onPress: () => {
-            // Clear the user context
-            router.replace("/"); // Replace with your login page route
-          },
-        },
-      ]);
-    };
+      },
+    ]);
+  };
 
   return (
     <>
@@ -238,6 +241,39 @@ const renderEventCard = ({ item }: { item: Event }) => (
               {description}
             </Text>
           )}
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#ff4d4d",
+              padding: 10,
+              borderRadius: 5,
+              marginVertical: 20,
+              alignSelf: "center",
+            }}
+            onPress={() => {
+              // Logic for logging out
+              handleLogout();
+            }}
+          >
+
+            <Text style={{ color: "white", fontWeight: "bold" }}>Logout</Text>
+          </TouchableOpacity>
+
+          {/* display event cards */}
+          <Text style={profile_styles.myEventsText}>My Events</Text>
+          <FlatList
+            data={events}
+            renderItem={renderEventCard}
+            keyExtractor={(item) => item.id}
+            ListEmptyComponent={<Text>No events yet. Create one!</Text>}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "white",
+            }}
+            scrollEventThrottle={16}
+          />
         </View>
       </View>
       <Modal
@@ -258,38 +294,9 @@ const renderEventCard = ({ item }: { item: Event }) => (
           />
         </View>
       </Modal>
-          
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#ff4d4d",
-              padding: 10,
-              borderRadius: 5,
-              marginVertical: 20,
-              alignSelf: "center",
-            }}
-            onPress={() => {
-              // Logic for logging out
-              handleLogout();
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "bold" }}>Logout</Text>
-          </TouchableOpacity>
 
-      {/* display event cards */}
-      <Text style={profile_styles.headerText}>My Events</Text>
-      <FlatList
-        data={events}
-        renderItem={renderEventCard}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>No events yet. Create one!</Text>}
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "white",
-        }} 
-        scrollEventThrottle={16}
-      />
+
+
     </>
 
   );
@@ -338,7 +345,7 @@ const profile_styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 10,
     borderColor: "#ccc",
-    
+
   },
   enlargedProfilePicture: {
     width: 300,
@@ -380,6 +387,13 @@ const profile_styles = StyleSheet.create({
   modalCloseButtonText: {
     color: "#007bff",
     fontSize: 16,
+  },
+  myEventsText: {
+    fontSize: 16, // Smaller font size
+    color: "#888", // Grey color
+    textAlign: "left", // Align to the left
+    alignSelf: "flex-start",
+    margin: 20,
   },
 });
 

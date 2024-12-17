@@ -29,7 +29,7 @@ export default function Login() {
         console.log("Logged in successfully");
         setUserID(userData.id); // Set the user ID in the context
         setUsername(userData.accountname);
-        router.replace("/home"); // Navigate to the home screen
+        router.replace("/(tabs)/home"); // Navigate to the home screen
       }
   };
 
@@ -38,7 +38,7 @@ export default function Login() {
   };
 
   const handleContinueAsGuest = () => {
-    router.replace("/home"); // Navigate to the home screen without login
+    router.replace("/(tabs)/home"); // Navigate to the home screen without login
   };
 
   const hashpassword = async() => {  // add salt in future
