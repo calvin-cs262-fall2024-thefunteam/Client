@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import * as Crypto from 'expo-crypto';
 
 export default function SignUp() {
   const [username, setUsername] = useState("");
@@ -17,14 +18,14 @@ export default function SignUp() {
   const [name, setName] = useState("");
   const router = useRouter();
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (hashedPassword: string) => {
     // Validate if all fields are filled and if passwords match
     if (username && password && confirmPassword) {
       if (password === confirmPassword && password.length >= 8) {
         try {
           const response = await axios.post("https://eventsphere-web.azurewebsites.net/users", {
             Accountname: username,
-            password: password,
+            password: hashedPassword,
             name: name,
           });
           if (response.status === 201) {
@@ -33,6 +34,7 @@ export default function SignUp() {
           }
         } catch (error) {
           console.error("Error creating user:", error);
+
           Alert.alert("Error", "Failed to create user");
         }
         router.replace("/loginForm"); // Redirect to home screen after sign-up
@@ -46,6 +48,13 @@ export default function SignUp() {
 
   const handleBackToLogin = () => {
     router.replace("/loginForm"); // Redirect to the login page
+  };
+
+  const hashpassword = async() => {  // add salt in future
+    console.log("hashing password");
+    const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password)
+    console.log(digest);
+    handleSignUp(digest);
   };
 
   return (
@@ -90,7 +99,7 @@ export default function SignUp() {
       />
 
       {/* Sign Up Button */}
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+      <TouchableOpacity style={styles.signUpButton} onPress={hashpassword}>
         <Text style={styles.signUpButtonText}>Sign Up</Text>
       </TouchableOpacity>
 
@@ -98,6 +107,11 @@ export default function SignUp() {
       <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
         <Text style={styles.backButtonText}>Already have an account? Log in</Text>
       </TouchableOpacity>
+
+      {/* For Testing Purposes */}
+      {/* <TouchableOpacity style={styles.signUpButton} onPress={hashpassword}>
+        <Text style={styles.signUpButtonText}>Hash Password</Text>
+      </TouchableOpacity> */}
     </View>
   );
 }
