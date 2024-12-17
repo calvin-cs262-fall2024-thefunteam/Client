@@ -1,11 +1,10 @@
 // Import required libraries and components
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   Pressable,
-  TextInput,
   RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
@@ -15,8 +14,8 @@ import axios from "axios"; // Import Axios for API requests
 import { router } from "expo-router";
 import { useNavigation } from "@react-navigation/native"; // Navigation hook
 import { useFocusEffect } from "@react-navigation/native";
-
 import { useUser } from "../../components/UserContext";
+import useSavedEvents from "../../hooks/useSavedEvents"; // Import custom hook
 
 // Define the structure of tags with label and color properties
 export type Tag = {
@@ -53,27 +52,27 @@ export type Event = {
 // Main component rendering the list of events
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
-  
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
-
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
-
   const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
   const [isSearchBarVisible, setIsSearchBarVisible] = useState(true);
   const flatListRef = useRef<FlatList<Event>>(null);
   const { userID } = useUser();
+  const { savedEvents, fetchSavedEvents } = useSavedEvents(); // Use custom hook
 
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchEvents(); // Fetch events when screen is focused
-    }, [])
-  );
+  useFocusEffect(() => {
+    fetchEvents();
+  });
  
+
+  const checkSavedEvents = (eventid: string) => {
+    return savedEvents.some((event) => event.id == eventid);
+  }
 
   // Fetch events from the server
   const fetchEvents = async () => {
+    fetchSavedEvents();
     try {
       const response = await axios.get(
         "https://eventsphere-web.azurewebsites.net/events"
@@ -96,7 +95,7 @@ const Home = () => {
           tags: eventTags,
           location: tempEvent.location,
           organizerID: tempEvent.organizerid,
-          isSaved: false, // Default to false
+          isSaved: checkSavedEvents(String(tempEvent.id)),
         };
       });
 
@@ -136,6 +135,11 @@ const Home = () => {
 
   // Handle bookmark toggle
   const handleToggleBookmark = (event: Event) => {
+    if (!event.isSaved) {
+      handleSaveEvent(event);
+    } else {
+      handleUnsaveEvent(event);
+    }
     // Update event saved status
     setEvents((currentEvents) =>
       currentEvents.map((currentEvent) =>
@@ -144,12 +148,6 @@ const Home = () => {
           : currentEvent
       )
     );
-    
-    if (!event.isSaved) {
-      handleSaveEvent(event);
-    } else {
-      handleUnsaveEvent(event);
-    }
   };
 
   // Refresh events list

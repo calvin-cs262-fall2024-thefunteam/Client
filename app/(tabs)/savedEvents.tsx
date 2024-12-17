@@ -1,78 +1,31 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "@/styles/globalStyles";
 import {
   View,
   Text,
   FlatList,
   Pressable,
-  StyleSheet,
-  KeyboardAvoidingView,
+  RefreshControl,
 } from "react-native";
-import Event, { Tag } from "../(tabs)/home";
-import tag from "../(tabs)/home";
-import { availableTags } from "../(tabs)/home";
-import axios from "axios";
-import { useUser } from "../../components/UserContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
-
-export type Event = {
-  id: string;
-  name: string;
-  organizer: string;
-  date: string;
-  description: string;
-  tags?: Tag[]; // optional
-  location: string;
-  isSaved: boolean;
-  organizerID: number;
-};
+import useSavedEvents from "../../hooks/useSavedEvents"; // Import custom hook
+import { Event, Tag } from "../(tabs)/home";
 
 export default function displaySavedEvents() {
-  const [savedEvents, setSavedEvents] = useState<Event[]>([]);
-  const { userID } = useUser();
-
-  useEffect(() => {
-    fetchSavedEvents();
-  }, []);
-
+  const { savedEvents, fetchSavedEvents } = useSavedEvents(); // Use custom hook
+  const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
-    useCallback(() => {
-      fetchSavedEvents(); // Fetch events when screen is focused
+    React.useCallback(() => {
+      fetchSavedEvents();
     }, [])
   );
 
-  const fetchSavedEvents = async () => {
-
-    const response = await axios.get(
-      `https://eventsphere-web.azurewebsites.net/savedEvents/${userID}`
-    );
-    const tempEvents: any[] = response.data; // Store data in a temporary array with type any
-
-    const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
-
-      const eventTags = tempEvent.tagsarray
-        .map((tagId: number) => {
-          return availableTags.find((tag) => tag.id === tagId);
-        })
-        .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
-
-      return {
-        id: String(tempEvent.id),
-        name: tempEvent.name,
-        organizer: `Organizer ${tempEvent.organizerid}`, // Assuming organizer is retrieved this way
-        date: tempEvent.date.split("T")[0], // Format date to 'YYYY-MM-DD'
-        description: tempEvent.description,
-        tags: eventTags,
-        location: tempEvent.location,
-        organizerID: tempEvent.organizerid,
-        isSaved: false, // Default to false
-      };
-    });
-
-    setSavedEvents(mappedEvents); // Sets the mapped events to state
-
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchSavedEvents();
+    setRefreshing(false);
   };
 
   const handleSeeMore = (event: Event) => {
@@ -87,7 +40,6 @@ export default function displaySavedEvents() {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardText}>{item.name}</Text>
-          {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
         </View>
         <View style={styles.cardDateLocationContainer}>
           <Text style={styles.cardDate}>{item.date}</Text>
@@ -107,22 +59,21 @@ export default function displaySavedEvents() {
             ))}
           </View>
         </View>
-
       </View>
     </Pressable>
   );
 
-
   return (
     <View style={styles.container}>
-      {/* display event cards */}
       <FlatList
         data={savedEvents}
         renderItem={renderEventCard}
         keyExtractor={(item) => item.id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={<Text>No saved events.</Text>}
       />
-
     </View>
   );
 }
-

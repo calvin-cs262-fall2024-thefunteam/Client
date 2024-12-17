@@ -45,7 +45,7 @@ export default function EventDetailsScreen() {
     }
 
     // Navigate back to the home screen after deleting the event
-    router.navigate("/home");
+    router.replace("/home");
 
   };
 
