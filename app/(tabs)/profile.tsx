@@ -260,7 +260,7 @@ const Profile = ({ }) => {
           </TouchableOpacity>
 
           {/* display event cards */}
-          <Text style={profile_styles.headerText}>My Events</Text>
+          <Text style={profile_styles.myEventsText}>My Events</Text>
           <FlatList
             data={events}
             renderItem={renderEventCard}
@@ -387,6 +387,13 @@ const profile_styles = StyleSheet.create({
   modalCloseButtonText: {
     color: "#007bff",
     fontSize: 16,
+  },
+  myEventsText: {
+    fontSize: 16, // Smaller font size
+    color: "#888", // Grey color
+    textAlign: "left", // Align to the left
+    alignSelf: "flex-start",
+    margin: 20,
   },
 });
 
