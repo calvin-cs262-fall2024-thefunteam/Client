@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import { UserProvider } from "../components/UserContext";
 import React from "react";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 // LogoTitle now receives the `isGuest` state as a prop
 function LogoTitle() {
@@ -22,6 +23,7 @@ function LogoTitle() {
         style={styles.image}
         source={require("@/assets/images/eventSphere.png")}
       />
+      <Pressable onPress={() => router.push("/help")}><AntDesign style={styles.questionIcon} name="questioncircleo" size={24} color="black" /></Pressable>
     </View>
   );
 }
@@ -65,18 +67,23 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start", // Align items to the start (left)
+    justifyContent: "space-between", // Align items to the start (left) and end (right)
     flex: 1,
     marginLeft: -60, // Add some margin to the left
   },
   logoContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    flex: 1,
   },
   image: {
     width: 150,
     height: 40,
     resizeMode: "contain",
+  },
+  questionIcon: {
+    marginRight: 0, // Add some margin to the right
   },
   calendarIcon: {
     marginRight: 10, // Add some margin to the right
