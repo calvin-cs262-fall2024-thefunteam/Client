@@ -345,7 +345,7 @@ const profile_styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 10,
     borderColor: "#ccc",
-
+    borderWidth: 2,
   },
   enlargedProfilePicture: {
     width: 300,
@@ -353,11 +353,12 @@ const profile_styles = StyleSheet.create({
     borderRadius: 150,
   },
   profileName: {
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: "bold",
   },
   profileDescription: {
-    fontSize: 14,
+    marginTop: 5,
+    fontSize: 17,
     color: "#888",
   },
   input: {
