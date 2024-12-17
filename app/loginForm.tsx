@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "../components/UserContext";
+import * as Crypto from 'expo-crypto';
 
 export default function Login() {
   const [accountName, setAccountName] = useState("");
@@ -16,28 +17,20 @@ export default function Login() {
   const router = useRouter();
   const { userID, setUserID, username, setUsername } = useUser();
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${password}`);
+  const handleLogin = async (hashedPassword: string) => {
+      const response = await fetch(`https://eventsphere-web.azurewebsites.net/users/${accountName}/${hashedPassword}`);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        Alert.alert("Error", "Invalid credentials");
       }
       const userData = await response.json();
       console.log(userData);
-
       console.log(userData.accountname);
-      if (userData && userData.accountname === accountName && userData.password === password) {
+      if (userData && userData.accountname === accountName && userData.password === hashedPassword) {
         console.log("Logged in successfully");
         setUserID(userData.id); // Set the user ID in the context
         setUsername(userData.accountname);
         router.replace("/home"); // Navigate to the home screen
-      } else {
-        Alert.alert("Error", "Invalid credentials");
       }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      Alert.alert("Error", "Failed to log in");
-    }
   };
 
   const handleSignUp = () => {
@@ -46,6 +39,13 @@ export default function Login() {
 
   const handleContinueAsGuest = () => {
     router.replace("/home"); // Navigate to the home screen without login
+  };
+
+  const hashpassword = async() => {  // add salt in future
+    console.log("hashing password");
+    const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password)
+    console.log(digest);
+    handleLogin(digest);
   };
 
   return (
@@ -72,7 +72,7 @@ export default function Login() {
       />
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      <TouchableOpacity style={styles.loginButton} onPress={hashpassword}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
