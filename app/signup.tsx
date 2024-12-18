@@ -1,3 +1,14 @@
+/**
+ * SignUp component allows users to create a new account with a username, password, 
+ * and confirm password. It validates the input and hashes the password before sending
+ * a request to the server to create the user.
+ * 
+ * @component
+ * @example
+ * return <SignUp />;
+ */
+
+// Import React and necessary modules from React Native
 import React, { useState } from "react";
 import {
   View,
@@ -11,13 +22,32 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import * as Crypto from 'expo-crypto';
 
+/**
+ * The SignUp component for the EventSphere app.
+ * 
+ * This component allows users to sign up by providing their name, username, 
+ * password, and confirmation of password. It validates the input fields, hashes the password, 
+ * and sends a request to the server to create a new user account.
+ * 
+ * @component
+ * @example
+ * return <SignUp />;
+ */
 export default function SignUp() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
-  const [name, setName] = useState("");
-  const router = useRouter();
+  const [username, setUsername] = useState(""); // The state for the username
+  const [password, setPassword] = useState(""); // The state for the password
+  const [confirmPassword, setConfirmPassword] = useState(""); // The state for the confirm password
+  const [name, setName] = useState(""); // The state for the user's name
+  const router = useRouter(); // Used for navigation between screens
 
+  /**
+   * Handles the user sign-up process by validating the input fields and 
+   * sending the request to the server to create the user.
+   * 
+   * @async
+   * @param {string} hashedPassword - The SHA256 hashed password to store for the new user.
+   * @returns {Promise<void>} Resolves when the sign-up request is complete.
+   */
   const handleSignUp = async (hashedPassword: string) => {
     // Validate if all fields are filled and if passwords match
     if (username && password && confirmPassword) {
@@ -37,7 +67,7 @@ export default function SignUp() {
 
           Alert.alert("Error", "Failed to create user");
         }
-        router.replace("/loginForm"); // Redirect to home screen after sign-up
+        router.replace("/loginForm"); // Redirect to login screen after sign-up
       } else {
         Alert.alert("Error", "Passwords do not match or are less than 8 characters.");
       }
@@ -46,15 +76,27 @@ export default function SignUp() {
     }
   };
 
+  /**
+   * Navigates the user back to the login screen.
+   * 
+   * @returns {void}
+   */
   const handleBackToLogin = () => {
     router.replace("/loginForm"); // Redirect to the login page
   };
 
+  /**
+   * Hashes the entered password using SHA256 before sending it for sign-up.
+   * The password will be hashed with Crypto.digestStringAsync.
+   * 
+   * @async
+   * @returns {Promise<void>} Resolves when the password is hashed and sign-up is attempted.
+   */
   const hashpassword = async() => {  // add salt in future
     console.log("hashing password");
-    const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password)
+    const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
     console.log(digest);
-    handleSignUp(digest);
+    handleSignUp(digest); // Pass the hashed password to handleSignUp
   };
 
   return (
@@ -68,7 +110,6 @@ export default function SignUp() {
         onChangeText={setName}
         textContentType="username"
         autoComplete="username"
-        
       />
 
       <TextInput

@@ -6,65 +6,103 @@ import React, { useState } from "react";
 import { Slot } from "expo-router";
 import Login from "@/app/login";
 
-
 // Get the width of the device's screen for layout styling
 const screenWidth = Dimensions.get('window').width;
 
+/**
+ * TabLayout component: Manages the bottom tab navigation for the application.
+ * 
+ * @returns {JSX.Element} A JSX element representing the tab navigation layout.
+ */
 export default function TabLayout() {
     return (
         <Tabs>
-          {/* Home Tab */}
+          {/* 
+           * Home Tab
+           * 
+           * @screen home
+           * @title Home
+           * @icon Ionicons home-outline
+           * @headerShown false
+           */ }
           <Tabs.Screen
-            name="home"                                 // Screen component for home                         
+            name="home"                                 
             options={{
-              title: 'Home',                           // Title displayed in header
-              tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                <Ionicons name="home-outline" size={size} color={color} />, // Home icon
-                headerShown: false, // Hide the header
+              title: 'Home',                           
+              tabBarIcon: ({ color, size }) =>         
+                <Ionicons name="home-outline" size={size} color={color} />, 
+                headerShown: false, 
             }}
             
         />
 
-            {/* Communities Tab */}
+            {/* /**
+             * Communities Tab
+             * 
+             * @screen communities
+             * @title Communities
+             * @icon Ionicons people-outline
+             */ }
             <Tabs.Screen
-                name="communities"                           // Screen component for communities
+                name="communities"                           
                 options={{
-                    title: 'Communities',                    // Title displayed in header
-                    tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                        <Ionicons name="people-outline" size={size} color={color} />, // Communities icon
+                    title: 'Communities',                    
+                    tabBarIcon: ({ color, size }) =>         
+                        <Ionicons name="people-outline" size={size} color={color} />, 
                 }}
             />
 
-            {/* Create Event Tab */}
+            {/* /**
+             * Create Event Tab
+             * 
+             * @screen createEvent
+             * @title Create Event
+             * @icon Ionicons add-circle-outline
+             * @headerShown false
+             */ }
             <Tabs.Screen
-                name="createEvent"                           // Screen component for creating events
+                name="createEvent"                           
                 options={{
-                    title: 'Create Event',                   // Title displayed in header
-                    tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                        <Ionicons name="add-circle-outline" size={size} color={color} />, // Add event icon
-                        headerShown: false, // Hide the header
+                    title: 'Create Event',                   
+                    tabBarIcon: ({ color, size }) =>         
+                        <Ionicons name="add-circle-outline" size={size} color={color} />, 
+                        headerShown: false, 
                 }}
             />
 
-            {/* Saved Events Tab */}
+            {/* /**
+             * Saved Events Tab
+             * 
+             * @screen savedEvents
+             * @title Saved Events
+             * @icon Ionicons bookmark-outline
+             * @headerShown false
+             */ }
             <Tabs.Screen
-                name="savedEvents"                           // Screen component for saved events
+                name="savedEvents"                           
                 options={{
-                    title: 'Saved Events',                   // Title displayed in header
-                    tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                        <Ionicons name="bookmark-outline" size={size} color={color} />, // Bookmark icon
-                        headerShown: false, // Hide the header
+                    title: 'Saved Events',                   
+                    tabBarIcon: ({ color, size }) =>         
+                        <Ionicons name="bookmark-outline" size={size} color={color} />, 
+                        headerShown: false, 
                 }}
             />
 
-            {/* Profile Tab */}
+            {/* /**
+             * Profile Tab
+             * 
+             * @screen profile
+             * @title Profile
+             * @icon Ionicons person-outline
+             * @headerShown false
+             */ }
             <Tabs.Screen
-                name="profile"                               // Screen component for user profile
+                name="profile"                               
                 options={{
-                    title: 'Profile',                        // Title displayed in header
-                    tabBarIcon: ({ color, size }) =>         // Tab icon using Ionicons
-                        <Ionicons name="person-outline" size={size} color={color} />, // Profile icon
-                        headerShown: false, // Hide the header
+                    title: 'Profile',                        
+                    tabBarIcon: ({ color, size }) =>         
+                        <Ionicons name="person-outline" size={size} color={color} />, 
+                        headerShown: false, 
                 }}
             />
         </Tabs>

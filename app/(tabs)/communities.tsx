@@ -14,10 +14,9 @@ const communityData = [
 ];
 
 // Define the navigation prop type for this component
-type CommunitiesScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Communities"
->;
+/**
+ * @typedef {NativeStackNavigationProp<RootStackParamList, "Communities">} CommunitiesScreenNavigationProp
+ */
 
 export default function Communities() {
   const navigation = useNavigation();
@@ -45,3 +44,25 @@ export default function Communities() {
     </View>
   );
 }
+
+/**
+ * Communities component: Displays a list of communities with navigation to their details.
+ * 
+ * @component
+ * @returns {JSX.Element} A JSX element rendering the list of communities.
+ * 
+ * @example
+ * <Communities />
+ * 
+ * @description
+ * - Uses `FlatList` to display community data.
+ * - `Pressable` navigates to the community details screen.
+ * - Navigation type is defined by `CommunitiesScreenNavigationProp`.
+ * 
+ * @requires react
+ * @requires react-native
+ * @requires @react-navigation/native
+ * @requires @react-navigation/native-stack
+ * @requires @/app/communitiesNavigation
+ * @requires @/styles/globalStyles
+ */
