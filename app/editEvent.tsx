@@ -18,6 +18,7 @@ import { availableTags } from "../app/(tabs)/home"; // Import availableTags from
 import { parse } from "@babel/core";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
+import { useUser } from "@/components/UserContext";
 
 /**
  * EditEventScreen allows the user to update an existing event by modifying event details.
@@ -33,7 +34,7 @@ export default function EditEventScreen() {
   // Get route data to retrieve parameters passed from the previous screen
   const route = useRoute();
   const navigation = useNavigation();
-
+  const {userID} = useUser();
   // Extract 'event' parameter from route parameters, specifying it as a string type
   const { event } = route.params as { event: string };
 
@@ -102,7 +103,7 @@ export default function EditEventScreen() {
       description: eventDescription,
       tagsArray: selectedTags.map((tag) => tag.id), // Map selected tags to their IDs
       location: location,
-      organizerid: 1, // Assume organizer ID is 1 for simplicity
+      organizerid: userID,
     };
 
     try {
