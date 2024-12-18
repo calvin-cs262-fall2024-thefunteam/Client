@@ -20,7 +20,16 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { useUser } from "@/components/UserContext";
 
-// Define the EditEventScreen component
+/**
+ * EditEventScreen allows the user to update an existing event by modifying event details.
+ * The component retrieves the event data from the route parameters and pre-fills the input fields.
+ * The user can update the event name, organizer, date, location, description, and tags.
+ * After editing, the user can submit the changes to update the event.
+ *
+ * @component
+ * @example
+ * return <EditEventScreen />
+ */
 export default function EditEventScreen() {
   // Get route data to retrieve parameters passed from the previous screen
   const route = useRoute();
@@ -44,7 +53,11 @@ export default function EditEventScreen() {
 
   const tags = availableTags;
 
-  // Function to add or remove a tag from selectedTags
+  /**
+   * Toggles the selection state of a tag. Adds the tag to selectedTags if not already selected, otherwise removes it.
+   *
+   * @param {Tag} tag - The tag to be added or removed.
+   */
   const handleTagToggle = (tag: Tag) => {
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tag)
@@ -53,6 +66,13 @@ export default function EditEventScreen() {
     );
   };
 
+  /**
+   * Handles the event date change when the user selects a date from the DateTimePicker.
+   * Updates the state with the new selected date.
+   *
+   * @param {object} event - The event triggered by the date selection.
+   * @param {Date} selectedDate - The newly selected date.
+   */
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setEventDate(selectedDate); // Update the event date
@@ -70,7 +90,10 @@ export default function EditEventScreen() {
     organizerid: parsedEvent.organizerid,
   };
 
-  // Function to handle event update
+  /**
+   * Submits the updated event data to the server to update the event information.
+   * The function sends a PUT request to update the event in the backend.
+   */
   const handleUpdateEvent = async () => {
     updatedEvent = {
       id: parsedEvent.id,
@@ -86,7 +109,7 @@ export default function EditEventScreen() {
     try {
       console.log("Updating event with data:", updatedEvent); // Log the event data
       const response = await fetch(
-        "https://eventsphere-web.azurewebsites.net/events/${parsedEvent.id}",
+        `https://eventsphere-web.azurewebsites.net/events/${parsedEvent.id}`,
         {
           method: "PUT",
           headers: {
@@ -160,31 +183,31 @@ export default function EditEventScreen() {
         onChangeText={setEventDescription}
       />
 
-       {/* Section to select tags for the event */}
-       <Text style={styles.modalText}>Select Tags</Text>
+      {/* Section to select tags for the event */}
+      <Text style={styles.modalText}>Select Tags</Text>
 
-{/* Display tags as buttons or selectable options */}
-<View style={styles.tagSelectionContainer}>
-  {availableTags.map((tag) => (
-    <Pressable
-      key={tag.id}
-      onPress={() => handleTagToggle(tag)}
-      style={[
-        styles.tag,
-        selectedTags.includes(tag) && { backgroundColor: tag.color }, // Change background color if selected
-      ]}
-    >
-      <Text
-        style={[
-          styles.tagText,
-          selectedTags.includes(tag) ? { fontWeight: "bold" } : {},
-        ]}
-      >
-        {tag.label}
-      </Text>
-    </Pressable>
-  ))}
-</View>
+      {/* Display tags as buttons or selectable options */}
+      <View style={styles.tagSelectionContainer}>
+        {availableTags.map((tag) => (
+          <Pressable
+            key={tag.id}
+            onPress={() => handleTagToggle(tag)}
+            style={[
+              styles.tag,
+              selectedTags.includes(tag) && { backgroundColor: tag.color }, // Change background color if selected
+            ]}
+          >
+            <Text
+              style={[
+                styles.tagText,
+                selectedTags.includes(tag) ? { fontWeight: "bold" } : {},
+              ]}
+            >
+              {tag.label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
 
       {/* Button to update event */}
       <Button title="Update Event" onPress={handleUpdateEvent} />

@@ -11,7 +11,7 @@ import { useUser } from "@/components/UserContext";
 export default function EventDetailsScreen() {
   // Get route data to retrieve parameters passed from the previous screen
   const route = useRoute();
-  const {userID} = useUser();
+  const { userID } = useUser();
 
   // Extract 'event' parameter from route parameters, specifying it as a string type
   const { event } = route.params as { event: string };
@@ -21,32 +21,25 @@ export default function EventDetailsScreen() {
 
   const router = useRouter();
 
-  console.log("organizerID:",parsedEvent.organizerID);
-  console.log(userID);
-
-  const handleEditEvent = (event: Event) => {
+  const handleEditEvent = (event: any) => {
     router.push({
       pathname: "/editEvent",
       params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
     });
-  }
+  };
 
   const handleDeleteEvent = async (id: string) => {
     try {
       const response = await axios.delete(`https://eventsphere-web.azurewebsites.net/events/${id}`);
       if (response.status >= 200 && response.status < 300) {
-        setEvents((prevEvents) => prevEvents.filter((event: { id: string; }) => event.id !== id));
         console.log(`Event with id ${id} deleted successfully.`);
+        router.replace("/home");
       } else {
         console.error(`Failed to delete event with id ${id}. Status code: ${response.status}`);
       }
-    } catch (error) { 
-      //console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
+    } catch (error) {
+      console.error(`An error occurred while deleting the event with id ${id}: ${error}`);
     }
-
-    // Navigate back to the home screen after deleting the event
-    router.replace("/home");
-
   };
 
   const confirmDelete = (id: string) => {
@@ -67,14 +60,12 @@ export default function EventDetailsScreen() {
       { cancelable: true }
     );
   };
-  
+
   return (
     <View style={styles.container}>
       {/* Display event details */}
       <Text style={styles.title}>{parsedEvent.name}</Text>
-      <Text style={styles.organizer}>
-        Organized by: {parsedEvent.organizer}
-      </Text>
+      <Text style={styles.organizer}>Organized by: {parsedEvent.organizer}</Text>
       <Text style={styles.date}>{parsedEvent.date}</Text>
       <Text style={styles.description}>{parsedEvent.description}</Text>
       <Text style={styles.location}>{parsedEvent.location}</Text>
@@ -91,8 +82,8 @@ export default function EventDetailsScreen() {
         ))}
       </View>
 
-         {/* Conditional rendering of Edit and Delete buttons */}
-      { (userID === 4 || userID === parsedEvent.organizerID) && (
+      {/* Conditional rendering of Edit and Delete buttons */}
+      {(userID === 4 || userID === parsedEvent.organizerID) && (
         <View style={styles.editAndDeleteButton}>
           <Pressable
             style={styles.editButton}
@@ -185,7 +176,3 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
 });
-function setEvents(arg0: (prevEvents: any) => any) {
-  throw new Error("Function not implemented.");
-}
-

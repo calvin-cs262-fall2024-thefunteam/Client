@@ -51,40 +51,41 @@ export type Event = {
 
 // Main component rendering the list of events
 const Home = () => {
+  // State for handling search query and event list
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const [events, setEvents] = useState<Event[]>([]); // State for storing events
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false); // State for refreshing list
   const navigation = useNavigation();
-  const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
-  const [isSearchBarVisible, setIsSearchBarVisible] = useState(true);
-  const flatListRef = useRef<FlatList<Event>>(null);
-  const { userID } = useUser();
-  const { savedEvents, fetchSavedEvents } = useSavedEvents(); // Use custom hook
+  const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false); // State for showing scroll button
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(true); // State for search bar visibility
+  const flatListRef = useRef<FlatList<Event>>(null); // Reference to FlatList for scroll control
+  const { userID } = useUser(); // Context for user information
+  const { savedEvents, fetchSavedEvents } = useSavedEvents(); // Custom hook for saved events
 
+  // Fetch events when the component is focused
   useFocusEffect(() => {
     fetchEvents();
   });
- 
 
+  // Check if an event is already saved
   const checkSavedEvents = (eventid: string) => {
     return savedEvents.some((event) => event.id == eventid);
   }
 
-  // Fetch events from the server
+  // Fetch events from the backend API
   const fetchEvents = async () => {
-    fetchSavedEvents();
+    fetchSavedEvents(); // Fetch saved events from local storage/context
     try {
-      const response = await axios.get(
-        "https://eventsphere-web.azurewebsites.net/events"
-      );
-      const tempEvents: any[] = response.data; // Store data in a temporary array with type any
+      const response = await axios.get("https://eventsphere-web.azurewebsites.net/events");
+      const tempEvents: any[] = response.data; // Store data in a temporary array
 
+      // Map raw event data to the Event type
       const mappedEvents: Event[] = tempEvents.map((tempEvent) => {
         const eventTags = tempEvent.tagsarray
           .map((tagId: number) => {
             return availableTags.find((tag) => tag.id === tagId);
           })
-          .filter(Boolean) as Tag[]; // Filters out any null values if no match is found
+          .filter(Boolean) as Tag[]; // Filter out null values if no tag match
 
         return {
           id: String(tempEvent.id),
@@ -99,7 +100,7 @@ const Home = () => {
         };
       });
 
-      setEvents(mappedEvents); // Sets the mapped events to state
+      setEvents(mappedEvents); // Update state with mapped events
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -109,19 +110,19 @@ const Home = () => {
   const handleSeeMore = (event: Event) => {
     router.push({
       pathname: "/eventDetails",
-      params: { event: JSON.stringify(event) }, // Convert event object to string for navigation
+      params: { event: JSON.stringify(event) }, // Pass event data as string
     });
-  }; 
+  };
 
   // Helper function to truncate long text descriptions
   function truncateText(text: string, charLimit: number) {
     if (text.length > charLimit) {
-      return text.slice(0, charLimit) + "...";
+      return text.slice(0, charLimit) + "..."; // Truncate if text exceeds char limit
     }
     return text;
   }
 
-  // Filter events based on search query
+  // Filter events based on the search query
   const filteredEvents = events.filter(
     (event: Event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -133,14 +134,13 @@ const Home = () => {
         ))
   );
 
-  // Handle bookmark toggle
+  // Handle bookmark toggle for event save/unsave
   const handleToggleBookmark = (event: Event) => {
     if (!event.isSaved) {
       handleSaveEvent(event);
     } else {
       handleUnsaveEvent(event);
     }
-    // Update event saved status
     setEvents((currentEvents) =>
       currentEvents.map((currentEvent) =>
         currentEvent.id === event.id
@@ -150,14 +150,14 @@ const Home = () => {
     );
   };
 
-  // Refresh events list
+  // Refresh event list from the server
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchEvents();
     setRefreshing(false);
   };
 
-  // Save event to backend
+  // Save an event to the backend
   const handleSaveEvent = async (event: Event) => {
     const eventID = event.id;
     const item = {
@@ -175,7 +175,6 @@ const Home = () => {
           body: JSON.stringify(item),
         }
       );
-
       const data = await response.json();
       console.log("Success:", data);
     } catch (error) {
@@ -183,7 +182,7 @@ const Home = () => {
     }
   };
 
-  // Unsave event from backend
+  // Unsave an event from the backend
   const handleUnsaveEvent = async (event: Event) => {
     const eventID = event.id;
     try {
@@ -197,7 +196,6 @@ const Home = () => {
         }
       );
   
-      // Log the raw response for debugging
       const text = await response.text();
       console.log("Raw response:", text);
   
@@ -205,7 +203,6 @@ const Home = () => {
         throw new Error(`Failed to unsave event: ${response.statusText}`);
       }
   
-      // Parse JSON only if applicable
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         const data = JSON.parse(text);
         console.log("Success:", data);
@@ -217,18 +214,15 @@ const Home = () => {
     }
   };
 
-  // Scroll to top functionality
+  // Scroll to the top of the list
   const goToTop = () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   };
 
-  // Handle scroll to show/hide scroll to top button
-  const handleScroll = (event: {
-    nativeEvent: { contentOffset: { y: any } };
-  }) => {
+  // Handle scroll to show/hide the scroll to top button
+  const handleScroll = (event: { nativeEvent: { contentOffset: { y: any } } }) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-    setIsScrollButtonVisible(offsetY > 100);
-    // setIsSearchBarVisible(offsetY <= 0); // Hide search bar when scrolling down
+    setIsScrollButtonVisible(offsetY > 100); // Show button after scrolling 100px
   };
 
   // Render individual event card
@@ -237,7 +231,6 @@ const Home = () => {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardText}>{item.name}</Text>
-          {/* <Text style={styles.cardText}>{item.organizer}</Text> */}
         </View>
         <View style={styles.cardDateLocationContainer}>
           <Text style={styles.cardDate}>{item.date}</Text>
@@ -246,7 +239,7 @@ const Home = () => {
 
         <View style={styles.separator} />
         <Text style={styles.cardDescription}>
-          {truncateText(item.description, 45)}
+          {truncateText(item.description, 45)} {/* Truncate description if needed */}
         </Text>
 
         <View style={styles.tagAndButtonContainer}>
@@ -277,7 +270,6 @@ const Home = () => {
   // Main render method
   return (
     <View style={styles.container}>
-      {/* Events list */}
       <FlatList
         data={filteredEvents}
         ref={flatListRef}
@@ -293,22 +285,19 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListHeaderComponent={
-          // isSearchBarVisible && 
-          (
-            <View style={styles.searchContainer}>
-              <Ionicons
-                name="search"
-                size={24}
-                color="black"
-                style={styles.searchIcon}
-              />
-              <SearchBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                style={styles.searchInput}
-              />
-            </View>
-          )
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search"
+              size={24}
+              color="black"
+              style={styles.searchIcon}
+            />
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              style={styles.searchInput}
+            />
+          </View>
         }
         onScroll={handleScroll}
         scrollEventThrottle={16}
