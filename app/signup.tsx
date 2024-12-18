@@ -84,7 +84,7 @@ export default function SignUp() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        textContentType="none"
+        textContentType="password"
         autoComplete="off"
       />
 
@@ -94,7 +94,7 @@ export default function SignUp() {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
-        textContentType="none"
+        textContentType="password"
         autoComplete="off"
       />
 

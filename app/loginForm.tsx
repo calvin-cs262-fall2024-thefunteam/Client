@@ -68,7 +68,8 @@ export default function Login() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        textContentType="none"
+        textContentType="password"
+        autoComplete="off"
       />
 
       {/* Login Button */}
