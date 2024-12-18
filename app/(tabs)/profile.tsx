@@ -171,7 +171,7 @@ const Profile = ({ }) => {
       <View
         style={[
           styles.container,
-          { backgroundColor: colorScheme === "dark" ? "#fff" : "#000" },
+          { backgroundColor: colorScheme === "dark" ? "white" : "white" },
         ]}
       >
         {/* Header */}
@@ -179,7 +179,7 @@ const Profile = ({ }) => {
           <Text
             style={[
               profile_styles.headerText,
-              { color: colorScheme === "dark" ? "#000" : "#fff" },
+              { color: colorScheme === "dark" ? "black" : "black" },
             ]}
           >
             Profile
@@ -222,7 +222,7 @@ const Profile = ({ }) => {
             <Text
               style={[
                 profile_styles.profileName,
-                { color: colorScheme === "dark" ? "#000" : "#fff" },
+                { color: colorScheme === "dark" ? "black" : "black" },
               ]}
             >
               {username}
